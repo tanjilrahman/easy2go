@@ -72,6 +72,8 @@ export function SearchCard({
     useState<LocationSuggestion | null>(null);
   const [activeField, setActiveField] = useState<ActiveField>(null);
   const [optimization, setOptimization] = useState<RouteOptimization>("recommended");
+  const [isLocatingOrigin, setIsLocatingOrigin] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   const debouncedOrigin = useDebouncedValue(originText.trim(), 350);
   const debouncedDestination = useDebouncedValue(destinationText.trim(), 350);
@@ -131,6 +133,7 @@ export function SearchCard({
       if (activeField === "origin") {
         setOriginText(item.name);
         setOriginSelection(item);
+        setLocationError(null);
       } else if (activeField === "destination") {
         setDestinationText(item.name);
         setDestinationSelection(item);
@@ -144,6 +147,52 @@ export function SearchCard({
     setDestinationText(destination);
     setOriginSelection(null);
     setDestinationSelection(null);
+    setLocationError(null);
+  };
+
+  const useCurrentLocation = () => {
+    if (!navigator.geolocation) {
+      setLocationError("Current location is not supported in this browser.");
+      return;
+    }
+
+    setIsLocatingOrigin(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        startTransition(() => {
+          setOriginText("Current location");
+          setOriginSelection({
+            id: "current-location",
+            name: "Current location",
+            address: "Using your device coordinates",
+            type: "place",
+            coordinates: [position.coords.latitude, position.coords.longitude],
+          });
+        });
+        setActiveField(null);
+        setIsLocatingOrigin(false);
+      },
+      (error) => {
+        const message =
+          error.code === error.PERMISSION_DENIED
+            ? "Location access was denied. Please allow it and try again."
+            : error.code === error.POSITION_UNAVAILABLE
+              ? "Your current location is unavailable right now."
+              : error.code === error.TIMEOUT
+                ? "Getting your current location timed out."
+                : "Unable to get your current location right now.";
+
+        setLocationError(message);
+        setIsLocatingOrigin(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      },
+    );
   };
 
   const renderSuggestionList = activeField && activeQuery.length >= 2;
@@ -173,15 +222,33 @@ export function SearchCard({
               onChange={(event) => {
                 setOriginText(event.target.value);
                 setOriginSelection(null);
+                setLocationError(null);
               }}
               onFocus={() => setActiveField("origin")}
               className={cn(
-                "h-14 rounded-[22px] border-0 bg-white/70 pl-12 pr-4 text-[15px] shadow-none ring-1 ring-white/55 placeholder:text-muted-foreground",
+                "h-14 rounded-[22px] border-0 bg-white/70 pl-12 pr-28 text-[15px] shadow-none ring-1 ring-white/55 placeholder:text-muted-foreground",
                 activeField === "origin" ? "ring-2 ring-primary/20" : "",
               )}
             />
             <LocateFixed className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
+            <button
+              type="button"
+              onClick={useCurrentLocation}
+              disabled={isLocatingOrigin}
+              className="absolute right-2 top-1/2 inline-flex h-10 items-center gap-2 rounded-full bg-primary/10 px-3 text-xs font-semibold text-primary transition hover:bg-primary/14 disabled:cursor-not-allowed disabled:opacity-70"
+            >
+              {isLocatingOrigin ? (
+                <LoaderCircle className="h-4 w-4 animate-spin" />
+              ) : (
+                <LocateFixed className="h-4 w-4" />
+              )}
+              {isLocatingOrigin ? "Locating..." : "Use current"}
+            </button>
           </div>
+
+          {locationError ? (
+            <p className="px-1 text-xs text-rose-600">{locationError}</p>
+          ) : null}
 
           <div className="relative">
             <Input
