@@ -1,154 +1,320 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
 import { Compass, MapPinned } from "lucide-react";
-import { startTransition, useMemo, useState } from "react";
+import { startTransition, useEffect, useMemo, useState } from "react";
 
-import { useCalculateRoutes, useSearchHistory } from "@/hooks/use-route-planner";
 import { BrandLogo } from "@/components/brand-logo";
 import { MapFrame } from "@/components/map/dhaka-map";
-import { EmptyState } from "@/components/route-planner/empty-state";
-import { RouteDetailsSheet } from "@/components/route-planner/route-details-sheet";
-import { RouteResultsSheet } from "@/components/route-planner/route-results-sheet";
-import { SearchCard } from "@/components/route-planner/search-card";
-import type {
-  CalculateRouteRequest,
-  RouteOptimization,
-  RouteOption,
-} from "@/lib/validations/routes";
+import { PlannerComparePane } from "@/components/route-planner/planner-compare-pane";
+import { PlannerComposerPane } from "@/components/route-planner/planner-composer-pane";
+import { PlannerItineraryPane } from "@/components/route-planner/planner-itinerary-pane";
+import { PlannerPane } from "@/components/route-planner/planner-pane";
+import { PlannerSavedPane } from "@/components/route-planner/planner-saved-pane";
+import { usePlannerMemory } from "@/hooks/use-planner-memory";
+import { useCalculateRoutes } from "@/hooks/use-route-planner";
+import type { CalculateRouteRequest, LocationInput, RouteOption } from "@/lib/validations/routes";
 
-function getOptimizationLabel(optimization: RouteOptimization) {
-  switch (optimization) {
-    case "fastest":
-      return "Fastest ranking";
-    case "cheapest":
-      return "Cheapest ranking";
+type PaneState = "compose" | "compare" | "itinerary" | "saved";
+
+function paneMeta(pane: PaneState, routeCount: number) {
+  switch (pane) {
+    case "compare":
+      return {
+        title: "Choose the route",
+        subtitle: `${routeCount} guided options ranked for clarity, not noise.`,
+        height: "54vh",
+      };
+    case "itinerary":
+      return {
+        title: "Follow the trip",
+        subtitle: "One route, full connector and fare breakdown.",
+        height: "68vh",
+      };
+    case "saved":
+      return {
+        title: "Saved places",
+        subtitle: "Keep your common anchors ready without leaving the map.",
+        height: "58vh",
+      };
     default:
-      return "Balanced ranking";
+      return {
+        title: "Plan a Dhaka trip",
+        subtitle: "One planner pane, constant map context, and only the choices worth showing.",
+        height: "60vh",
+      };
   }
 }
 
+function createDraftInput(text: string, selection: LocationInput | null) {
+  const name = text.trim();
+
+  if (!name) {
+    return null;
+  }
+
+  return {
+    name,
+    address: selection?.address,
+    placeId: selection?.placeId,
+    coordinates: selection?.coordinates,
+    canonicalId: selection?.canonicalId,
+    type: selection?.type,
+  } satisfies LocationInput;
+}
+
 export function RoutePlannerApp() {
-  const historyQuery = useSearchHistory();
+  const memory = usePlannerMemory();
+  const {
+    ready: memoryReady,
+    draftOrigin,
+    draftDestination,
+    lastSelectedRouteSignature,
+    saveDraft,
+    savePlace,
+    removePlace,
+    recordTrip,
+    rememberRoute,
+    recentTrips,
+    savedPlaces,
+    savedPlaceMap,
+  } = memory;
   const calculateRoutes = useCalculateRoutes();
-
+  const [pane, setPane] = useState<PaneState>("compose");
   const [results, setResults] = useState<RouteOption[]>([]);
-  const [selectedRoute, setSelectedRoute] = useState<RouteOption | null>(null);
-  const [resultsOpen, setResultsOpen] = useState(false);
-  const [detailsOpen, setDetailsOpen] = useState(false);
-  const [optimization, setOptimization] =
-    useState<RouteOptimization>("recommended");
+  const [selectedRouteId, setSelectedRouteId] = useState<string>();
+  const [originText, setOriginText] = useState("");
+  const [destinationText, setDestinationText] = useState("");
+  const [originSelection, setOriginSelection] = useState<LocationInput | null>(null);
+  const [destinationSelection, setDestinationSelection] = useState<LocationInput | null>(null);
+  const [isLocatingOrigin, setIsLocatingOrigin] = useState(false);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
-  const activeRoute = useMemo(
-    () => selectedRoute ?? results[0] ?? null,
-    [results, selectedRoute],
+  useEffect(() => {
+    if (!memoryReady) {
+      return;
+    }
+
+    startTransition(() => {
+      if (!originText && draftOrigin) {
+        setOriginText(draftOrigin.name);
+        setOriginSelection(draftOrigin);
+      }
+
+      if (!destinationText && draftDestination) {
+        setDestinationText(draftDestination.name);
+        setDestinationSelection(draftDestination);
+      }
+    });
+  }, [
+    destinationText,
+    draftDestination,
+    draftOrigin,
+    memoryReady,
+    originText,
+  ]);
+
+  const originValue = useMemo(
+    () => createDraftInput(originText, originSelection),
+    [originSelection, originText],
+  );
+  const destinationValue = useMemo(
+    () => createDraftInput(destinationText, destinationSelection),
+    [destinationSelection, destinationText],
   );
 
-  const handleSearch = (payload: CalculateRouteRequest) => {
-    setOptimization(payload.optimization);
+  useEffect(() => {
+    if (!memoryReady) {
+      return;
+    }
+
+    saveDraft(originValue ?? undefined, destinationValue ?? undefined);
+  }, [destinationValue, memoryReady, originValue, saveDraft]);
+
+  const activeRoute = useMemo(
+    () => results.find((route) => route.id === selectedRouteId) ?? results[0] ?? null,
+    [results, selectedRouteId],
+  );
+
+  const paneCopy = paneMeta(pane, results.length);
+
+  function applyLocation(location: LocationInput, field: "origin" | "destination") {
+    if (field === "origin") {
+      setOriginText(location.name);
+      setOriginSelection(location);
+      return;
+    }
+
+    setDestinationText(location.name);
+    setDestinationSelection(location);
+  }
+
+  function handleSearch(payload: CalculateRouteRequest) {
+    setLocationError(null);
     calculateRoutes.mutate(payload, {
-      onSuccess: (response) => {
-        startTransition(() => {
-          setResults(response.routes);
-          setSelectedRoute(response.routes[0] ?? null);
-          setResultsOpen(true);
-          setDetailsOpen(false);
-        });
+        onSuccess: (response) => {
+          startTransition(() => {
+            setResults(response.routes);
+            const remembered =
+              response.routes.find((route) => route.pathSignature === lastSelectedRouteSignature) ??
+              response.routes[0];
+            setSelectedRouteId(remembered?.id);
+            setPane(response.routes.length > 1 ? "compare" : "itinerary");
+            recordTrip(payload.origin, payload.destination);
+            rememberRoute(remembered?.pathSignature);
+          });
+        },
+      });
+  }
+
+  function useCurrentLocation() {
+    if (!navigator.geolocation) {
+      setLocationError("Current location is not supported in this browser.");
+      return;
+    }
+
+    setIsLocatingOrigin(true);
+    setLocationError(null);
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const nextLocation: LocationInput = {
+          name: "Current location",
+          address: "Using your device coordinates",
+          type: "place",
+          coordinates: [position.coords.latitude, position.coords.longitude],
+        };
+
+        setOriginText(nextLocation.name);
+        setOriginSelection(nextLocation);
+        setIsLocatingOrigin(false);
       },
-    });
-  };
+      (error) => {
+        const message =
+          error.code === error.PERMISSION_DENIED
+            ? "Location access was denied. Please allow it and try again."
+            : error.code === error.POSITION_UNAVAILABLE
+              ? "Your current location is unavailable right now."
+              : error.code === error.TIMEOUT
+                ? "Getting your current location timed out."
+                : "Unable to get your current location right now.";
+
+        setLocationError(message);
+        setIsLocatingOrigin(false);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 60000,
+      },
+    );
+  }
 
   return (
     <main className="relative h-dvh min-h-[100svh] overflow-hidden bg-background">
       <MapFrame activeRoute={activeRoute} />
 
-      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-36 bg-gradient-to-b from-[rgba(10,24,42,0.42)] via-[rgba(10,24,42,0.1)] to-transparent" />
-      <div className="pointer-events-none absolute inset-0 z-10 bg-[linear-gradient(180deg,transparent_0%,transparent_58%,rgba(4,13,23,0.08)_100%)]" />
+      <div className="absolute inset-0 z-10 bg-[radial-gradient(circle_at_top_left,rgba(125,211,252,0.14),transparent_28%),linear-gradient(180deg,rgba(2,6,23,0.12)_0%,rgba(2,6,23,0.08)_42%,rgba(2,6,23,0.54)_100%)]" />
 
-      <div className="absolute left-4 right-4 top-5 z-20 flex items-start justify-between gap-4">
+      <div className="absolute inset-x-3 top-4 z-20 mx-auto flex max-w-xl items-start justify-between gap-4 sm:inset-x-5">
         <BrandLogo />
 
-        <div className="glass-panel flex items-center gap-2 rounded-full px-4 py-3 text-sm font-medium text-foreground">
-          <Compass className="h-4 w-4 text-secondary" />
-          {getOptimizationLabel(optimization)}
+        <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[rgba(3,10,18,0.72)] px-4 py-3 text-sm font-medium text-white backdrop-blur-xl">
+          <Compass className="h-4 w-4 text-sky-300" />
+          {activeRoute?.primaryReason ?? "Map-first planner"}
         </div>
       </div>
 
-      {!resultsOpen && !detailsOpen ? (
-        <div className="absolute inset-x-0 bottom-0 z-20">
-          <SearchCard
-            recentSearches={historyQuery.data?.searches ?? []}
-            isLoading={calculateRoutes.isPending}
-            onSearch={handleSearch}
-          />
+      {activeRoute ? (
+        <div className="absolute left-3 right-3 top-24 z-20 mx-auto max-w-xl sm:left-5 sm:right-5">
+          <div className="inline-flex max-w-full items-center gap-2 rounded-full border border-white/10 bg-[rgba(3,10,18,0.72)] px-4 py-2.5 text-sm text-slate-100 backdrop-blur-xl">
+            <MapPinned className="h-4 w-4 text-emerald-300" />
+            <span className="truncate">
+              {activeRoute.boarding.label} to {activeRoute.alighting.label}
+            </span>
+          </div>
         </div>
       ) : null}
 
-      <AnimatePresence>
-        {calculateRoutes.isPending ? (
-          <motion.div
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 18 }}
-            className="absolute inset-x-4 bottom-10 z-30 mx-auto max-w-sm rounded-[28px] border border-white/60 bg-white/82 p-4 shadow-[0_28px_65px_-35px_rgba(15,31,55,0.48)] backdrop-blur-xl"
-          >
-            <div className="mb-2 flex items-center gap-3">
-              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <MapPinned className="h-5 w-5" />
-              </div>
-              <div>
-                <p className="font-display text-base font-semibold text-foreground">
-                  Calculating your route
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Matching Dhaka places, then scoring by time, fare, and transfers.
-                </p>
-              </div>
-            </div>
-            <div className="h-2 rounded-full bg-muted">
-              <div className="shimmer h-2 w-2/3 rounded-full bg-primary/65" />
-            </div>
-          </motion.div>
+      <PlannerPane
+        paneKey={pane}
+        title={paneCopy.title}
+        subtitle={calculateRoutes.isError ? calculateRoutes.error.message : paneCopy.subtitle}
+        height={paneCopy.height}
+      >
+        {pane === "compose" ? (
+          <PlannerComposerPane
+            originText={originText}
+            destinationText={destinationText}
+            originSelection={originSelection}
+            destinationSelection={destinationSelection}
+            onOriginTextChange={setOriginText}
+            onDestinationTextChange={setDestinationText}
+            onOriginSelectionChange={setOriginSelection}
+            onDestinationSelectionChange={setDestinationSelection}
+            onSwap={() => {
+              setOriginText(destinationText);
+              setDestinationText(originText);
+              setOriginSelection(destinationSelection);
+              setDestinationSelection(originSelection);
+            }}
+            onUseCurrentLocation={useCurrentLocation}
+            onSearch={handleSearch}
+            onOpenSaved={() => setPane("saved")}
+            isLoading={calculateRoutes.isPending}
+            isLocating={isLocatingOrigin}
+            locationError={locationError}
+            savedPlaces={savedPlaceMap}
+            recentTrips={recentTrips}
+          />
         ) : null}
-      </AnimatePresence>
 
-      <AnimatePresence>
-        {calculateRoutes.isError ? (
-          <motion.div
-            initial={{ opacity: 0, y: 16 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 16 }}
-            className="absolute inset-x-4 bottom-8 z-30 mx-auto max-w-sm"
-          >
-            <EmptyState
-              title="Route search hit a problem"
-              description={
-                calculateRoutes.error instanceof Error
-                  ? calculateRoutes.error.message
-                  : "Please try again with another pair of Dhaka locations."
-              }
-            />
-          </motion.div>
+        {pane === "compare" ? (
+          <PlannerComparePane
+            routes={results}
+            selectedRouteId={selectedRouteId}
+            onSelectRoute={(route) => {
+              setSelectedRouteId(route.id);
+              rememberRoute(route.pathSignature);
+            }}
+            onOpenItinerary={() => setPane("itinerary")}
+            onBack={() => setPane("compose")}
+          />
         ) : null}
-      </AnimatePresence>
 
-      <RouteResultsSheet
-        open={resultsOpen && !detailsOpen}
-        optimization={optimization}
-        routes={results}
-        selectedRouteId={selectedRoute?.id}
-        onClose={() => setResultsOpen(false)}
-        onSelectRoute={(route) => {
-          setSelectedRoute(route);
-          setDetailsOpen(true);
-        }}
-      />
+        {pane === "itinerary" ? (
+          <PlannerItineraryPane
+            route={activeRoute}
+            onBack={() => setPane(results.length > 1 ? "compare" : "compose")}
+            onBackLabel={results.length > 1 ? "Compare" : "Edit trip"}
+            onUseReturnTrip={(nextOrigin, nextDestination) => {
+              applyLocation(nextOrigin, "origin");
+              applyLocation(nextDestination, "destination");
+              setPane("compose");
+            }}
+          />
+        ) : null}
 
-      <RouteDetailsSheet
-        open={detailsOpen}
-        route={selectedRoute}
-        onClose={() => setDetailsOpen(false)}
-      />
+        {pane === "saved" ? (
+          <PlannerSavedPane
+            savedPlaces={savedPlaces}
+            recentTrips={recentTrips}
+            currentOrigin={originValue}
+            currentDestination={destinationValue}
+            onBack={() => setPane("compose")}
+            onApplyPlace={(location, field) => {
+              applyLocation(location, field);
+              setPane("compose");
+            }}
+            onSavePlace={(slot, location) => savePlace(slot, location)}
+            onRemovePlace={(slot) => removePlace(slot)}
+            onApplyTrip={(trip) => {
+              applyLocation(trip.origin, "origin");
+              applyLocation(trip.destination, "destination");
+              setPane("compose");
+            }}
+          />
+        ) : null}
+      </PlannerPane>
     </main>
   );
 }

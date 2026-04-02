@@ -64,12 +64,24 @@ export function DhakaMap({ activeRoute }: DhakaMapProps) {
         className="h-full w-full rounded-none"
       />
       <div className="pointer-events-none absolute inset-x-5 bottom-5 rounded-[26px] border border-white/60 bg-white/78 px-4 py-3 shadow-[0_20px_50px_-36px_rgba(15,31,55,0.52)] backdrop-blur-xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
-          Map Preview
-        </p>
-        <p className="mt-1 font-display text-base font-semibold text-foreground">
-          {activeRoute.mapPreview.originLabel} to {activeRoute.mapPreview.destinationLabel}
-        </p>
+        <div className="flex items-center justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+              Active Route
+            </p>
+            <p className="mt-1 truncate font-display text-base font-semibold text-foreground">
+              {activeRoute.mapPreview.originLabel} to {activeRoute.mapPreview.destinationLabel}
+            </p>
+          </div>
+          {activeRoute.estimatedDurationMinutes ? (
+            <div className="rounded-full bg-primary/8 px-3 py-2 text-sm font-semibold text-primary">
+              {activeRoute.estimatedDurationMinutes} min
+            </div>
+          ) : null}
+        </div>
+        {activeRoute.primaryReason ? (
+          <p className="mt-2 text-sm text-muted-foreground">{activeRoute.primaryReason}</p>
+        ) : null}
       </div>
     </div>
   );

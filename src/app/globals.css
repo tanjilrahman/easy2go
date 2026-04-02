@@ -93,6 +93,102 @@ select {
   box-shadow: 0 -18px 45px -28px rgba(11, 31, 56, 0.42);
 }
 
+.planner-pane {
+  background:
+    radial-gradient(circle at top left, rgba(125, 211, 252, 0.12), transparent 28%),
+    linear-gradient(180deg, rgba(4, 14, 24, 0.96) 0%, rgba(7, 18, 30, 0.94) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 -24px 70px -32px rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(26px);
+}
+
+.planner-input-shell {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 28px;
+  padding: 14px;
+}
+
+.planner-input-label {
+  display: inline-flex;
+  margin-bottom: 12px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(203, 213, 225, 0.74);
+}
+
+.planner-input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  height: 18px;
+  width: 18px;
+  transform: translateY(-50%);
+}
+
+.planner-input {
+  height: 56px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 22px;
+  padding-left: 46px;
+  color: white;
+}
+
+.planner-input::placeholder {
+  color: rgba(203, 213, 225, 0.55);
+}
+
+.planner-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(241, 245, 249, 0.95);
+  transition: background 0.2s ease;
+}
+
+.planner-chip:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.planner-trip-chip {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 8px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.05);
+  padding: 10px 14px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(241, 245, 249, 0.95);
+  transition: background 0.2s ease;
+}
+
+.planner-trip-chip:hover {
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.compare-metric {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.06);
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
 @keyframes shimmer {
   0% {
     background-position: 200% 0;

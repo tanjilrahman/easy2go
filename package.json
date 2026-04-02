@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
+    "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "build:bus-dataset": "node scripts/build-dhaka-bus-seed.mjs",
     "build:leguna-dataset": "node scripts/build-dhaka-leguna-seed.mjs"
@@ -36,6 +37,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.2",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.2"
   }
 }

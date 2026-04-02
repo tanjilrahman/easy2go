@@ -48,6 +48,10 @@ export const fareTypeSchema = z.enum(["exact", "unknown", "advisory"]);
 
 export type FareType = z.infer<typeof fareTypeSchema>;
 
+export const connectorTypeSchema = z.enum(["walk", "rickshaw", "advisory"]);
+
+export type ConnectorType = z.infer<typeof connectorTypeSchema>;
+
 export const locationSuggestionSchema = z.object({
   id: z.string(),
   name: z.string(),
@@ -96,8 +100,13 @@ export const routeSegmentSchema = z.object({
   note: z.string().optional(),
   serviceWindowText: z.string().optional(),
   fareText: z.string().optional(),
+  estimatedDistanceKm: z.number().nonnegative().optional(),
+  estimatedDurationMinutes: z.number().int().nonnegative().optional(),
   stopCount: z.number().int().positive().optional(),
   stationCount: z.number().int().positive().optional(),
+  connectorType: connectorTypeSchema.optional(),
+  connectorDistanceKm: z.number().nonnegative().optional(),
+  connectorFare: z.number().int().nonnegative().optional(),
 });
 
 export type RouteSegment = z.infer<typeof routeSegmentSchema>;
@@ -107,6 +116,7 @@ export const routeOptionSchema = z.object({
   kind: routeKindSchema,
   confidence: routeConfidenceSchema,
   summary: z.string(),
+  pathSignature: z.string(),
   fareType: fareTypeSchema,
   fareText: z.string(),
   totalCost: z.number().nonnegative().optional(),
@@ -115,9 +125,15 @@ export const routeOptionSchema = z.object({
   serviceWindowText: z.string().optional(),
   stopCount: z.number().int().nonnegative().optional(),
   stationCount: z.number().int().nonnegative().optional(),
+  transferCount: z.number().int().nonnegative().default(0),
   boarding: routeStopReferenceSchema,
   alighting: routeStopReferenceSchema,
   transferStops: z.array(routeStopReferenceSchema).default([]),
+  serviceLabels: z.array(z.string()).default([]),
+  primaryServiceLabel: z.string().optional(),
+  highlights: z.array(z.string()).default([]),
+  tradeoffs: z.array(z.string()).default([]),
+  primaryReason: z.string().optional(),
   segments: z.array(routeSegmentSchema).min(1),
   mapPreview: routeMapPreviewSchema,
   advisories: z.array(z.string()).default([]),

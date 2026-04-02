@@ -28,6 +28,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      data-scroll-behavior="smooth"
       className={`${dmSans.variable} ${outfit.variable} h-full scroll-smooth`}
     >
       <body className="min-h-full">

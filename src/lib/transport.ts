@@ -56,3 +56,11 @@ export function getConfidenceTone(confidence: RouteConfidence) {
       return "bg-muted text-muted-foreground";
   }
 }
+
+export function formatBdt(amount?: number) {
+  if (amount === undefined) {
+    return "Fare varies";
+  }
+
+  return `BDT ${Math.round(amount)}`;
+}
