@@ -2,6 +2,7 @@
 
 import { ArrowRight, CheckCircle2, Clock3, Coins, GitCompareArrows, MapPinned, Route } from "lucide-react";
 
+import { PlannerDebugRoutes } from "@/components/route-planner/planner-debug-routes";
 import { Button } from "@/components/ui/button";
 import { formatBdt, getConfidenceTone, getRouteKindLabel, getRouteKindTone } from "@/lib/transport";
 import { cn } from "@/lib/utils";
@@ -9,6 +10,7 @@ import type { RouteOption } from "@/lib/validations/routes";
 
 interface PlannerComparePaneProps {
   routes: RouteOption[];
+  debugRoutes: RouteOption[];
   selectedRouteId?: string;
   onSelectRoute: (route: RouteOption) => void;
   onOpenItinerary: () => void;
@@ -105,6 +107,7 @@ function CompareRow({
 
 export function PlannerComparePane({
   routes,
+  debugRoutes,
   selectedRouteId,
   onSelectRoute,
   onOpenItinerary,
@@ -112,31 +115,35 @@ export function PlannerComparePane({
 }: PlannerComparePaneProps) {
   return (
     <div className="flex h-full min-h-0 flex-col gap-3">
-      <div className="flex items-center justify-between rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-white px-3 py-2.5">
-        <p className="text-sm font-semibold text-slate-900">Fastest + alternative</p>
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onBack}
-          className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
-        >
-          Edit
-        </Button>
+      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+        <div className="space-y-3 pb-3">
+          <div className="flex items-center justify-between rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-white px-3 py-2.5">
+            <p className="text-sm font-semibold text-slate-900">Fastest + alternative</p>
+            <Button
+              type="button"
+              variant="ghost"
+              onClick={onBack}
+              className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
+            >
+              Edit
+            </Button>
+          </div>
+
+          {routes.map((route, index) => (
+            <CompareRow
+              key={route.id}
+              route={route}
+              label={index === 0 ? "Fastest" : "Alternative"}
+              selected={route.id === selectedRouteId}
+              onClick={() => onSelectRoute(route)}
+            />
+          ))}
+
+          <PlannerDebugRoutes routes={debugRoutes} />
+        </div>
       </div>
 
-      <div className="min-h-0 flex-1 overflow-y-auto space-y-3 pr-1">
-        {routes.map((route, index) => (
-          <CompareRow
-            key={route.id}
-            route={route}
-            label={index === 0 ? "Fastest" : "Alternative"}
-            selected={route.id === selectedRouteId}
-            onClick={() => onSelectRoute(route)}
-          />
-        ))}
-      </div>
-
-      <div className="shrink-0 border-t border-slate-200 bg-white/90 pt-3">
+      <div className="sticky bottom-0 z-10 shrink-0 border-t border-slate-200 bg-white/95 pt-3 backdrop-blur">
         <Button
           type="button"
           onClick={onOpenItinerary}

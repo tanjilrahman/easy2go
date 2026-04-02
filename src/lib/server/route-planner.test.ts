@@ -436,5 +436,6 @@ describe("calculateRoutes", () => {
     expect(response.routes[0]?.segments.some((segment) => segment.mode === "bus")).toBe(true);
     expect(response.routes[0]?.segments.at(-1)?.mode).toBe("rickshaw");
     expect(response.routes[0]?.alighting.type).toBe("bus_stop");
+    expect(response.debugRoutes.length).toBeGreaterThan(0);
   });
 });

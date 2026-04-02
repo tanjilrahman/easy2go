@@ -59,8 +59,8 @@ export function PlannerPane({
         ref={paneRef}
         layout
         transition={{ type: "spring", stiffness: 180, damping: 24 }}
-        style={{ maxHeight }}
-        className="planner-pane mx-auto flex w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-[30px] sm:max-w-[min(70vw,34rem)]"
+        style={{ height: maxHeight, maxHeight }}
+        className="planner-pane mx-auto flex h-full w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-[30px] sm:max-w-[min(70vw,34rem)]"
       >
         {showHeader ? (
           <div className="flex items-start justify-between gap-3 border-b border-slate-200/80 px-4 pb-3 pt-3">

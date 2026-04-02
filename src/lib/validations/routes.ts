@@ -151,6 +151,7 @@ export type CalculateRouteRequest = z.infer<typeof calculateRouteRequestSchema>;
 
 export const calculateRouteResponseSchema = z.object({
   routes: z.array(routeOptionSchema),
+  debugRoutes: z.array(routeOptionSchema).default([]),
   source: z.enum(["deterministic"]),
   searchId: z.string().optional(),
 });

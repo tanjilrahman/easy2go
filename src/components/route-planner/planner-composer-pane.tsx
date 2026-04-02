@@ -466,7 +466,7 @@ export function PlannerComposerPane({
         </div>
       </div>
 
-      <div className="shrink-0 border-t border-slate-200 bg-white/90 pt-3">
+      <div className="sticky bottom-0 z-10 shrink-0 border-t border-slate-200 bg-white/95 pt-3 backdrop-blur">
         <Button
           type="button"
           onClick={() => {

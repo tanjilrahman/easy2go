@@ -1947,9 +1947,18 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
     }
   }
 
+  const allFoundRoutes = groupRoutesByPresentation(groupRoutesByPath(routes));
   const surfacedRoutes = surfaceRoutes(routes, payload.optimization);
+  const fallbackCandidates =
+    surfacedRoutes.length > 0
+      ? []
+      : collectFallbackBusRoutes(originResolution, destinationResolution);
+  const allFoundFallbackRoutes =
+    surfacedRoutes.length > 0
+      ? []
+      : groupRoutesByPresentation(groupRoutesByPath(fallbackCandidates));
   const fallbackRoutes =
-    surfacedRoutes.length > 0 ? [] : surfaceRoutes(collectFallbackBusRoutes(originResolution, destinationResolution), payload.optimization);
+    surfacedRoutes.length > 0 ? [] : surfaceRoutes(fallbackCandidates, payload.optimization);
 
   const finalRoutes =
     surfacedRoutes.length > 0
@@ -1969,6 +1978,12 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
 
   return calculateRouteResponseSchema.parse({
     routes: finalRoutes,
+    debugRoutes:
+      surfacedRoutes.length > 0
+        ? allFoundRoutes
+        : fallbackRoutes.length > 0
+          ? allFoundFallbackRoutes
+          : [],
     source: "deterministic",
   });
 }

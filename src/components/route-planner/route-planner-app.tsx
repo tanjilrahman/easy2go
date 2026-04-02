@@ -93,6 +93,7 @@ export function RoutePlannerApp() {
   const calculateRoutes = useCalculateRoutes();
   const [pane, setPane] = useState<PaneState>("compose");
   const [results, setResults] = useState<RouteOption[]>([]);
+  const [debugRoutes, setDebugRoutes] = useState<RouteOption[]>([]);
   const [selectedRouteId, setSelectedRouteId] = useState<string>();
   const [originText, setOriginText] = useState("");
   const [destinationText, setDestinationText] = useState("");
@@ -194,6 +195,7 @@ export function RoutePlannerApp() {
 
   function clearCurrentRoute() {
     setResults([]);
+    setDebugRoutes([]);
     setSelectedRouteId(undefined);
   }
 
@@ -208,6 +210,7 @@ export function RoutePlannerApp() {
       onSuccess: (response) => {
         startTransition(() => {
           setResults(response.routes);
+          setDebugRoutes(response.debugRoutes);
           const remembered =
             response.routes.find(
               (route) => route.pathSignature === lastSelectedRouteSignature,
@@ -335,6 +338,7 @@ export function RoutePlannerApp() {
         {pane === "compare" ? (
           <PlannerComparePane
             routes={results}
+            debugRoutes={debugRoutes}
             selectedRouteId={selectedRouteId}
             onSelectRoute={(route) => {
               setSelectedRouteId(route.id);
@@ -348,6 +352,7 @@ export function RoutePlannerApp() {
         {pane === "itinerary" ? (
           <PlannerItineraryPane
             route={activeRoute}
+            debugRoutes={debugRoutes}
             onBack={() => {
               if (results.length > 1) {
                 setPane("compare");
