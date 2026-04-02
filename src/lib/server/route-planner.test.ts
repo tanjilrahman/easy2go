@@ -1,6 +1,11 @@
 import { describe, expect, it } from "vitest";
 
-import { createPathSignature, estimateRickshawFareBdt, surfaceRoutes } from "@/lib/server/route-planner";
+import {
+  calculateRoutes,
+  createPathSignature,
+  estimateRickshawFareBdt,
+  surfaceRoutes,
+} from "@/lib/server/route-planner";
 import { routeOptionSchema, type RouteOption } from "@/lib/validations/routes";
 
 function makeRoute(overrides: Partial<RouteOption> = {}) {
@@ -216,5 +221,29 @@ describe("surfaceRoutes", () => {
     expect(surfaced[0]?.id).toBe("fastest");
     expect(surfaced[0]?.primaryReason).toBe("Fastest total travel time");
     expect(surfaced[1]?.id).toBe("metro-alt");
+  });
+});
+
+describe("calculateRoutes", () => {
+  it("falls back to the closest bus corridor plus rickshaw instead of returning no route", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Farmgate",
+        canonicalId: "hub-farmgate",
+        type: "hub",
+      },
+      destination: {
+        name: "Demra fringe",
+        coordinates: [23.6905, 90.5045],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+
+    expect(response.routes.length).toBeGreaterThan(0);
+    expect(response.routes[0]?.kind).not.toBe("advisory_connector");
+    expect(response.routes[0]?.segments.some((segment) => segment.mode === "bus")).toBe(true);
+    expect(response.routes[0]?.segments.at(-1)?.mode).toBe("rickshaw");
+    expect(response.routes[0]?.alighting.type).toBe("bus_stop");
   });
 });

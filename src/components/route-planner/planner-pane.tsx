@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import type { ReactNode } from "react";
 
@@ -7,43 +8,76 @@ import { cn } from "@/lib/utils";
 
 interface PlannerPaneProps {
   paneKey: string;
-  title: string;
+  title?: string;
   subtitle?: string;
-  height?: string;
+  maxHeight?: string;
+  scrollable?: boolean;
   actions?: ReactNode;
   children: ReactNode;
   className?: string;
+  onHeightChange?: (height: number) => void;
 }
 
 export function PlannerPane({
   paneKey,
   title,
   subtitle,
-  height = "58vh",
+  maxHeight = "70vh",
+  scrollable = true,
   actions,
   children,
   className,
+  onHeightChange,
 }: PlannerPaneProps) {
+  const showHeader = Boolean(title || subtitle || actions);
+  const paneRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (!paneRef.current || !onHeightChange || typeof ResizeObserver === "undefined") {
+      return;
+    }
+
+    const element = paneRef.current;
+    const updateHeight = () => onHeightChange(element.getBoundingClientRect().height);
+
+    updateHeight();
+
+    const observer = new ResizeObserver(() => {
+      updateHeight();
+    });
+
+    observer.observe(element);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, [onHeightChange]);
+
   return (
-    <section className={cn("absolute inset-x-0 bottom-0 z-30 px-3 pb-3 sm:px-5 sm:pb-5", className)}>
+    <section className={cn("absolute inset-x-0 bottom-0 z-30 px-3 pb-3 sm:px-4 sm:pb-4", className)}>
       <motion.div
+        ref={paneRef}
         layout
         transition={{ type: "spring", stiffness: 180, damping: 24 }}
-        style={{ minHeight: height, maxHeight: "82vh" }}
-        className="planner-pane mx-auto flex w-full max-w-xl flex-col overflow-hidden rounded-[34px]"
+        style={{ maxHeight }}
+        className="planner-pane mx-auto flex w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-[30px] sm:max-w-[min(70vw,34rem)]"
       >
-        <div className="flex items-start justify-between gap-4 border-b border-white/10 px-5 pb-4 pt-4">
-          <div>
-            <div className="mb-3 h-1.5 w-14 rounded-full bg-white/12" />
-            <h2 className="font-display text-[1.38rem] font-semibold tracking-tight text-white">
-              {title}
-            </h2>
-            {subtitle ? (
-              <p className="mt-1 max-w-md text-sm text-slate-300">{subtitle}</p>
-            ) : null}
+        {showHeader ? (
+          <div className="flex items-start justify-between gap-3 border-b border-slate-200/80 px-4 pb-3 pt-3">
+            <div className="min-w-0">
+              <div className="mb-2 h-1.5 w-12 rounded-full bg-slate-300/70" />
+              {title ? (
+                <h2 className="truncate font-display text-[1.02rem] font-semibold tracking-tight text-slate-900">
+                  {title}
+                </h2>
+              ) : null}
+              {subtitle ? (
+                <p className="mt-0.5 truncate text-xs text-slate-500">{subtitle}</p>
+              ) : null}
+            </div>
+            {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
           </div>
-          {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
-        </div>
+        ) : null}
 
         <div className="min-h-0 flex-1 overflow-hidden">
           <AnimatePresence mode="wait">
@@ -53,7 +87,10 @@ export function PlannerPane({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -12 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="h-full overflow-y-auto px-5 pb-5 pt-4"
+              className={cn(
+                "flex h-full min-h-0 flex-col px-4 pb-4 pt-3",
+                scrollable ? "overflow-hidden" : "overflow-hidden",
+              )}
             >
               {children}
             </motion.div>

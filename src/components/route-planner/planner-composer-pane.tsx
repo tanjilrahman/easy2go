@@ -1,7 +1,18 @@
 "use client";
 
-import { ArrowDownUp, Bookmark, LoaderCircle, LocateFixed, MapPin, Navigation2, Search, Star } from "lucide-react";
-import { type KeyboardEvent, useId, useMemo, useState } from "react";
+import {
+  ArrowDownUp,
+  Bookmark,
+  ChevronDown,
+  ChevronUp,
+  LoaderCircle,
+  LocateFixed,
+  MapPin,
+  Navigation2,
+  Search,
+  Star,
+} from "lucide-react";
+import { type KeyboardEvent, useEffect, useId, useMemo, useState } from "react";
 
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
 import type { RecentTrip, SavedPlace } from "@/hooks/use-planner-memory";
@@ -24,6 +35,7 @@ interface PlannerComposerPaneProps {
   onUseCurrentLocation: () => void;
   onSearch: (payload: CalculateRouteRequest) => void;
   onOpenSaved: () => void;
+  onExpandedContentChange?: (expanded: boolean) => void;
   isLoading?: boolean;
   isLocating?: boolean;
   locationError?: string | null;
@@ -70,6 +82,7 @@ export function PlannerComposerPane({
   onUseCurrentLocation,
   onSearch,
   onOpenSaved,
+  onExpandedContentChange,
   isLoading,
   isLocating,
   locationError,
@@ -78,6 +91,7 @@ export function PlannerComposerPane({
 }: PlannerComposerPaneProps) {
   const [activeField, setActiveField] = useState<ActiveField>(null);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
+  const [showRecentTripsOnMobile, setShowRecentTripsOnMobile] = useState(false);
   const listboxId = useId();
   const debouncedOrigin = useDebouncedValue(originText.trim(), 250);
   const debouncedDestination = useDebouncedValue(destinationText.trim(), 250);
@@ -126,6 +140,12 @@ export function PlannerComposerPane({
     !!destinationValue &&
     originValue.name.length > 1 &&
     destinationValue.name.length > 1;
+  const hasSuggestionsOpen = Boolean(activeField && activeQuery.length >= 2);
+  const hasExpandedRecentTrips = recentTrips.length > 0 && showRecentTripsOnMobile;
+
+  useEffect(() => {
+    onExpandedContentChange?.(hasSuggestionsOpen || hasExpandedRecentTrips);
+  }, [hasExpandedRecentTrips, hasSuggestionsOpen, onExpandedContentChange]);
 
   function selectSuggestion(item: LocationSuggestion) {
     const nextValue = toLocationInput(item);
@@ -157,6 +177,7 @@ export function PlannerComposerPane({
     onDestinationTextChange(trip.destination.name);
     onDestinationSelectionChange(trip.destination);
     setActiveField(null);
+    setShowRecentTripsOnMobile(false);
   }
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -197,262 +218,284 @@ export function PlannerComposerPane({
   }
 
   return (
-    <div className="space-y-5">
-      <div className="grid gap-3">
-        <div className="planner-input-shell">
-          <label className="planner-input-label" htmlFor="planner-origin">
-            Start from
-          </label>
-          <div className="relative">
-            <LocateFixed className="planner-input-icon text-sky-300" />
-            <Input
-              id="planner-origin"
-              role="combobox"
-              aria-expanded={activeField === "origin" && suggestions.length > 0}
-              aria-controls={listboxId}
-              aria-autocomplete="list"
-              aria-activedescendant={
-                activeField === "origin" && suggestions[activeSuggestionIndex]
-                  ? `${listboxId}-${suggestions[activeSuggestionIndex]?.id}`
-                  : undefined
-              }
-              value={originText}
-              placeholder="Your place, stop, or station"
-              onFocus={() => setActiveField("origin")}
-              onChange={(event) => {
-                onOriginTextChange(event.target.value);
-                onOriginSelectionChange(null);
-                setActiveField("origin");
-                setActiveSuggestionIndex(0);
-              }}
-              onKeyDown={handleKeyDown}
-              className="planner-input pr-32"
-            />
-            <button
-              type="button"
-              onClick={onUseCurrentLocation}
-              disabled={isLocating}
-              className="absolute right-2 top-1/2 inline-flex h-10 -translate-y-1/2 items-center gap-2 rounded-full bg-white/8 px-3 text-xs font-semibold text-white transition hover:bg-white/12 disabled:opacity-60"
-            >
-              {isLocating ? (
-                <LoaderCircle className="h-4 w-4 animate-spin" />
-              ) : (
-                <LocateFixed className="h-4 w-4" />
-              )}
-              {isLocating ? "Locating" : "Current"}
-            </button>
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {savedPlaces.home ? (
-              <button
-                type="button"
-                onClick={() => applySavedPlace(savedPlaces.home!, "origin")}
-                className="planner-chip"
-              >
-                <Star className="h-3.5 w-3.5" />
-                Home
-              </button>
-            ) : null}
-            {savedPlaces.work ? (
-              <button
-                type="button"
-                onClick={() => applySavedPlace(savedPlaces.work!, "origin")}
-                className="planner-chip"
-              >
-                <Bookmark className="h-3.5 w-3.5" />
-                Work
-              </button>
-            ) : null}
-          </div>
-        </div>
-
-        <div className="flex justify-center">
-          <button
-            type="button"
-            onClick={onSwap}
-            className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-200 transition hover:bg-white/10"
-            aria-label="Swap origin and destination"
-          >
-            <ArrowDownUp className="h-4 w-4" />
-          </button>
-        </div>
-
-        <div className="planner-input-shell">
-          <label className="planner-input-label" htmlFor="planner-destination">
-            Going to
-          </label>
-          <div className="relative">
-            <Navigation2 className="planner-input-icon text-emerald-300" />
-            <Input
-              id="planner-destination"
-              role="combobox"
-              aria-expanded={activeField === "destination" && suggestions.length > 0}
-              aria-controls={listboxId}
-              aria-autocomplete="list"
-              aria-activedescendant={
-                activeField === "destination" && suggestions[activeSuggestionIndex]
-                  ? `${listboxId}-${suggestions[activeSuggestionIndex]?.id}`
-                  : undefined
-              }
-              value={destinationText}
-              placeholder="Destination, stop, or corridor"
-              onFocus={() => setActiveField("destination")}
-              onChange={(event) => {
-                onDestinationTextChange(event.target.value);
-                onDestinationSelectionChange(null);
-                setActiveField("destination");
-                setActiveSuggestionIndex(0);
-              }}
-              onKeyDown={handleKeyDown}
-              className="planner-input"
-            />
-          </div>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {savedPlaces.home ? (
-              <button
-                type="button"
-                onClick={() => applySavedPlace(savedPlaces.home!, "destination")}
-                className="planner-chip"
-              >
-                <Star className="h-3.5 w-3.5" />
-                Home
-              </button>
-            ) : null}
-            {savedPlaces.work ? (
-              <button
-                type="button"
-                onClick={() => applySavedPlace(savedPlaces.work!, "destination")}
-                className="planner-chip"
-              >
-                <Bookmark className="h-3.5 w-3.5" />
-                Work
-              </button>
-            ) : null}
-          </div>
-        </div>
-      </div>
-
-      {locationError ? (
-        <p className="rounded-2xl border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-100">
-          {locationError}
-        </p>
-      ) : null}
-
-      {activeField && activeQuery.length >= 2 ? (
-        <div
-          id={listboxId}
-          role="listbox"
-          aria-label="Suggested places"
-          className="overflow-hidden rounded-[28px] border border-white/10 bg-[#091523]/90"
-        >
-          {suggestionsQuery.isPending ? (
-            <div className="flex items-center gap-2 px-4 py-4 text-sm text-slate-300">
-              <LoaderCircle className="h-4 w-4 animate-spin" />
-              Searching Dhaka places and transit points...
-            </div>
-          ) : suggestions.length ? (
-            <div className="max-h-72 overflow-y-auto py-2">
-              {suggestions.map((item, index) => (
-                <button
-                  id={`${listboxId}-${item.id}`}
-                  role="option"
-                  aria-selected={index === activeSuggestionIndex}
-                  type="button"
-                  key={item.id}
-                  onClick={() => selectSuggestion(item)}
-                  onMouseEnter={() => setActiveSuggestionIndex(index)}
-                  className={cn(
-                    "flex w-full items-start gap-3 px-4 py-3 text-left transition",
-                    index === activeSuggestionIndex ? "bg-white/10" : "hover:bg-white/6",
-                  )}
-                >
-                  <div className="mt-0.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-white/8 text-sky-200">
-                    <MapPin className="h-4 w-4" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-white">{item.name}</p>
-                    <p className="truncate text-xs text-slate-400">
-                      {item.address ?? "Dhaka, Bangladesh"}
-                    </p>
-                  </div>
-                  <span className="rounded-full bg-white/8 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-300">
-                    {suggestionTypeLabel(item.type)}
-                  </span>
-                </button>
-              ))}
-            </div>
-          ) : (
-            <div className="px-4 py-4 text-sm text-slate-300">
-              No direct suggestion yet. Try a more specific stop, metro station, or landmark.
-            </div>
-          )}
-        </div>
-      ) : (
-        <>
-          <div className="flex items-center justify-between rounded-[28px] border border-white/10 bg-white/5 px-4 py-3">
-            <div>
-              <p className="text-sm font-semibold text-white">Saved & Recent</p>
-              <p className="text-xs text-slate-400">
-                Keep the map visible while switching trip context inside this pane.
+    <div className="flex h-full min-h-0 flex-col">
+      <div className="min-h-0 flex-1 overflow-y-auto pr-1">
+        <div className="space-y-3 pb-3">
+          <div className="flex items-start justify-between gap-3 px-1 py-1">
+            <div className="min-w-0">
+              <p className="text-[0.95rem] font-semibold tracking-tight text-slate-900">Plan your trip</p>
+              <p className="mt-1 text-xs text-[rgb(87,80,119)]">
+                Fastest bus route with the right last-mile connector.
               </p>
             </div>
             <Button
               type="button"
               variant="ghost"
               onClick={onOpenSaved}
-              className="h-10 rounded-full border border-white/10 bg-white/6 px-4 text-white hover:bg-white/12"
+              className="h-8 shrink-0 rounded-full border border-[rgba(90,67,215,0.12)] bg-white px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
             >
-              Open saved
+              <Bookmark className="mr-1.5 h-4 w-4" />
+              Saved
             </Button>
           </div>
 
-          {recentTrips.length ? (
-            <div className="flex flex-wrap gap-2">
-              {recentTrips.slice(0, 4).map((trip) => (
+          <div className="grid gap-2">
+            <div className="planner-input-shell">
+              <div className="relative">
+                <LocateFixed className="planner-input-icon text-[rgb(90,67,215)]" />
+                <Input
+                  id="planner-origin"
+                  role="combobox"
+                  aria-expanded={activeField === "origin" && suggestions.length > 0}
+                  aria-controls={listboxId}
+                  aria-autocomplete="list"
+                  aria-activedescendant={
+                    activeField === "origin" && suggestions[activeSuggestionIndex]
+                      ? `${listboxId}-${suggestions[activeSuggestionIndex]?.id}`
+                      : undefined
+                  }
+                  value={originText}
+                  placeholder="Start"
+                  onFocus={() => setActiveField("origin")}
+                  onChange={(event) => {
+                    onOriginTextChange(event.target.value);
+                    onOriginSelectionChange(null);
+                    setActiveField("origin");
+                    setActiveSuggestionIndex(0);
+                  }}
+                  onKeyDown={handleKeyDown}
+                  className="planner-input pr-28"
+                />
                 <button
                   type="button"
-                  key={trip.id}
-                  onClick={() => applyTrip(trip)}
-                  className="planner-trip-chip"
+                  onClick={onUseCurrentLocation}
+                  disabled={isLocating}
+                  className="absolute right-1.5 top-1/2 inline-flex h-8 -translate-y-1/2 items-center gap-1.5 rounded-full bg-[rgba(90,67,215,0.1)] px-2.5 text-[11px] font-semibold text-[rgb(67,50,154)] transition hover:bg-[rgba(90,67,215,0.16)] disabled:opacity-60"
                 >
-                  <span className="truncate">{trip.origin.name}</span>
-                  <span className="text-slate-500">to</span>
-                  <span className="truncate">{trip.destination.name}</span>
+                  {isLocating ? (
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <LocateFixed className="h-4 w-4" />
+                  )}
+                  {isLocating ? "Locating" : "Current"}
                 </button>
-              ))}
+              </div>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {savedPlaces.home ? (
+                  <button
+                    type="button"
+                    onClick={() => applySavedPlace(savedPlaces.home!, "origin")}
+                    className="planner-chip"
+                  >
+                    <Star className="h-3.5 w-3.5" />
+                    Home
+                  </button>
+                ) : null}
+                {savedPlaces.work ? (
+                  <button
+                    type="button"
+                    onClick={() => applySavedPlace(savedPlaces.work!, "origin")}
+                    className="planner-chip"
+                  >
+                    <Bookmark className="h-3.5 w-3.5" />
+                    Work
+                  </button>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="flex justify-center">
+              <button
+                type="button"
+                onClick={onSwap}
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(90,67,215,0.14)] bg-white text-[rgb(95,86,135)] transition hover:bg-[rgba(244,241,255,0.96)]"
+                aria-label="Swap origin and destination"
+              >
+                <ArrowDownUp className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="planner-input-shell">
+              <div className="relative">
+                <Navigation2 className="planner-input-icon text-[rgb(118,94,241)]" />
+                <Input
+                  id="planner-destination"
+                  role="combobox"
+                  aria-expanded={activeField === "destination" && suggestions.length > 0}
+                  aria-controls={listboxId}
+                  aria-autocomplete="list"
+                  aria-activedescendant={
+                    activeField === "destination" && suggestions[activeSuggestionIndex]
+                      ? `${listboxId}-${suggestions[activeSuggestionIndex]?.id}`
+                      : undefined
+                  }
+                  value={destinationText}
+                  placeholder="Destination"
+                  onFocus={() => setActiveField("destination")}
+                  onChange={(event) => {
+                    onDestinationTextChange(event.target.value);
+                    onDestinationSelectionChange(null);
+                    setActiveField("destination");
+                    setActiveSuggestionIndex(0);
+                  }}
+                  onKeyDown={handleKeyDown}
+                  className="planner-input"
+                />
+              </div>
+              <div className="mt-1 flex flex-wrap gap-1">
+                {savedPlaces.home ? (
+                  <button
+                    type="button"
+                    onClick={() => applySavedPlace(savedPlaces.home!, "destination")}
+                    className="planner-chip"
+                  >
+                    <Star className="h-3.5 w-3.5" />
+                    Home
+                  </button>
+                ) : null}
+                {savedPlaces.work ? (
+                  <button
+                    type="button"
+                    onClick={() => applySavedPlace(savedPlaces.work!, "destination")}
+                    className="planner-chip"
+                  >
+                    <Bookmark className="h-3.5 w-3.5" />
+                    Work
+                  </button>
+                ) : null}
+              </div>
+            </div>
+          </div>
+
+          {locationError ? (
+            <p className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-800">
+              {locationError}
+            </p>
+          ) : null}
+
+          {hasSuggestionsOpen ? (
+            <div
+              id={listboxId}
+              role="listbox"
+              aria-label="Suggested places"
+              className="overflow-hidden rounded-[20px] border border-slate-200 bg-white"
+            >
+              {suggestionsQuery.isPending ? (
+                <div className="flex items-center gap-2 px-4 py-3 text-sm text-slate-500">
+                  <LoaderCircle className="h-4 w-4 animate-spin" />
+                  Searching...
+                </div>
+              ) : suggestions.length ? (
+                <div className="max-h-56 overflow-y-auto py-1.5">
+                  {suggestions.map((item, index) => (
+                    <button
+                      id={`${listboxId}-${item.id}`}
+                      role="option"
+                      aria-selected={index === activeSuggestionIndex}
+                      type="button"
+                      key={item.id}
+                      onClick={() => selectSuggestion(item)}
+                      onMouseEnter={() => setActiveSuggestionIndex(index)}
+                      className={cn(
+                        "flex w-full items-start gap-3 px-4 py-2.5 text-left transition",
+                        index === activeSuggestionIndex
+                          ? "bg-[rgba(90,67,215,0.07)]"
+                          : "hover:bg-[rgba(90,67,215,0.04)]",
+                      )}
+                    >
+                      <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-2xl bg-[rgba(90,67,215,0.09)] text-[rgb(90,67,215)]">
+                        <MapPin className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="truncate text-sm font-semibold text-slate-900">{item.name}</p>
+                        <p className="truncate text-xs text-slate-500">
+                          {item.address ?? "Dhaka, Bangladesh"}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-[rgba(118,94,241,0.1)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[rgb(84,67,174)]">
+                        {suggestionTypeLabel(item.type)}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              ) : (
+                <div className="px-4 py-3 text-sm text-slate-500">
+                  No suggestion found.
+                </div>
+              )}
+            </div>
+          ) : recentTrips.length ? (
+            <div className="space-y-2">
+              <div className="sm:hidden">
+                <Button
+                  type="button"
+                  variant="ghost"
+                  onClick={() => setShowRecentTripsOnMobile((current) => !current)}
+                  className="h-9 w-full justify-between rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
+                >
+                  <span>Recent trips</span>
+                  {showRecentTripsOnMobile ? (
+                    <ChevronUp className="h-4 w-4" />
+                  ) : (
+                    <ChevronDown className="h-4 w-4" />
+                  )}
+                </Button>
+              </div>
+
+              <div className={cn("space-y-2 sm:block", showRecentTripsOnMobile ? "block" : "hidden")}>
+                <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[rgb(95,86,135)]">
+                  Recent trips
+                </p>
+                <div className="flex flex-wrap gap-1">
+                  {recentTrips.slice(0, 4).map((trip) => (
+                    <button
+                      type="button"
+                      key={trip.id}
+                      onClick={() => applyTrip(trip)}
+                      className="planner-trip-chip"
+                    >
+                      <span className="truncate">{trip.origin.name}</span>
+                      <span className="text-slate-500">to</span>
+                      <span className="truncate">{trip.destination.name}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           ) : null}
-        </>
-      )}
+        </div>
+      </div>
 
-      <Button
-        type="button"
-        onClick={() => {
-          if (!originValue || !destinationValue) {
-            return;
-          }
+      <div className="shrink-0 border-t border-slate-200 bg-white/90 pt-3">
+        <Button
+          type="button"
+          onClick={() => {
+            if (!originValue || !destinationValue) {
+              return;
+            }
 
-          onSearch({
-            origin: originValue,
-            destination: destinationValue,
-            optimization: "recommended",
-          });
-        }}
-        disabled={!canSearch || isLoading}
-        className="h-14 w-full rounded-[24px] bg-[linear-gradient(135deg,#7dd3fc_0%,#2563eb_48%,#0f172a_100%)] text-base text-white shadow-[0_24px_60px_-24px_rgba(37,99,235,0.65)]"
-      >
-        {isLoading ? (
-          <>
-            <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
-            Calculating the fastest path
-          </>
-        ) : (
-          <>
-            <Search className="mr-2 h-5 w-5" />
-            Find fastest route
-          </>
-        )}
-      </Button>
+            onSearch({
+              origin: originValue,
+              destination: destinationValue,
+              optimization: "recommended",
+            });
+          }}
+          disabled={Boolean(!canSearch || isLoading)}
+          className="h-11 w-full rounded-[20px] bg-[linear-gradient(135deg,#5a43d7_0%,#765ef1_100%)] text-sm text-white shadow-[0_20px_40px_-20px_rgba(90,67,215,0.42)]"
+        >
+          {isLoading ? (
+            <>
+              <LoaderCircle className="mr-2 h-5 w-5 animate-spin" />
+              Routing
+            </>
+          ) : (
+            <>
+              <Search className="mr-2 h-5 w-5" />
+              Route
+            </>
+          )}
+        </Button>
+      </div>
     </div>
   );
 }

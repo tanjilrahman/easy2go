@@ -8,12 +8,12 @@ export const transportModeMeta: Record<
   TransportMode,
   { label: string; color: string }
 > = {
-  walk: { label: "Walk", color: "#8699ab" },
-  bus: { label: "Bus", color: "#1964cb" },
-  rickshaw: { label: "Rickshaw", color: "#13b86d" },
-  leguna: { label: "Leguna", color: "#f1b14a" },
-  metro: { label: "Metro", color: "#6f60ef" },
-  ride_share: { label: "Ride Share", color: "#ea5b74" },
+  walk: { label: "Walk", color: "#7a719f" },
+  bus: { label: "Bus", color: "#5a43d7" },
+  rickshaw: { label: "Rickshaw", color: "#0f8a6b" },
+  leguna: { label: "Leguna", color: "#b7791f" },
+  metro: { label: "Metro", color: "#765ef1" },
+  ride_share: { label: "Ride Share", color: "#c34b77" },
 };
 
 export function getRouteKindLabel(kind: RouteKind) {
@@ -34,15 +34,15 @@ export function getRouteKindLabel(kind: RouteKind) {
 export function getRouteKindTone(kind: RouteKind) {
   switch (kind) {
     case "metro_direct":
-      return "bg-violet-100 text-violet-800";
+      return "bg-[rgba(118,94,241,0.12)] text-[rgb(68,48,160)]";
     case "bus_direct":
-      return "bg-blue-100 text-blue-800";
+      return "bg-[rgba(90,67,215,0.12)] text-[rgb(62,44,151)]";
     case "bus_transfer":
-      return "bg-amber-100 text-amber-800";
+      return "bg-[rgba(183,121,31,0.14)] text-[rgb(126,78,20)]";
     case "bus_metro_hybrid":
-      return "bg-emerald-100 text-emerald-800";
+      return "bg-[rgba(15,138,107,0.12)] text-[rgb(13,104,81)]";
     default:
-      return "bg-slate-100 text-slate-700";
+      return "bg-[rgba(101,93,137,0.12)] text-[rgb(87,80,119)]";
   }
 }
 

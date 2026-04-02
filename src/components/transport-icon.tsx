@@ -21,12 +21,12 @@ const icons: Record<TransportMode, LucideIcon> = {
 };
 
 const tones: Record<TransportMode, string> = {
-  walk: "bg-slate-100 text-slate-600",
-  bus: "bg-blue-100 text-blue-700",
-  rickshaw: "bg-emerald-100 text-emerald-700",
-  leguna: "bg-amber-100 text-amber-700",
-  metro: "bg-violet-100 text-violet-700",
-  ride_share: "bg-rose-100 text-rose-700",
+  walk: "bg-[rgba(101,93,137,0.1)] text-[rgb(95,86,135)]",
+  bus: "bg-[rgba(90,67,215,0.12)] text-[rgb(72,53,173)]",
+  rickshaw: "bg-[rgba(15,138,107,0.12)] text-[rgb(13,104,81)]",
+  leguna: "bg-[rgba(183,121,31,0.14)] text-[rgb(126,78,20)]",
+  metro: "bg-[rgba(118,94,241,0.12)] text-[rgb(79,61,180)]",
+  ride_share: "bg-[rgba(195,75,119,0.12)] text-[rgb(156,53,93)]",
 };
 
 export function TransportIcon({

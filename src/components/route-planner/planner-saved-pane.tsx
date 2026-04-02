@@ -40,15 +40,15 @@ function SavedPlaceCard({
   const Icon = slot === "home" ? Home : Bookmark;
 
   return (
-    <div className="rounded-[28px] border border-white/10 bg-white/5 p-4">
+    <div className="rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-white p-3">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-white/8 text-slate-100">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(90,67,215,0.08)] text-[rgb(72,53,173)]">
             <Icon className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-white">{label}</p>
-            <p className="text-xs text-slate-400">
+            <p className="text-sm font-semibold text-slate-900">{label}</p>
+            <p className="text-xs text-slate-500">
               {place?.location.name ?? `No ${label.toLowerCase()} saved yet`}
             </p>
           </div>
@@ -58,21 +58,21 @@ function SavedPlaceCard({
           <button
             type="button"
             onClick={() => onRemovePlace(slot)}
-            className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/6 text-slate-200 transition hover:bg-white/12"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] text-[rgb(95,86,135)] transition hover:bg-[rgba(238,232,255,0.98)]"
           >
             <Trash2 className="h-4 w-4" />
           </button>
         ) : null}
       </div>
 
-      <div className="mt-4 flex flex-wrap gap-2">
+      <div className="mt-3 flex flex-wrap gap-1.5">
         {place ? (
           <>
             <Button
               type="button"
               variant="ghost"
               onClick={() => onApplyPlace(place.location, "origin")}
-              className="h-10 rounded-full border border-white/10 bg-white/6 px-4 text-white hover:bg-white/12"
+              className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
             >
               Use as start
             </Button>
@@ -80,7 +80,7 @@ function SavedPlaceCard({
               type="button"
               variant="ghost"
               onClick={() => onApplyPlace(place.location, "destination")}
-              className="h-10 rounded-full border border-white/10 bg-white/6 px-4 text-white hover:bg-white/12"
+              className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
             >
               Use as destination
             </Button>
@@ -92,7 +92,7 @@ function SavedPlaceCard({
             type="button"
             variant="ghost"
             onClick={() => onSavePlace(slot, currentOrigin)}
-            className="h-10 rounded-full border border-white/10 bg-white/6 px-4 text-white hover:bg-white/12"
+            className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
           >
             <Plus className="mr-2 h-4 w-4" />
             Save current start
@@ -104,7 +104,7 @@ function SavedPlaceCard({
             type="button"
             variant="ghost"
             onClick={() => onSavePlace(slot, currentDestination)}
-            className="h-10 rounded-full border border-white/10 bg-white/6 px-4 text-white hover:bg-white/12"
+            className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
           >
             <Plus className="mr-2 h-4 w-4" />
             Save current destination
@@ -130,72 +130,71 @@ export function PlannerSavedPane({
   const work = savedPlaces.find((place) => place.slot === "work");
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between rounded-[28px] border border-white/10 bg-white/5 px-4 py-3">
-        <div>
-          <p className="text-sm font-semibold text-white">Saved anchors</p>
-          <p className="text-xs text-slate-400">Store the places you reuse most, then drop them into the next search.</p>
-        </div>
+    <div className="flex h-full min-h-0 flex-col gap-4">
+      <div className="flex items-center justify-between rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-white px-3 py-2.5">
+        <p className="text-sm font-semibold text-slate-900">Places</p>
         <Button
           type="button"
           variant="ghost"
           onClick={onBack}
-          className="h-10 rounded-full border border-white/10 bg-white/6 px-4 text-white hover:bg-white/12"
+          className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back
         </Button>
       </div>
 
-      <SavedPlaceCard
-        slot="home"
-        label="Home"
-        place={home}
-        currentOrigin={currentOrigin}
-        currentDestination={currentDestination}
-        onApplyPlace={onApplyPlace}
-        onSavePlace={onSavePlace}
-        onRemovePlace={onRemovePlace}
-      />
+      <div className="min-h-0 flex-1 overflow-y-auto space-y-4 pr-1">
+        <SavedPlaceCard
+          slot="home"
+          label="Home"
+          place={home}
+          currentOrigin={currentOrigin}
+          currentDestination={currentDestination}
+          onApplyPlace={onApplyPlace}
+          onSavePlace={onSavePlace}
+          onRemovePlace={onRemovePlace}
+        />
 
-      <SavedPlaceCard
-        slot="work"
-        label="Work"
-        place={work}
-        currentOrigin={currentOrigin}
-        currentDestination={currentDestination}
-        onApplyPlace={onApplyPlace}
-        onSavePlace={onSavePlace}
-        onRemovePlace={onRemovePlace}
-      />
+        <SavedPlaceCard
+          slot="work"
+          label="Work"
+          place={work}
+          currentOrigin={currentOrigin}
+          currentDestination={currentDestination}
+          onApplyPlace={onApplyPlace}
+          onSavePlace={onSavePlace}
+          onRemovePlace={onRemovePlace}
+        />
 
-      {recentTrips.length ? (
-        <div className="rounded-[28px] border border-white/10 bg-white/5 p-4">
-          <p className="mb-3 text-sm font-semibold text-white">Recent trips</p>
-          <div className="space-y-2">
-            {recentTrips.map((trip) => (
-              <button
-                key={trip.id}
-                type="button"
-                onClick={() => onApplyTrip(trip)}
-                className="flex w-full items-center gap-3 rounded-2xl border border-white/8 bg-white/6 px-3 py-3 text-left transition hover:bg-white/10"
-              >
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-white/8 text-slate-100">
-                  <MapPin className="h-4 w-4" />
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-white">
-                    {trip.origin.name} to {trip.destination.name}
-                  </p>
-                  <p className="text-xs text-slate-400">
-                    {new Date(trip.createdAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </button>
-            ))}
+        {recentTrips.length ? (
+          <div className="rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-white p-3">
+            <p className="mb-3 text-sm font-semibold text-slate-900">Recent trips</p>
+            <div className="space-y-2">
+              {recentTrips.map((trip) => (
+                <button
+                  key={trip.id}
+                  type="button"
+                  onClick={() => onApplyTrip(trip)}
+                  className="flex w-full items-center gap-3 rounded-2xl border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 py-2.5 text-left transition hover:bg-[rgba(238,232,255,0.98)]"
+                >
+                  <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[rgb(95,86,135)]">
+                    <MapPin className="h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-slate-900">
+                      {trip.origin.name} to {trip.destination.name}
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      {new Date(trip.createdAt).toLocaleDateString()}
+                    </p>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      ) : null}
+        ) : null}
+      </div>
     </div>
   );
 }

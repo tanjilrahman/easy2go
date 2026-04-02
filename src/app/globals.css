@@ -1,24 +1,24 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f3f7fb;
-  --foreground: #18324c;
+  --background: #f6f4ff;
+  --foreground: #261f54;
   --surface: #ffffff;
-  --surface-strong: #f9fcff;
-  --primary: #155fc8;
+  --surface-strong: #fbfaff;
+  --primary: #5a43d7;
   --primary-foreground: #ffffff;
-  --secondary: #13b86d;
+  --secondary: #765ef1;
   --secondary-foreground: #ffffff;
-  --accent: #f1b14a;
-  --accent-foreground: #4b3412;
-  --muted: #e6eef6;
-  --muted-foreground: #68829b;
-  --border: rgba(111, 142, 168, 0.22);
-  --ring: rgba(21, 95, 200, 0.28);
+  --accent: #ece8ff;
+  --accent-foreground: #372a7b;
+  --muted: #ece9fb;
+  --muted-foreground: #655d89;
+  --border: rgba(91, 73, 171, 0.16);
+  --ring: rgba(90, 67, 215, 0.24);
   --danger: #dc4c64;
   --radius: 30px;
-  --shadow-soft: 0 28px 70px -38px rgba(10, 37, 64, 0.32);
-  --shadow-glass: 0 24px 72px -36px rgba(15, 31, 55, 0.5);
+  --shadow-soft: 0 28px 70px -38px rgba(49, 37, 111, 0.22);
+  --shadow-glass: 0 24px 72px -36px rgba(38, 31, 84, 0.28);
 }
 
 @theme inline {
@@ -53,8 +53,9 @@ body {
 body {
   margin: 0;
   background:
-    radial-gradient(circle at top left, rgba(255, 255, 255, 0.75), transparent 32%),
-    linear-gradient(180deg, #f7fbff 0%, #eef5fb 36%, #edf5fc 100%);
+    radial-gradient(circle at top left, rgba(128, 108, 245, 0.14), transparent 28%),
+    radial-gradient(circle at top right, rgba(90, 67, 215, 0.08), transparent 26%),
+    linear-gradient(180deg, #fcfbff 0%, #f4f1ff 38%, #f2efff 100%);
   color: var(--foreground);
   font-family: var(--font-dm-sans), sans-serif;
   text-rendering: optimizeLegibility;
@@ -68,7 +69,7 @@ select {
 }
 
 ::selection {
-  background: rgba(21, 95, 200, 0.18);
+  background: rgba(90, 67, 215, 0.18);
 }
 
 .glass-panel {
@@ -86,7 +87,7 @@ select {
 }
 
 .timeline-rail {
-  background: linear-gradient(180deg, rgba(21, 95, 200, 0.38), rgba(104, 130, 155, 0.18));
+  background: linear-gradient(180deg, rgba(90, 67, 215, 0.4), rgba(118, 94, 241, 0.18));
 }
 
 .sheet-shadow {
@@ -95,50 +96,58 @@ select {
 
 .planner-pane {
   background:
-    radial-gradient(circle at top left, rgba(125, 211, 252, 0.12), transparent 28%),
-    linear-gradient(180deg, rgba(4, 14, 24, 0.96) 0%, rgba(7, 18, 30, 0.94) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 -24px 70px -32px rgba(0, 0, 0, 0.55);
-  backdrop-filter: blur(26px);
+    radial-gradient(circle at top left, rgba(118, 94, 241, 0.12), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.97) 0%, rgba(249, 247, 255, 0.98) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.82);
+  box-shadow: 0 -24px 60px -34px rgba(38, 31, 84, 0.2);
+  backdrop-filter: blur(24px);
 }
 
 .planner-input-shell {
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 28px;
-  padding: 14px;
+  border: 1px solid rgba(99, 82, 183, 0.12);
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 18px;
+  padding: 6px;
 }
 
 .planner-input-label {
   display: inline-flex;
-  margin-bottom: 12px;
-  font-size: 11px;
+  margin-bottom: 8px;
+  font-size: 10px;
   font-weight: 700;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: rgba(203, 213, 225, 0.74);
+  color: rgba(101, 93, 137, 0.88);
 }
 
 .planner-input-icon {
   position: absolute;
   left: 16px;
   top: 50%;
-  height: 18px;
-  width: 18px;
+  height: 16px;
+  width: 16px;
   transform: translateY(-50%);
 }
 
 .planner-input {
-  height: 56px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 22px;
-  padding-left: 46px;
-  color: white;
+  height: 50px;
+  border: 1px solid rgba(219, 213, 248, 0.95);
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 14px;
+  padding-left: 42px;
+  color: #201a47;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.planner-input:focus-visible {
+  outline: none;
+  border-color: rgba(90, 67, 215, 0.42);
+  box-shadow: 0 0 0 4px rgba(90, 67, 215, 0.1);
 }
 
 .planner-input::placeholder {
-  color: rgba(203, 213, 225, 0.55);
+  color: rgba(101, 93, 137, 0.72);
 }
 
 .planner-chip {
@@ -146,17 +155,17 @@ select {
   align-items: center;
   gap: 6px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.06);
-  padding: 8px 12px;
-  font-size: 12px;
+  border: 1px solid rgba(220, 214, 250, 0.95);
+  background: rgba(244, 241, 255, 0.98);
+  padding: 7px 10px;
+  font-size: 11px;
   font-weight: 700;
-  color: rgba(241, 245, 249, 0.95);
+  color: rgba(55, 42, 123, 0.98);
   transition: background 0.2s ease;
 }
 
 .planner-chip:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(237, 232, 255, 1);
 }
 
 .planner-trip-chip {
@@ -165,28 +174,29 @@ select {
   align-items: center;
   gap: 8px;
   border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  background: rgba(255, 255, 255, 0.05);
-  padding: 10px 14px;
-  font-size: 12px;
+  border: 1px solid rgba(220, 214, 250, 0.92);
+  background: rgba(255, 255, 255, 0.94);
+  padding: 8px 11px;
+  font-size: 11px;
   font-weight: 700;
-  color: rgba(241, 245, 249, 0.95);
+  color: rgba(55, 42, 123, 0.98);
   transition: background 0.2s ease;
 }
 
 .planner-trip-chip:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: rgba(245, 242, 255, 1);
 }
 
 .compare-metric {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  border-radius: 18px;
-  background: rgba(255, 255, 255, 0.06);
-  padding: 10px 12px;
-  font-size: 13px;
+  border-radius: 16px;
+  background: rgba(243, 240, 255, 0.96);
+  padding: 8px 10px;
+  font-size: 12px;
   font-weight: 600;
+  color: #40357d;
 }
 
 @keyframes shimmer {
@@ -212,5 +222,5 @@ select {
 
 ::-webkit-scrollbar-thumb {
   border-radius: 999px;
-  background: rgba(104, 130, 155, 0.35);
+  background: rgba(103, 90, 175, 0.3);
 }

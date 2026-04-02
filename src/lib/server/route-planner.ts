@@ -49,6 +49,20 @@ interface AccessLeg {
   note: string;
 }
 
+interface FallbackDirectBusCandidate {
+  leg: BusLeg;
+  alightingCoordinates: [number, number];
+  remainingDistanceKm: number;
+}
+
+interface FallbackTransferBusCandidate {
+  firstLeg: BusLeg;
+  secondLeg: BusLeg;
+  transferLabel: string;
+  alightingCoordinates: [number, number];
+  remainingDistanceKm: number;
+}
+
 const preferredTransferLabels = new Set(
   [
     ...DHAKA_ACCESS_POINTS.flatMap((point) => point.busStopLabels),
@@ -147,6 +161,19 @@ export function estimateRickshawFareBdt(distanceKm: number) {
   return Math.min(70, 25 + extraSteps * 10);
 }
 
+function estimateExtendedRickshawFareBdt(distanceKm: number) {
+  if (distanceKm <= 0) {
+    return undefined;
+  }
+
+  if (distanceKm <= ACCESS_RICKSHAW_MAX_KM) {
+    return estimateRickshawFareBdt(distanceKm);
+  }
+
+  const extraSteps = Math.ceil((distanceKm - 1) / 0.5);
+  return 25 + extraSteps * 10;
+}
+
 function createAccessLeg(
   resolution: ResolvedTransitInput,
   point: TransitPoint,
@@ -204,6 +231,50 @@ function createAccessLeg(
       role === "origin"
         ? `${point.name} is farther from ${resolution.displayName}; plan a longer rickshaw or ride-share connector.`
         : `${resolution.displayName} sits beyond short rickshaw range from ${point.name}; plan a longer connector after transit.`,
+  };
+}
+
+function createConnectorLegBetween(
+  startLocation: string,
+  startCoordinates: [number, number] | undefined,
+  endLocation: string,
+  endCoordinates: [number, number] | undefined,
+  preference: "auto" | "prefer_rickshaw" = "auto",
+): AccessLeg | null {
+  if (!startCoordinates || !endCoordinates) {
+    return null;
+  }
+
+  const distanceKm = haversineDistanceKm(startCoordinates, endCoordinates);
+
+  if (!Number.isFinite(distanceKm) || distanceKm <= 0.05) {
+    return null;
+  }
+
+  if (preference === "auto" && distanceKm <= ACCESS_WALK_MAX_KM) {
+    return {
+      connectorType: "walk",
+      mode: "walk",
+      distanceKm,
+      durationMinutes: Math.max(4, Math.round((distanceKm / WALK_SPEED_KMPH) * 60)),
+      startLocation,
+      endLocation,
+      note: `Short walking connector from ${startLocation} to ${endLocation}.`,
+    };
+  }
+
+  return {
+    connectorType: "rickshaw",
+    mode: "rickshaw",
+    distanceKm,
+    durationMinutes: Math.max(6, Math.round((distanceKm / RICKSHAW_SPEED_KMPH) * 60)),
+    costBdt: estimateExtendedRickshawFareBdt(distanceKm),
+    startLocation,
+    endLocation,
+    note:
+      distanceKm <= ACCESS_RICKSHAW_MAX_KM
+        ? `Rickshaw connector from ${startLocation} to ${endLocation}.`
+        : `Continue from ${startLocation} by rickshaw for the remaining distance to ${endLocation}.`,
   };
 }
 
@@ -812,6 +883,132 @@ function findTransferBusLegs(originLabels: string[], destinationLabels: string[]
   return legs;
 }
 
+function findClosestDirectBusCandidates(
+  originLabels: string[],
+  destinationCoordinates: [number, number],
+) {
+  const candidates: FallbackDirectBusCandidate[] = [];
+
+  for (const route of dhakaBusSeedRoutes) {
+    const boarding = findIndexOnRoute(route, originLabels);
+
+    if (!boarding) {
+      continue;
+    }
+
+    for (let alightingIndex = boarding.index + 1; alightingIndex < route.stopLabels.length; alightingIndex++) {
+      const alightingLabel = route.stopLabels[alightingIndex];
+      const alightingCoordinates = findBusStopCoordinates(alightingLabel);
+
+      if (!alightingCoordinates) {
+        continue;
+      }
+
+      candidates.push({
+        leg: {
+          route,
+          boardingLabel: route.stopLabels[boarding.index],
+          alightingLabel,
+          stopCount: alightingIndex - boarding.index,
+          serviceWindowText: buildServiceWindowText(route),
+        },
+        alightingCoordinates,
+        remainingDistanceKm: haversineDistanceKm(alightingCoordinates, destinationCoordinates),
+      });
+    }
+  }
+
+  return candidates
+    .sort((a, b) => {
+      if (a.remainingDistanceKm !== b.remainingDistanceKm) {
+        return a.remainingDistanceKm - b.remainingDistanceKm;
+      }
+
+      return a.leg.stopCount - b.leg.stopCount;
+    })
+    .slice(0, 6);
+}
+
+function findClosestTransferBusCandidates(
+  originLabels: string[],
+  destinationCoordinates: [number, number],
+) {
+  const candidates: FallbackTransferBusCandidate[] = [];
+
+  for (const firstRoute of dhakaBusSeedRoutes) {
+    const firstBoarding = findIndexOnRoute(firstRoute, originLabels);
+
+    if (!firstBoarding) {
+      continue;
+    }
+
+    for (let transferIndex = firstBoarding.index + 1; transferIndex < firstRoute.stopLabels.length; transferIndex++) {
+      const transferLabel = firstRoute.stopLabels[transferIndex];
+
+      if (!preferredTransferLabels.has(normalizeTransitText(transferLabel))) {
+        continue;
+      }
+
+      for (const secondRoute of dhakaBusSeedRoutes) {
+        if (secondRoute.id === firstRoute.id) {
+          continue;
+        }
+
+        const secondTransfer = secondRoute.stopLabels.findIndex(
+          (stopLabel) => normalizeTransitText(stopLabel) === normalizeTransitText(transferLabel),
+        );
+
+        if (secondTransfer < 0) {
+          continue;
+        }
+
+        for (let secondAlightingIndex = secondTransfer + 1; secondAlightingIndex < secondRoute.stopLabels.length; secondAlightingIndex++) {
+          const alightingLabel = secondRoute.stopLabels[secondAlightingIndex];
+          const alightingCoordinates = findBusStopCoordinates(alightingLabel);
+
+          if (!alightingCoordinates) {
+            continue;
+          }
+
+          candidates.push({
+            firstLeg: {
+              route: firstRoute,
+              boardingLabel: firstRoute.stopLabels[firstBoarding.index],
+              alightingLabel: transferLabel,
+              stopCount: transferIndex - firstBoarding.index,
+              serviceWindowText: buildServiceWindowText(firstRoute),
+            },
+            secondLeg: {
+              route: secondRoute,
+              boardingLabel: transferLabel,
+              alightingLabel,
+              stopCount: secondAlightingIndex - secondTransfer,
+              serviceWindowText: buildServiceWindowText(secondRoute),
+            },
+            transferLabel,
+            alightingCoordinates,
+            remainingDistanceKm: haversineDistanceKm(alightingCoordinates, destinationCoordinates),
+          });
+        }
+      }
+    }
+  }
+
+  return candidates
+    .sort((a, b) => {
+      if (a.remainingDistanceKm !== b.remainingDistanceKm) {
+        return a.remainingDistanceKm - b.remainingDistanceKm;
+      }
+
+      return (
+        a.firstLeg.stopCount +
+        a.secondLeg.stopCount -
+        (b.firstLeg.stopCount + b.secondLeg.stopCount)
+      );
+    })
+    .slice(0, 6);
+}
+
 function getMetroFare(originStationId: string, destinationStationId: string) {
   const origin = getMetroStationById(originStationId);
   const destination = getMetroStationById(destinationStationId);
@@ -998,6 +1195,186 @@ function createTransferBusRoute(
       originAccess,
       destinationAccess,
     ),
+  });
+}
+
+function createFallbackDirectBusRoute(
+  candidate: FallbackDirectBusCandidate,
+  originResolution: ResolvedTransitInput,
+  originPoint: TransitPoint,
+  destinationResolution: ResolvedTransitInput,
+) {
+  const busName = getBusDisplayName(candidate.leg.route);
+  const busDistanceKm = estimateBusLegDistanceKm(candidate.leg);
+  const busFare = estimateBusFareBdt(busDistanceKm, candidate.leg.stopCount);
+  const busDurationMinutes = estimateBusDurationMinutes(busDistanceKm, candidate.leg.stopCount);
+  const originAccess = createAccessLeg(originResolution, originPoint, "origin");
+  const destinationAccess = createConnectorLegBetween(
+    candidate.leg.alightingLabel,
+    candidate.alightingCoordinates,
+    destinationResolution.displayName,
+    destinationResolution.place?.coordinates,
+    "prefer_rickshaw",
+  );
+  const metrics = combineRouteMetrics([
+    accessLegMetrics(originAccess),
+    {
+      distanceKm: busDistanceKm,
+      durationMinutes: busDurationMinutes,
+      costBdt: busFare,
+    },
+    accessLegMetrics(destinationAccess),
+  ]);
+
+  return finalizeRoute({
+    id: `${candidate.leg.route.id}-${normalizeTransitText(candidate.leg.boardingLabel)}-${normalizeTransitText(candidate.leg.alightingLabel)}-fallback`,
+    kind: "bus_direct",
+    confidence: "advisory",
+    summary: `${busName} close match`,
+    fareType: "advisory",
+    fareText: formatRouteTotal(metrics.totalCost),
+    totalCost: metrics.totalCost,
+    estimatedDistanceKm: metrics.estimatedDistanceKm,
+    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
+    serviceWindowText: candidate.leg.serviceWindowText,
+    stopCount: candidate.leg.stopCount,
+    stationCount: undefined,
+    transferCount: 0,
+    boarding: makeStopReference(candidate.leg.boardingLabel),
+    alighting: makeStopReference(candidate.leg.alightingLabel),
+    transferStops: [],
+    serviceLabels: [busName],
+    primaryServiceLabel: busName,
+    primaryReason: undefined,
+    segments: [
+      ...(originAccess ? [buildAccessSegment(originAccess)] : []),
+      {
+        mode: "bus",
+        instruction: `Board ${busName}`,
+        startLocation: candidate.leg.boardingLabel,
+        endLocation: candidate.leg.alightingLabel,
+        note: "Verified bus corridor to the closest matched stop. Fare and travel time are estimated from route length and stop count.",
+        serviceWindowText: candidate.leg.serviceWindowText,
+        fareText: formatApproxFare(busFare),
+        estimatedDistanceKm: roundDistanceKm(busDistanceKm),
+        estimatedDurationMinutes: busDurationMinutes,
+        stopCount: candidate.leg.stopCount,
+      },
+      ...(destinationAccess ? [buildAccessSegment(destinationAccess)] : []),
+    ],
+    mapPreview: buildMapPreview(candidate.leg.boardingLabel, candidate.leg.alightingLabel),
+    advisories: dedupeStrings([
+      ...originPoint.advisories,
+      originAccess?.connectorType === "advisory" ? originAccess.note : "",
+      destinationAccess?.note ?? "",
+      `Continue from ${candidate.leg.alightingLabel} to ${destinationResolution.displayName} by rickshaw.`,
+    ]),
+  });
+}
+
+function createFallbackTransferBusRoute(
+  candidate: FallbackTransferBusCandidate,
+  originResolution: ResolvedTransitInput,
+  originPoint: TransitPoint,
+  destinationResolution: ResolvedTransitInput,
+) {
+  const firstBusName = getBusDisplayName(candidate.firstLeg.route);
+  const secondBusName = getBusDisplayName(candidate.secondLeg.route);
+  const firstDistanceKm = estimateBusLegDistanceKm(candidate.firstLeg);
+  const secondDistanceKm = estimateBusLegDistanceKm(candidate.secondLeg);
+  const firstFare = estimateBusFareBdt(firstDistanceKm, candidate.firstLeg.stopCount);
+  const secondFare = estimateBusFareBdt(secondDistanceKm, candidate.secondLeg.stopCount);
+  const firstDurationMinutes = estimateBusDurationMinutes(firstDistanceKm, candidate.firstLeg.stopCount);
+  const secondDurationMinutes = estimateBusDurationMinutes(secondDistanceKm, candidate.secondLeg.stopCount);
+  const originAccess = createAccessLeg(originResolution, originPoint, "origin");
+  const destinationAccess = createConnectorLegBetween(
+    candidate.secondLeg.alightingLabel,
+    candidate.alightingCoordinates,
+    destinationResolution.displayName,
+    destinationResolution.place?.coordinates,
+    "prefer_rickshaw",
+  );
+  const metrics = combineRouteMetrics([
+    accessLegMetrics(originAccess),
+    {
+      distanceKm: firstDistanceKm,
+      durationMinutes: firstDurationMinutes,
+      costBdt: firstFare,
+    },
+    {
+      distanceKm: secondDistanceKm,
+      durationMinutes: secondDurationMinutes,
+      costBdt: secondFare,
+    },
+    { durationMinutes: TRANSFER_BUFFER_MINUTES },
+    accessLegMetrics(destinationAccess),
+  ]);
+
+  return finalizeRoute({
+    id: `${candidate.firstLeg.route.id}-${candidate.secondLeg.route.id}-${normalizeTransitText(candidate.transferLabel)}-fallback`,
+    kind: "bus_transfer",
+    confidence: "advisory",
+    summary: `${firstBusName} -> ${secondBusName}`,
+    fareType: "advisory",
+    fareText: formatRouteTotal(metrics.totalCost),
+    totalCost: metrics.totalCost,
+    estimatedDistanceKm: metrics.estimatedDistanceKm,
+    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
+    serviceWindowText:
+      `${firstBusName}: ${candidate.firstLeg.serviceWindowText ?? "N/A"} | ` +
+      `${secondBusName}: ${candidate.secondLeg.serviceWindowText ?? "N/A"}`,
+    stopCount: candidate.firstLeg.stopCount + candidate.secondLeg.stopCount,
+    stationCount: undefined,
+    transferCount: 1,
+    boarding: makeStopReference(candidate.firstLeg.boardingLabel),
+    alighting: makeStopReference(candidate.secondLeg.alightingLabel),
+    transferStops: [makeStopReference(candidate.transferLabel, "hub")],
+    serviceLabels: [firstBusName, secondBusName],
+    primaryServiceLabel: firstBusName,
+    primaryReason: undefined,
+    segments: [
+      ...(originAccess ? [buildAccessSegment(originAccess)] : []),
+      {
+        mode: "bus",
+        instruction: `Board ${firstBusName}`,
+        startLocation: candidate.firstLeg.boardingLabel,
+        endLocation: candidate.transferLabel,
+        note: "First bus corridor on the closest available path.",
+        serviceWindowText: candidate.firstLeg.serviceWindowText,
+        fareText: formatApproxFare(firstFare),
+        estimatedDistanceKm: roundDistanceKm(firstDistanceKm),
+        estimatedDurationMinutes: firstDurationMinutes,
+        stopCount: candidate.firstLeg.stopCount,
+      },
+      {
+        mode: "walk",
+        instruction: "Change buses",
+        startLocation: candidate.transferLabel,
+        endLocation: candidate.transferLabel,
+        note: "Short transfer between bus services.",
+        estimatedDurationMinutes: TRANSFER_BUFFER_MINUTES,
+      },
+      {
+        mode: "bus",
+        instruction: `Then board ${secondBusName}`,
+        startLocation: candidate.transferLabel,
+        endLocation: candidate.secondLeg.alightingLabel,
+        note: "Second bus corridor bringing you closest to the destination.",
+        serviceWindowText: candidate.secondLeg.serviceWindowText,
+        fareText: formatApproxFare(secondFare),
+        estimatedDistanceKm: roundDistanceKm(secondDistanceKm),
+        estimatedDurationMinutes: secondDurationMinutes,
+        stopCount: candidate.secondLeg.stopCount,
+      },
+      ...(destinationAccess ? [buildAccessSegment(destinationAccess)] : []),
+    ],
+    mapPreview: buildMapPreview(candidate.firstLeg.boardingLabel, candidate.secondLeg.alightingLabel),
+    advisories: dedupeStrings([
+      ...originPoint.advisories,
+      originAccess?.connectorType === "advisory" ? originAccess.note : "",
+      destinationAccess?.note ?? "",
+      `Continue from ${candidate.secondLeg.alightingLabel} to ${destinationResolution.displayName} by rickshaw.`,
+    ]),
   });
 }
 
@@ -1400,6 +1777,59 @@ function collectHybridRoutes(
   return routes;
 }
 
+function collectFallbackBusRoutes(
+  originResolution: ResolvedTransitInput,
+  destinationResolution: ResolvedTransitInput,
+) {
+  const destinationCoordinates =
+    destinationResolution.place?.coordinates ?? destinationResolution.candidates[0]?.coordinates;
+
+  if (!destinationCoordinates) {
+    return [];
+  }
+
+  const routes: RouteOption[] = [];
+
+  for (const originPoint of originResolution.candidates) {
+    if (!originPoint.busStopLabels.length) {
+      continue;
+    }
+
+    const directCandidates = findClosestDirectBusCandidates(
+      originPoint.busStopLabels,
+      destinationCoordinates,
+    );
+
+    for (const candidate of directCandidates) {
+      routes.push(
+        createFallbackDirectBusRoute(
+          candidate,
+          originResolution,
+          originPoint,
+          destinationResolution,
+        ),
+      );
+    }
+
+    if (directCandidates.length) {
+      continue;
+    }
+
+    for (const candidate of findClosestTransferBusCandidates(originPoint.busStopLabels, destinationCoordinates)) {
+      routes.push(
+        createFallbackTransferBusRoute(
+          candidate,
+          originResolution,
+          originPoint,
+          destinationResolution,
+        ),
+      );
+    }
+  }
+
+  return routes;
+}
+
 export async function calculateRoutes(payload: CalculateRouteRequest) {
   const [originResolution, destinationResolution] = await Promise.all([
     resolveTransitInput(payload.origin),
@@ -1460,11 +1890,15 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
   }
 
   const surfacedRoutes = surfaceRoutes(routes, payload.optimization);
+  const fallbackRoutes =
+    surfacedRoutes.length > 0 ? [] : surfaceRoutes(collectFallbackBusRoutes(originResolution, destinationResolution), payload.optimization);
 
   const finalRoutes =
     surfacedRoutes.length > 0
       ? surfacedRoutes
-      : originResolution.candidates[0] && destinationResolution.candidates[0]
+      : fallbackRoutes.length > 0
+        ? fallbackRoutes
+        : originResolution.candidates[0] && destinationResolution.candidates[0]
         ? [
             createAdvisoryRoute(
               originResolution,
