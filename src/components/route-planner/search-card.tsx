@@ -13,6 +13,7 @@ import { cn } from "@/lib/utils";
 import type {
   CalculateRouteRequest,
   LocationSuggestion,
+  RouteOptimization,
   SearchRecord,
 } from "@/lib/validations/routes";
 
@@ -23,6 +24,28 @@ interface SearchCardProps {
   isLoading?: boolean;
   onSearch: (payload: CalculateRouteRequest) => void;
 }
+
+const optimizationOptions: Array<{
+  value: RouteOptimization;
+  label: string;
+  description: string;
+}> = [
+  {
+    value: "recommended",
+    label: "Recommended",
+    description: "Balance time, cost, and transfers",
+  },
+  {
+    value: "fastest",
+    label: "Fastest",
+    description: "Prioritize shorter travel time",
+  },
+  {
+    value: "cheapest",
+    label: "Cheapest",
+    description: "Prioritize lower estimated fare",
+  },
+];
 
 function suggestionTypeLabel(type: LocationSuggestion["type"]) {
   switch (type) {
@@ -48,6 +71,7 @@ export function SearchCard({
   const [destinationSelection, setDestinationSelection] =
     useState<LocationSuggestion | null>(null);
   const [activeField, setActiveField] = useState<ActiveField>(null);
+  const [optimization, setOptimization] = useState<RouteOptimization>("recommended");
 
   const debouncedOrigin = useDebouncedValue(originText.trim(), 350);
   const debouncedDestination = useDebouncedValue(destinationText.trim(), 350);
@@ -97,6 +121,7 @@ export function SearchCard({
     onSearch({
       origin: originValue,
       destination: destinationValue,
+      optimization,
     });
     setActiveField(null);
   };
@@ -213,6 +238,39 @@ export function SearchCard({
               )}
             </div>
           ) : null}
+
+          <div className="rounded-[24px] border border-white/65 bg-white/70 p-3">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+              Optimize for
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {optimizationOptions.map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  onClick={() => setOptimization(option.value)}
+                  className={cn(
+                    "rounded-[20px] px-3 py-3 text-left transition",
+                    optimization === option.value
+                      ? "bg-primary text-primary-foreground shadow-[0_20px_36px_-28px_rgba(21,95,200,0.8)]"
+                      : "bg-muted/80 text-foreground hover:bg-muted",
+                  )}
+                >
+                  <p className="text-sm font-semibold">{option.label}</p>
+                  <p
+                    className={cn(
+                      "mt-1 text-[11px] leading-4",
+                      optimization === option.value
+                        ? "text-primary-foreground/80"
+                        : "text-muted-foreground",
+                    )}
+                  >
+                    {option.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </div>
 
           <Button
             type="button"

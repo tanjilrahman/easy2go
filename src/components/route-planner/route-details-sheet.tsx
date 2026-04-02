@@ -15,6 +15,14 @@ interface RouteDetailsSheetProps {
   onClose: () => void;
 }
 
+function formatDistance(distanceKm?: number) {
+  if (!distanceKm) {
+    return "N/A";
+  }
+
+  return Number.isInteger(distanceKm) ? `${distanceKm} km` : `${distanceKm.toFixed(1)} km`;
+}
+
 export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetProps) {
   return (
     <BottomSheet
@@ -54,6 +62,24 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-4 text-sm text-muted-foreground">
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground/80">
+                  Est. time
+                </p>
+                <p className="mt-1 font-medium text-foreground">
+                  {route.estimatedDurationMinutes
+                    ? `${route.estimatedDurationMinutes} min`
+                    : "N/A"}
+                </p>
+              </div>
+              <div>
+                <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground/80">
+                  Distance
+                </p>
+                <p className="mt-1 font-medium text-foreground">
+                  {formatDistance(route.estimatedDistanceKm)}
+                </p>
+              </div>
               <div>
                 <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground/80">
                   Stops

@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, Bus, MapPinned, Ticket, TrainTrack } from "lucide-react";
+import { ArrowRight, Bus, Clock3, MapPinned, Ticket, TrainTrack } from "lucide-react";
 import { motion } from "framer-motion";
 
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,14 @@ interface RouteCardProps {
   route: RouteOption;
   selected?: boolean;
   onClick: () => void;
+}
+
+function formatDistance(distanceKm?: number) {
+  if (!distanceKm) {
+    return null;
+  }
+
+  return Number.isInteger(distanceKm) ? `${distanceKm} km` : `${distanceKm.toFixed(1)} km`;
 }
 
 function RouteMetric({ route }: { route: RouteOption }) {
@@ -88,6 +96,18 @@ export function RouteCard({ route, selected, onClick }: RouteCardProps) {
       </div>
 
       <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+        {route.estimatedDurationMinutes ? (
+          <div className="flex items-center gap-1.5">
+            <Clock3 className="h-4 w-4 text-secondary" />
+            <span>~{route.estimatedDurationMinutes} min</span>
+          </div>
+        ) : null}
+        {route.estimatedDistanceKm ? (
+          <div className="flex items-center gap-1.5">
+            <MapPinned className="h-4 w-4 text-primary" />
+            <span>{formatDistance(route.estimatedDistanceKm)}</span>
+          </div>
+        ) : null}
         <RouteMetric route={route} />
         <div className="flex items-center gap-1.5">
           <Ticket className="h-4 w-4 text-primary" />

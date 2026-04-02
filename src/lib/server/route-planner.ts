@@ -10,11 +10,12 @@ import {
   type ResolvedTransitInput,
   type TransitPoint,
 } from "@/lib/server/transit-resolver";
-import { normalizeTransitText } from "@/lib/server/transit-support";
+import { haversineDistanceKm, normalizeTransitText } from "@/lib/server/transit-support";
 import {
   calculateRouteResponseSchema,
   type CalculateRouteRequest,
   routeOptionSchema,
+  type RouteOptimization,
   type RouteOption,
   type RouteStopReference,
 } from "@/lib/validations/routes";
@@ -33,6 +34,170 @@ const preferredTransferLabels = new Set(
     ...dhakaBusSeedStops.filter((stop) => stop.routeCount >= 4).map((stop) => stop.label),
   ].map((label) => normalizeTransitText(label)),
 );
+
+const BUS_STOP_SPACING_KM = 0.9;
+const METRO_STATION_SPACING_KM = 1.35;
+const BUS_SPEED_KMPH = 13;
+const METRO_SPEED_KMPH = 30;
+const WALK_SPEED_KMPH = 4.6;
+const RICKSHAW_SPEED_KMPH = 10;
+const BUS_STOP_DELAY_MINUTES = 0.7;
+const METRO_STATION_DELAY_MINUTES = 1.1;
+const TRANSFER_BUFFER_MINUTES = 6;
+const FALLBACK_SORT_VALUE = 99_999;
+
+interface RouteMetrics {
+  distanceKm?: number;
+  durationMinutes?: number;
+  costBdt?: number;
+}
+
+function roundDistanceKm(distanceKm: number) {
+  return Math.round(distanceKm * 10) / 10;
+}
+
+function approximateFareText(costBdt: number) {
+  return `Approx. BDT ${costBdt}`;
+}
+
+function findBusStopCoordinates(label: string) {
+  const normalizedLabel = normalizeTransitText(label);
+
+  return DHAKA_ACCESS_POINTS.find((point) =>
+    point.busStopLabels.some(
+      (stopLabel) => normalizeTransitText(stopLabel) === normalizedLabel,
+    ),
+  )?.coordinates;
+}
+
+function combineRouteMetrics(parts: RouteMetrics[]) {
+  const totalDistanceKm = parts.reduce(
+    (sum, part) => sum + (part.distanceKm ?? 0),
+    0,
+  );
+  const totalDurationMinutes = parts.reduce(
+    (sum, part) => sum + (part.durationMinutes ?? 0),
+    0,
+  );
+  const costParts = parts.filter((part) => part.costBdt !== undefined);
+
+  return {
+    totalCost:
+      costParts.length > 0
+        ? costParts.reduce((sum, part) => sum + (part.costBdt ?? 0), 0)
+        : undefined,
+    estimatedDistanceKm:
+      totalDistanceKm > 0 ? roundDistanceKm(totalDistanceKm) : undefined,
+    estimatedDurationMinutes:
+      totalDurationMinutes > 0 ? Math.round(totalDurationMinutes) : undefined,
+  };
+}
+
+function estimateAccessMetrics(
+  resolution: ResolvedTransitInput,
+  point: TransitPoint,
+): RouteMetrics {
+  if (resolution.directMatch || !resolution.place?.coordinates || !point.coordinates) {
+    return {};
+  }
+
+  const distanceKm = haversineDistanceKm(
+    resolution.place.coordinates,
+    point.coordinates,
+  );
+
+  if (!Number.isFinite(distanceKm) || distanceKm <= 0) {
+    return {};
+  }
+
+  const useRickshaw = distanceKm > 1.2;
+  const speed = useRickshaw ? RICKSHAW_SPEED_KMPH : WALK_SPEED_KMPH;
+  const durationMinutes = Math.max(
+    useRickshaw ? 6 : 4,
+    Math.round((distanceKm / speed) * 60),
+  );
+
+  return {
+    distanceKm,
+    durationMinutes,
+  };
+}
+
+function estimateBusLegDistanceKm(leg: BusLeg) {
+  const boardingCoordinates = findBusStopCoordinates(leg.boardingLabel);
+  const alightingCoordinates = findBusStopCoordinates(leg.alightingLabel);
+
+  if (boardingCoordinates && alightingCoordinates) {
+    return Math.max(
+      1.5,
+      haversineDistanceKm(boardingCoordinates, alightingCoordinates) * 1.2,
+    );
+  }
+
+  return Math.max(1.5, leg.stopCount * BUS_STOP_SPACING_KM);
+}
+
+function estimateMetroDistanceKm(
+  originStationId: string,
+  destinationStationId: string,
+  stationCount: number,
+) {
+  const origin = getMetroStationById(originStationId);
+  const destination = getMetroStationById(destinationStationId);
+
+  if (origin?.coordinates && destination?.coordinates) {
+    return Math.max(
+      1.2,
+      haversineDistanceKm(origin.coordinates, destination.coordinates) * 1.08,
+    );
+  }
+
+  return Math.max(1.2, stationCount * METRO_STATION_SPACING_KM);
+}
+
+function estimateBusFareBdt(distanceKm: number, stopCount: number) {
+  const effectiveDistanceKm = Math.max(distanceKm, stopCount * BUS_STOP_SPACING_KM);
+
+  if (effectiveDistanceKm <= 4) {
+    return 10;
+  }
+
+  if (effectiveDistanceKm <= 8) {
+    return 15;
+  }
+
+  if (effectiveDistanceKm <= 12) {
+    return 20;
+  }
+
+  if (effectiveDistanceKm <= 16) {
+    return 25;
+  }
+
+  if (effectiveDistanceKm <= 20) {
+    return 30;
+  }
+
+  if (effectiveDistanceKm <= 24) {
+    return 35;
+  }
+
+  return 40;
+}
+
+function estimateBusDurationMinutes(distanceKm: number, stopCount: number) {
+  const runningMinutes = (distanceKm / BUS_SPEED_KMPH) * 60;
+  const dwellMinutes = stopCount * BUS_STOP_DELAY_MINUTES;
+
+  return Math.max(10, Math.round(runningMinutes + dwellMinutes + 5));
+}
+
+function estimateMetroDurationMinutes(distanceKm: number, stationCount: number) {
+  const runningMinutes = (distanceKm / METRO_SPEED_KMPH) * 60;
+  const dwellMinutes = stationCount * METRO_STATION_DELAY_MINUTES;
+
+  return Math.max(6, Math.round(runningMinutes + dwellMinutes + 3));
+}
 
 function buildServiceWindowText(route: DhakaBusSeedRoute) {
   if (route.openingTime24h && route.closingTime24h) {
@@ -113,34 +278,91 @@ function dedupeRoutes(routes: RouteOption[]) {
   });
 }
 
-function rankRoutes(routes: RouteOption[]) {
-  const kindScore: Record<RouteOption["kind"], number> = {
-    metro_direct: 420,
-    bus_direct: 340,
-    bus_metro_hybrid: 280,
-    bus_transfer: 220,
-    advisory_connector: 80,
+function rankRoutes(routes: RouteOption[], optimization: RouteOptimization) {
+  const kindPriority: Record<RouteOption["kind"], number> = {
+    metro_direct: 5,
+    bus_direct: 4,
+    bus_metro_hybrid: 3,
+    bus_transfer: 2,
+    advisory_connector: 1,
   };
 
-  const confidenceScore: Record<RouteOption["confidence"], number> = {
-    exact: 40,
-    verified: 20,
-    advisory: 0,
+  const confidencePriority: Record<RouteOption["confidence"], number> = {
+    exact: 3,
+    verified: 2,
+    advisory: 1,
   };
 
   return [...routes].sort((a, b) => {
+    const aDuration = a.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
+    const bDuration = b.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
+    const aCost = a.totalCost ?? FALLBACK_SORT_VALUE;
+    const bCost = b.totalCost ?? FALLBACK_SORT_VALUE;
+    const aDistance = a.estimatedDistanceKm ?? FALLBACK_SORT_VALUE;
+    const bDistance = b.estimatedDistanceKm ?? FALLBACK_SORT_VALUE;
+
+    if (optimization === "fastest") {
+      if (aDuration !== bDuration) {
+        return aDuration - bDuration;
+      }
+
+      if (a.transferStops.length !== b.transferStops.length) {
+        return a.transferStops.length - b.transferStops.length;
+      }
+
+      if (aCost !== bCost) {
+        return aCost - bCost;
+      }
+
+      if (confidencePriority[a.confidence] !== confidencePriority[b.confidence]) {
+        return confidencePriority[b.confidence] - confidencePriority[a.confidence];
+      }
+
+      if (aDistance !== bDistance) {
+        return aDistance - bDistance;
+      }
+
+      return kindPriority[b.kind] - kindPriority[a.kind];
+    }
+
+    if (optimization === "cheapest") {
+      if (aCost !== bCost) {
+        return aCost - bCost;
+      }
+
+      if (aDuration !== bDuration) {
+        return aDuration - bDuration;
+      }
+
+      if (a.transferStops.length !== b.transferStops.length) {
+        return a.transferStops.length - b.transferStops.length;
+      }
+
+      if (confidencePriority[a.confidence] !== confidencePriority[b.confidence]) {
+        return confidencePriority[b.confidence] - confidencePriority[a.confidence];
+      }
+
+      if (aDistance !== bDistance) {
+        return aDistance - bDistance;
+      }
+
+      return kindPriority[b.kind] - kindPriority[a.kind];
+    }
+
     const aScore =
-      kindScore[a.kind] +
-      confidenceScore[a.confidence] -
-      a.transferStops.length * 15 -
-      (a.stopCount ?? 0) -
-      (a.stationCount ?? 0);
+      kindPriority[a.kind] * 36 +
+      confidencePriority[a.confidence] * 20 -
+      a.transferStops.length * 14 -
+      aDuration / 5 -
+      aCost / 6 -
+      aDistance / 4;
     const bScore =
-      kindScore[b.kind] +
-      confidenceScore[b.confidence] -
-      b.transferStops.length * 15 -
-      (b.stopCount ?? 0) -
-      (b.stationCount ?? 0);
+      kindPriority[b.kind] * 36 +
+      confidencePriority[b.confidence] * 20 -
+      b.transferStops.length * 14 -
+      bDuration / 5 -
+      bCost / 6 -
+      bDistance / 4;
 
     return bScore - aScore;
   });
@@ -276,6 +498,18 @@ function createDirectBusRoute(
   destinationResolution: ResolvedTransitInput,
   destinationPoint: TransitPoint,
 ) {
+  const busDistanceKm = estimateBusLegDistanceKm(leg);
+  const busDurationMinutes = estimateBusDurationMinutes(busDistanceKm, leg.stopCount);
+  const busFare = estimateBusFareBdt(busDistanceKm, leg.stopCount);
+  const metrics = combineRouteMetrics([
+    {
+      distanceKm: busDistanceKm,
+      durationMinutes: busDurationMinutes,
+      costBdt: busFare,
+    },
+    estimateAccessMetrics(originResolution, originPoint),
+    estimateAccessMetrics(destinationResolution, destinationPoint),
+  ]);
   const advisories = buildRouteAdvisories(
     originResolution,
     originPoint,
@@ -289,8 +523,11 @@ function createDirectBusRoute(
     kind: "bus_direct",
     confidence: "verified",
     summary: `${busName} direct`,
-    fareType: "unknown",
-    fareText: "Bus fare not verified",
+    fareType: "advisory",
+    fareText: approximateFareText(busFare),
+    totalCost: metrics.totalCost,
+    estimatedDistanceKm: metrics.estimatedDistanceKm,
+    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText: leg.serviceWindowText,
     stopCount: leg.stopCount,
     boarding: makeStopReference(leg.boardingLabel),
@@ -302,9 +539,9 @@ function createDirectBusRoute(
         instruction: `Board ${busName}`,
         startLocation: leg.boardingLabel,
         endLocation: leg.alightingLabel,
-        note: "Verified from the Dhaka bus stop-order dataset.",
+        note: "Verified from the Dhaka bus stop-order dataset. Fare and travel time are estimated from route length and stop count.",
         serviceWindowText: leg.serviceWindowText,
-        fareText: "Fare not verified",
+        fareText: approximateFareText(busFare),
         stopCount: leg.stopCount,
       },
     ],
@@ -324,6 +561,33 @@ function createTransferBusRoute(
   destinationResolution: ResolvedTransitInput,
   destinationPoint: TransitPoint,
 ) {
+  const firstDistanceKm = estimateBusLegDistanceKm(transfer.firstLeg);
+  const secondDistanceKm = estimateBusLegDistanceKm(transfer.secondLeg);
+  const firstFare = estimateBusFareBdt(firstDistanceKm, transfer.firstLeg.stopCount);
+  const secondFare = estimateBusFareBdt(secondDistanceKm, transfer.secondLeg.stopCount);
+  const metrics = combineRouteMetrics([
+    {
+      distanceKm: firstDistanceKm,
+      durationMinutes: estimateBusDurationMinutes(
+        firstDistanceKm,
+        transfer.firstLeg.stopCount,
+      ),
+      costBdt: firstFare,
+    },
+    {
+      distanceKm: secondDistanceKm,
+      durationMinutes: estimateBusDurationMinutes(
+        secondDistanceKm,
+        transfer.secondLeg.stopCount,
+      ),
+      costBdt: secondFare,
+    },
+    {
+      durationMinutes: TRANSFER_BUFFER_MINUTES,
+    },
+    estimateAccessMetrics(originResolution, originPoint),
+    estimateAccessMetrics(destinationResolution, destinationPoint),
+  ]);
   const advisories = buildRouteAdvisories(
     originResolution,
     originPoint,
@@ -338,8 +602,11 @@ function createTransferBusRoute(
     kind: "bus_transfer",
     confidence: "verified",
     summary: `${firstBusName} -> ${secondBusName}`,
-    fareType: "unknown",
-    fareText: "Bus fares not verified",
+    fareType: "advisory",
+    fareText: approximateFareText((metrics.totalCost ?? 0)),
+    totalCost: metrics.totalCost,
+    estimatedDistanceKm: metrics.estimatedDistanceKm,
+    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText:
       `${firstBusName}: ${transfer.firstLeg.serviceWindowText ?? "N/A"} | ` +
       `${secondBusName}: ${transfer.secondLeg.serviceWindowText ?? "N/A"}`,
@@ -353,9 +620,9 @@ function createTransferBusRoute(
         instruction: `Board ${firstBusName}`,
         startLocation: transfer.firstLeg.boardingLabel,
         endLocation: transfer.transferLabel,
-        note: "First bus segment.",
+        note: "First bus segment with estimated fare and travel time.",
         serviceWindowText: transfer.firstLeg.serviceWindowText,
-        fareText: "Fare not verified",
+        fareText: approximateFareText(firstFare),
         stopCount: transfer.firstLeg.stopCount,
       },
       {
@@ -370,9 +637,9 @@ function createTransferBusRoute(
         instruction: `Board ${secondBusName}`,
         startLocation: transfer.transferLabel,
         endLocation: transfer.secondLeg.alightingLabel,
-        note: "Second bus segment.",
+        note: "Second bus segment with estimated fare and travel time.",
         serviceWindowText: transfer.secondLeg.serviceWindowText,
-        fareText: "Fare not verified",
+        fareText: approximateFareText(secondFare),
         stopCount: transfer.secondLeg.stopCount,
       },
     ],
@@ -400,6 +667,20 @@ function createMetroRoute(
 
   const stationCount = Math.abs(originStation.sequence - destinationStation.sequence);
   const fare = getMetroFare(originStation.id, destinationStation.id);
+  const metroDistanceKm = estimateMetroDistanceKm(
+    originStation.id,
+    destinationStation.id,
+    stationCount,
+  );
+  const metrics = combineRouteMetrics([
+    {
+      distanceKm: metroDistanceKm,
+      durationMinutes: estimateMetroDurationMinutes(metroDistanceKm, stationCount),
+      costBdt: fare ?? undefined,
+    },
+    estimateAccessMetrics(originResolution, originPoint),
+    estimateAccessMetrics(destinationResolution, destinationPoint),
+  ]);
   const advisories = buildRouteAdvisories(
     originResolution,
     originPoint,
@@ -414,7 +695,9 @@ function createMetroRoute(
     summary: "Metro direct",
     fareType: "exact",
     fareText: fare ? `BDT ${fare}` : "Metro fare unavailable",
-    totalCost: fare ?? undefined,
+    totalCost: metrics.totalCost,
+    estimatedDistanceKm: metrics.estimatedDistanceKm,
+    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     stationCount,
     boarding: makeMetroReference(originStation.id),
     alighting: makeMetroReference(destinationStation.id),
@@ -464,6 +747,37 @@ function createHybridRoute(
     return null;
   }
 
+  const busDistanceKm = estimateBusLegDistanceKm(busLeg);
+  const busFare = estimateBusFareBdt(busDistanceKm, busLeg.stopCount);
+  const metroDistanceKm = estimateMetroDistanceKm(
+    interchangeStationId,
+    destinationStationId,
+    stationCount,
+  );
+  const metrics = combineRouteMetrics([
+    {
+      distanceKm: busDistanceKm,
+      durationMinutes: estimateBusDurationMinutes(busDistanceKm, busLeg.stopCount),
+      costBdt: busFare,
+    },
+    {
+      distanceKm: metroDistanceKm,
+      durationMinutes: estimateMetroDurationMinutes(metroDistanceKm, stationCount),
+      costBdt: fare ?? undefined,
+    },
+    {
+      durationMinutes: TRANSFER_BUFFER_MINUTES,
+    },
+    estimateAccessMetrics(originResolution, originPoint),
+    estimateAccessMetrics(destinationResolution, destinationPoint),
+  ]);
+
+  const totalFare = metrics.totalCost;
+  const hybridFareText =
+    totalFare !== undefined
+      ? `Approx. BDT ${totalFare}`
+      : approximateFareText(busFare);
+
   const segments =
     direction === "bus_then_metro"
       ? [
@@ -472,9 +786,9 @@ function createHybridRoute(
             instruction: `Board ${busName}`,
             startLocation: busLeg.boardingLabel,
             endLocation: busLeg.alightingLabel,
-            note: "Ride to a metro interchange hub.",
+            note: "Ride to a metro interchange hub. Bus fare and duration are estimated.",
             serviceWindowText: busLeg.serviceWindowText,
-            fareText: "Bus fare not verified",
+            fareText: approximateFareText(busFare),
             stopCount: busLeg.stopCount,
           },
           {
@@ -502,9 +816,9 @@ function createHybridRoute(
             instruction: `Then board ${busName}`,
             startLocation: busLeg.boardingLabel,
             endLocation: busLeg.alightingLabel,
-            note: "Final bus segment after leaving the metro.",
+            note: "Final bus segment after leaving the metro. Bus fare and duration are estimated.",
             serviceWindowText: busLeg.serviceWindowText,
-            fareText: "Bus fare not verified",
+            fareText: approximateFareText(busFare),
             stopCount: busLeg.stopCount,
           },
         ];
@@ -514,8 +828,11 @@ function createHybridRoute(
     kind: "bus_metro_hybrid",
     confidence: "verified",
     summary: `${busName} + Metro`,
-    fareType: "unknown",
-    fareText: fare ? `Metro BDT ${fare}; bus fare not verified` : "Bus fare not verified",
+    fareType: "advisory",
+    fareText: hybridFareText,
+    totalCost: metrics.totalCost,
+    estimatedDistanceKm: metrics.estimatedDistanceKm,
+    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText: busLeg.serviceWindowText,
     stopCount: busLeg.stopCount,
     stationCount,
@@ -741,7 +1058,10 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
     }
   }
 
-  const rankedRoutes = rankRoutes(dedupeRoutes(routes)).slice(0, 6);
+  const rankedRoutes = rankRoutes(
+    dedupeRoutes(routes),
+    payload.optimization,
+  ).slice(0, 6);
 
   const finalRoutes =
     rankedRoutes.length > 0

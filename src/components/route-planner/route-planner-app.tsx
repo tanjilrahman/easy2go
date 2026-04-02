@@ -11,7 +11,22 @@ import { EmptyState } from "@/components/route-planner/empty-state";
 import { RouteDetailsSheet } from "@/components/route-planner/route-details-sheet";
 import { RouteResultsSheet } from "@/components/route-planner/route-results-sheet";
 import { SearchCard } from "@/components/route-planner/search-card";
-import type { CalculateRouteRequest, RouteOption } from "@/lib/validations/routes";
+import type {
+  CalculateRouteRequest,
+  RouteOptimization,
+  RouteOption,
+} from "@/lib/validations/routes";
+
+function getOptimizationLabel(optimization: RouteOptimization) {
+  switch (optimization) {
+    case "fastest":
+      return "Fastest ranking";
+    case "cheapest":
+      return "Cheapest ranking";
+    default:
+      return "Balanced ranking";
+  }
+}
 
 export function RoutePlannerApp() {
   const historyQuery = useSearchHistory();
@@ -21,6 +36,8 @@ export function RoutePlannerApp() {
   const [selectedRoute, setSelectedRoute] = useState<RouteOption | null>(null);
   const [resultsOpen, setResultsOpen] = useState(false);
   const [detailsOpen, setDetailsOpen] = useState(false);
+  const [optimization, setOptimization] =
+    useState<RouteOptimization>("recommended");
 
   const activeRoute = useMemo(
     () => selectedRoute ?? results[0] ?? null,
@@ -28,6 +45,7 @@ export function RoutePlannerApp() {
   );
 
   const handleSearch = (payload: CalculateRouteRequest) => {
+    setOptimization(payload.optimization);
     calculateRoutes.mutate(payload, {
       onSuccess: (response) => {
         startTransition(() => {
@@ -52,7 +70,7 @@ export function RoutePlannerApp() {
 
         <div className="glass-panel flex items-center gap-2 rounded-full px-4 py-3 text-sm font-medium text-foreground">
           <Compass className="h-4 w-4 text-secondary" />
-          Verified Dhaka routes
+          {getOptimizationLabel(optimization)}
         </div>
       </div>
 
@@ -83,7 +101,7 @@ export function RoutePlannerApp() {
                   Calculating your route
                 </p>
                 <p className="text-sm text-muted-foreground">
-                  Matching Dhaka places to bus hubs and metro stations.
+                  Matching Dhaka places, then scoring by time, fare, and transfers.
                 </p>
               </div>
             </div>
@@ -116,6 +134,7 @@ export function RoutePlannerApp() {
 
       <RouteResultsSheet
         open={resultsOpen && !detailsOpen}
+        optimization={optimization}
         routes={results}
         selectedRouteId={selectedRoute?.id}
         onClose={() => setResultsOpen(false)}

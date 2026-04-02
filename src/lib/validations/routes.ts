@@ -36,6 +36,14 @@ export const routeConfidenceSchema = z.enum(["exact", "verified", "advisory"]);
 
 export type RouteConfidence = z.infer<typeof routeConfidenceSchema>;
 
+export const routeOptimizationSchema = z.enum([
+  "recommended",
+  "fastest",
+  "cheapest",
+]);
+
+export type RouteOptimization = z.infer<typeof routeOptimizationSchema>;
+
 export const fareTypeSchema = z.enum(["exact", "unknown", "advisory"]);
 
 export type FareType = z.infer<typeof fareTypeSchema>;
@@ -102,6 +110,8 @@ export const routeOptionSchema = z.object({
   fareType: fareTypeSchema,
   fareText: z.string(),
   totalCost: z.number().nonnegative().optional(),
+  estimatedDistanceKm: z.number().nonnegative().optional(),
+  estimatedDurationMinutes: z.number().int().nonnegative().optional(),
   serviceWindowText: z.string().optional(),
   stopCount: z.number().int().nonnegative().optional(),
   stationCount: z.number().int().nonnegative().optional(),
@@ -118,6 +128,7 @@ export type RouteOption = z.infer<typeof routeOptionSchema>;
 export const calculateRouteRequestSchema = z.object({
   origin: locationInputSchema,
   destination: locationInputSchema,
+  optimization: routeOptimizationSchema.default("recommended"),
 });
 
 export type CalculateRouteRequest = z.infer<typeof calculateRouteRequestSchema>;

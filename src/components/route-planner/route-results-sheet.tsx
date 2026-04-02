@@ -5,18 +5,46 @@ import { BadgeCheck } from "lucide-react";
 import { BottomSheet } from "@/components/route-planner/bottom-sheet";
 import { EmptyState } from "@/components/route-planner/empty-state";
 import { RouteCard } from "@/components/route-planner/route-card";
-import type { RouteOption } from "@/lib/validations/routes";
+import type { RouteOptimization, RouteOption } from "@/lib/validations/routes";
 
 interface RouteResultsSheetProps {
   open: boolean;
+  optimization: RouteOptimization;
   routes: RouteOption[];
   selectedRouteId?: string;
   onClose: () => void;
   onSelectRoute: (route: RouteOption) => void;
 }
 
+function getResultsTitle(optimization: RouteOptimization) {
+  switch (optimization) {
+    case "fastest":
+      return "Fastest Routes";
+    case "cheapest":
+      return "Cheapest Routes";
+    default:
+      return "Best Routes";
+  }
+}
+
+function getResultsSubtitle(optimization: RouteOptimization, count: number) {
+  if (!count) {
+    return "No routes found yet";
+  }
+
+  switch (optimization) {
+    case "fastest":
+      return `${count} options sorted by estimated travel time`;
+    case "cheapest":
+      return `${count} options sorted by estimated fare`;
+    default:
+      return `${count} deterministic options balanced across time, fare, and transfers`;
+  }
+}
+
 export function RouteResultsSheet({
   open,
+  optimization,
   routes,
   selectedRouteId,
   onClose,
@@ -26,12 +54,8 @@ export function RouteResultsSheet({
     <BottomSheet
       open={open}
       onClose={onClose}
-      title="Best Routes"
-      subtitle={
-        routes.length
-          ? `${routes.length} deterministic options for your Dhaka trip`
-          : "No routes found yet"
-      }
+      title={getResultsTitle(optimization)}
+      subtitle={getResultsSubtitle(optimization, routes.length)}
       height="64vh"
     >
       {routes.length ? (
