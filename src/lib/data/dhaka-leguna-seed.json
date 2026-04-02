@@ -1,0 +1,1907 @@
+{
+  "version": 1,
+  "generatedAt": "2026-04-02T14:19:12.187Z",
+  "source": {
+    "name": "dhaka_leguna_routes_with_stoppages.csv",
+    "retrievedAt": "2026-04-02T14:19:12.187Z",
+    "license": "user_supplied_reference_only",
+    "notes": [
+      "Built from a user-supplied CSV of Dhaka leguna corridors and ordered stoppages.",
+      "Only the columns needed for routing and fare/advisory display are retained.",
+      "Leguna remains an informal mode, so reported fares and corridors should be treated as variable."
+    ]
+  },
+  "summary": {
+    "routeCount": 47,
+    "stopCount": 72
+  },
+  "stops": [
+    {
+      "id": "leguna-stop-farmgate",
+      "label": "Farmgate",
+      "slug": "farmgate",
+      "routeIds": [
+        "leguna-farmgate-to-mohammadpur-0",
+        "leguna-farmgate-to-mirpur-2-1",
+        "leguna-mirpur-2-to-farmgate-3",
+        "leguna-farmgate-to-radio-mor-passport-office-area-4",
+        "leguna-farmgate-to-shankar-5",
+        "leguna-farmgate-to-zigatola-6",
+        "leguna-mirpur-10-to-farmgate-9",
+        "leguna-mohammadpur-to-farmgate-25",
+        "leguna-mohammadpur-to-gulistan-29"
+      ],
+      "routeCount": 9
+    },
+    {
+      "id": "leguna-stop-khamarbari",
+      "label": "Khamarbari",
+      "slug": "khamarbari",
+      "routeIds": [
+        "leguna-farmgate-to-mohammadpur-0",
+        "leguna-farmgate-to-mirpur-2-1",
+        "leguna-mirpur-2-to-farmgate-3",
+        "leguna-farmgate-to-radio-mor-passport-office-area-4",
+        "leguna-farmgate-to-shankar-5",
+        "leguna-farmgate-to-zigatola-6",
+        "leguna-mirpur-10-to-farmgate-9",
+        "leguna-mohammadpur-to-farmgate-25"
+      ],
+      "routeCount": 8
+    },
+    {
+      "id": "leguna-stop-asad-gate",
+      "label": "Asad Gate",
+      "slug": "asad-gate",
+      "routeIds": [
+        "leguna-farmgate-to-mohammadpur-0",
+        "leguna-farmgate-to-shankar-5",
+        "leguna-farmgate-to-zigatola-6",
+        "leguna-mirpur-1-to-mohammadpur-13",
+        "leguna-mohammadpur-to-farmgate-25",
+        "leguna-town-hall-to-asad-gate-27",
+        "leguna-shia-masjid-to-asad-gate-dhanmondi-27-28",
+        "leguna-mohammadpur-to-gulistan-29"
+      ],
+      "routeCount": 8
+    },
+    {
+      "id": "leguna-stop-shyamoli",
+      "label": "Shyamoli",
+      "slug": "shyamoli",
+      "routeIds": [
+        "leguna-farmgate-to-mohammadpur-0",
+        "leguna-mirpur-1-to-shyamoli-12",
+        "leguna-mirpur-1-to-mohammadpur-13",
+        "leguna-mohammadpur-to-shyamoli-26",
+        "leguna-mohammadpur-to-mirpur-30"
+      ],
+      "routeCount": 5
+    },
+    {
+      "id": "leguna-stop-mohammadpur",
+      "label": "Mohammadpur",
+      "slug": "mohammadpur",
+      "routeIds": [
+        "leguna-farmgate-to-mohammadpur-0",
+        "leguna-mirpur-1-to-mohammadpur-13",
+        "leguna-mohammadpur-to-farmgate-25",
+        "leguna-mohammadpur-to-shyamoli-26",
+        "leguna-shia-masjid-to-asad-gate-dhanmondi-27-28",
+        "leguna-mohammadpur-to-gulistan-29",
+        "leguna-mohammadpur-to-mirpur-30"
+      ],
+      "routeCount": 7
+    },
+    {
+      "id": "leguna-stop-agargaon",
+      "label": "Agargaon",
+      "slug": "agargaon",
+      "routeIds": [
+        "leguna-farmgate-to-mirpur-2-1",
+        "leguna-mirpur-2-to-farmgate-3",
+        "leguna-farmgate-to-radio-mor-passport-office-area-4",
+        "leguna-mirpur-10-to-farmgate-9",
+        "leguna-mirpur-10-to-agargaon-10",
+        "leguna-mirpur-2-to-sony-cinema-hall-16"
+      ],
+      "routeCount": 6
+    },
+    {
+      "id": "leguna-stop-taltola",
+      "label": "Taltola",
+      "slug": "taltola",
+      "routeIds": [
+        "leguna-farmgate-to-mirpur-2-1",
+        "leguna-agargaon-nins-area-to-mirpur-2-2",
+        "leguna-mirpur-2-to-farmgate-3",
+        "leguna-mirpur-10-to-farmgate-9",
+        "leguna-mirpur-10-to-agargaon-10"
+      ],
+      "routeCount": 5
+    },
+    {
+      "id": "leguna-stop-shewrapara",
+      "label": "Shewrapara",
+      "slug": "shewrapara",
+      "routeIds": [
+        "leguna-farmgate-to-mirpur-2-1",
+        "leguna-agargaon-nins-area-to-mirpur-2-2",
+        "leguna-mirpur-2-to-farmgate-3",
+        "leguna-mirpur-10-to-farmgate-9",
+        "leguna-mirpur-10-to-agargaon-10",
+        "leguna-mirpur-2-to-sony-cinema-hall-16"
+      ],
+      "routeCount": 6
+    },
+    {
+      "id": "leguna-stop-kazipara",
+      "label": "Kazipara",
+      "slug": "kazipara",
+      "routeIds": [
+        "leguna-farmgate-to-mirpur-2-1",
+        "leguna-agargaon-nins-area-to-mirpur-2-2",
+        "leguna-mirpur-2-to-farmgate-3",
+        "leguna-mirpur-10-to-farmgate-9",
+        "leguna-mirpur-10-to-agargaon-10",
+        "leguna-mirpur-2-to-sony-cinema-hall-16"
+      ],
+      "routeCount": 6
+    },
+    {
+      "id": "leguna-stop-mirpur-10",
+      "label": "Mirpur-10",
+      "slug": "mirpur-10",
+      "routeIds": [
+        "leguna-farmgate-to-mirpur-2-1",
+        "leguna-agargaon-nins-area-to-mirpur-2-2",
+        "leguna-mirpur-2-to-farmgate-3",
+        "leguna-mirpur-10-to-farmgate-9",
+        "leguna-mirpur-10-to-agargaon-10",
+        "leguna-mirpur-2-to-sony-cinema-hall-16"
+      ],
+      "routeCount": 6
+    },
+    {
+      "id": "leguna-stop-mirpur-2",
+      "label": "Mirpur-2",
+      "slug": "mirpur-2",
+      "routeIds": [
+        "leguna-farmgate-to-mirpur-2-1",
+        "leguna-agargaon-nins-area-to-mirpur-2-2",
+        "leguna-mirpur-2-to-farmgate-3",
+        "leguna-mirpur-2-to-sony-cinema-hall-16"
+      ],
+      "routeCount": 4
+    },
+    {
+      "id": "leguna-stop-agargaon-nins-area",
+      "label": "Agargaon (NINS area)",
+      "slug": "agargaon-nins-area",
+      "routeIds": [
+        "leguna-agargaon-nins-area-to-mirpur-2-2"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-radio-mor",
+      "label": "Radio Mor",
+      "slug": "radio-mor",
+      "routeIds": [
+        "leguna-farmgate-to-radio-mor-passport-office-area-4"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-passport-office-area",
+      "label": "Passport Office area",
+      "slug": "passport-office-area",
+      "routeIds": [
+        "leguna-farmgate-to-radio-mor-passport-office-area-4"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-dhanmondi-27",
+      "label": "Dhanmondi 27",
+      "slug": "dhanmondi-27",
+      "routeIds": [
+        "leguna-farmgate-to-shankar-5",
+        "leguna-farmgate-to-zigatola-6",
+        "leguna-shia-masjid-to-asad-gate-dhanmondi-27-28"
+      ],
+      "routeCount": 3
+    },
+    {
+      "id": "leguna-stop-shankar",
+      "label": "Shankar",
+      "slug": "shankar",
+      "routeIds": [
+        "leguna-farmgate-to-shankar-5"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-science-lab",
+      "label": "Science Lab",
+      "slug": "science-lab",
+      "routeIds": [
+        "leguna-farmgate-to-zigatola-6"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-zigatola",
+      "label": "Zigatola",
+      "slug": "zigatola",
+      "routeIds": [
+        "leguna-farmgate-to-zigatola-6"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-bashabo",
+      "label": "Bashabo",
+      "slug": "bashabo",
+      "routeIds": [
+        "leguna-bashabo-to-gulistan-7"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-khilgaon-flyover-area",
+      "label": "Khilgaon Flyover area",
+      "slug": "khilgaon-flyover-area",
+      "routeIds": [
+        "leguna-bashabo-to-gulistan-7"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-malibagh",
+      "label": "Malibagh",
+      "slug": "malibagh",
+      "routeIds": [
+        "leguna-bashabo-to-gulistan-7",
+        "leguna-khilgaon-to-gulistan-daily-bangla-8"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-shantinagar",
+      "label": "Shantinagar",
+      "slug": "shantinagar",
+      "routeIds": [
+        "leguna-bashabo-to-gulistan-7",
+        "leguna-khilgaon-to-gulistan-daily-bangla-8"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-paltan",
+      "label": "Paltan",
+      "slug": "paltan",
+      "routeIds": [
+        "leguna-bashabo-to-gulistan-7",
+        "leguna-khilgaon-to-gulistan-daily-bangla-8",
+        "leguna-mohammadpur-to-gulistan-29"
+      ],
+      "routeCount": 3
+    },
+    {
+      "id": "leguna-stop-gulistan",
+      "label": "Gulistan",
+      "slug": "gulistan",
+      "routeIds": [
+        "leguna-bashabo-to-gulistan-7",
+        "leguna-khilgaon-to-gulistan-daily-bangla-8",
+        "leguna-mohammadpur-to-gulistan-29"
+      ],
+      "routeCount": 3
+    },
+    {
+      "id": "leguna-stop-khilgaon",
+      "label": "Khilgaon",
+      "slug": "khilgaon",
+      "routeIds": [
+        "leguna-khilgaon-to-gulistan-daily-bangla-8"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-mouchak",
+      "label": "Mouchak",
+      "slug": "mouchak",
+      "routeIds": [
+        "leguna-khilgaon-to-gulistan-daily-bangla-8"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-daily-bangla",
+      "label": "Daily Bangla",
+      "slug": "daily-bangla",
+      "routeIds": [
+        "leguna-khilgaon-to-gulistan-daily-bangla-8"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-mirpur-1",
+      "label": "Mirpur-1",
+      "slug": "mirpur-1",
+      "routeIds": [
+        "leguna-mirpur-1-to-gabtoli-11",
+        "leguna-mirpur-1-to-shyamoli-12",
+        "leguna-mirpur-1-to-mohammadpur-13"
+      ],
+      "routeCount": 3
+    },
+    {
+      "id": "leguna-stop-technical",
+      "label": "Technical",
+      "slug": "technical",
+      "routeIds": [
+        "leguna-mirpur-1-to-gabtoli-11",
+        "leguna-mirpur-1-to-shyamoli-12",
+        "leguna-mirpur-1-to-mohammadpur-13",
+        "leguna-mohammadpur-to-mirpur-30"
+      ],
+      "routeCount": 4
+    },
+    {
+      "id": "leguna-stop-gabtoli",
+      "label": "Gabtoli",
+      "slug": "gabtoli",
+      "routeIds": [
+        "leguna-mirpur-1-to-gabtoli-11",
+        "leguna-gabtoli-to-savar-31"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-kallyanpur",
+      "label": "Kallyanpur",
+      "slug": "kallyanpur",
+      "routeIds": [
+        "leguna-mirpur-1-to-shyamoli-12",
+        "leguna-mirpur-1-to-mohammadpur-13",
+        "leguna-mohammadpur-to-mirpur-30"
+      ],
+      "routeCount": 3
+    },
+    {
+      "id": "leguna-stop-rupnagar",
+      "label": "Rupnagar",
+      "slug": "rupnagar",
+      "routeIds": [
+        "leguna-rupnagar-to-ashulia-14",
+        "leguna-uttara-to-mirpur-24",
+        "leguna-savar-to-mirpur-36",
+        "leguna-ashulia-to-mirpur-43"
+      ],
+      "routeCount": 4
+    },
+    {
+      "id": "leguna-stop-beribadh",
+      "label": "Beribadh",
+      "slug": "beribadh",
+      "routeIds": [
+        "leguna-rupnagar-to-ashulia-14",
+        "leguna-diabari-uttara-to-ashulia-23",
+        "leguna-uttara-to-mirpur-24",
+        "leguna-savar-to-mirpur-36",
+        "leguna-ashulia-to-mirpur-43"
+      ],
+      "routeCount": 5
+    },
+    {
+      "id": "leguna-stop-birulia",
+      "label": "Birulia",
+      "slug": "birulia",
+      "routeIds": [
+        "leguna-rupnagar-to-ashulia-14",
+        "leguna-diabari-uttara-to-ashulia-23",
+        "leguna-uttara-to-mirpur-24",
+        "leguna-savar-to-uttara-37",
+        "leguna-ashulia-to-mirpur-43",
+        "leguna-ashulia-to-uttara-abdullahpur-44"
+      ],
+      "routeCount": 6
+    },
+    {
+      "id": "leguna-stop-ashulia",
+      "label": "Ashulia",
+      "slug": "ashulia",
+      "routeIds": [
+        "leguna-rupnagar-to-ashulia-14",
+        "leguna-diabari-uttara-to-ashulia-23",
+        "leguna-baipayl-to-ashulia-35",
+        "leguna-savar-to-uttara-37",
+        "leguna-ashulia-to-jamgora-39",
+        "leguna-ashulia-to-savar-42",
+        "leguna-ashulia-to-mirpur-43",
+        "leguna-ashulia-to-uttara-abdullahpur-44",
+        "leguna-ashulia-to-fantasy-kingdom-area-45",
+        "leguna-ashulia-to-depz-46"
+      ],
+      "routeCount": 10
+    },
+    {
+      "id": "leguna-stop-mirpur-14",
+      "label": "Mirpur-14",
+      "slug": "mirpur-14",
+      "routeIds": [
+        "leguna-mirpur-14-to-kuril-kalshi-15"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-ecb",
+      "label": "ECB",
+      "slug": "ecb",
+      "routeIds": [
+        "leguna-mirpur-14-to-kuril-kalshi-15"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-kalshi",
+      "label": "Kalshi",
+      "slug": "kalshi",
+      "routeIds": [
+        "leguna-mirpur-14-to-kuril-kalshi-15"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-kuril",
+      "label": "Kuril",
+      "slug": "kuril",
+      "routeIds": [
+        "leguna-mirpur-14-to-kuril-kalshi-15",
+        "leguna-abdullahpur-to-badda-notun-bazar-19"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-sony-cinema-hall",
+      "label": "Sony Cinema Hall",
+      "slug": "sony-cinema-hall",
+      "routeIds": [
+        "leguna-mirpur-2-to-sony-cinema-hall-16"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-abdullahpur",
+      "label": "Abdullahpur",
+      "slug": "abdullahpur",
+      "routeIds": [
+        "leguna-abdullahpur-to-airport-17",
+        "leguna-abdullahpur-to-kuril-bishwa-road-18",
+        "leguna-abdullahpur-to-badda-notun-bazar-19",
+        "leguna-abdullahpur-to-tongi-20",
+        "leguna-savar-to-uttara-37",
+        "leguna-ashulia-to-uttara-abdullahpur-44"
+      ],
+      "routeCount": 6
+    },
+    {
+      "id": "leguna-stop-house-building",
+      "label": "House Building",
+      "slug": "house-building",
+      "routeIds": [
+        "leguna-abdullahpur-to-airport-17",
+        "leguna-abdullahpur-to-kuril-bishwa-road-18",
+        "leguna-abdullahpur-to-badda-notun-bazar-19",
+        "leguna-abdullahpur-to-tongi-20",
+        "leguna-uttara-sectors-to-house-building-21"
+      ],
+      "routeCount": 5
+    },
+    {
+      "id": "leguna-stop-azampur",
+      "label": "Azampur",
+      "slug": "azampur",
+      "routeIds": [
+        "leguna-abdullahpur-to-airport-17",
+        "leguna-abdullahpur-to-kuril-bishwa-road-18"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-rajlakshmi",
+      "label": "Rajlakshmi",
+      "slug": "rajlakshmi",
+      "routeIds": [
+        "leguna-abdullahpur-to-airport-17",
+        "leguna-abdullahpur-to-kuril-bishwa-road-18",
+        "leguna-uttara-sectors-to-house-building-21",
+        "leguna-rajlakshmi-to-airport-22"
+      ],
+      "routeCount": 4
+    },
+    {
+      "id": "leguna-stop-jashimuddin",
+      "label": "Jashimuddin",
+      "slug": "jashimuddin",
+      "routeIds": [
+        "leguna-abdullahpur-to-airport-17",
+        "leguna-abdullahpur-to-kuril-bishwa-road-18",
+        "leguna-rajlakshmi-to-airport-22"
+      ],
+      "routeCount": 3
+    },
+    {
+      "id": "leguna-stop-airport",
+      "label": "Airport",
+      "slug": "airport",
+      "routeIds": [
+        "leguna-abdullahpur-to-airport-17",
+        "leguna-abdullahpur-to-kuril-bishwa-road-18",
+        "leguna-abdullahpur-to-badda-notun-bazar-19",
+        "leguna-rajlakshmi-to-airport-22"
+      ],
+      "routeCount": 4
+    },
+    {
+      "id": "leguna-stop-khilkhet",
+      "label": "Khilkhet",
+      "slug": "khilkhet",
+      "routeIds": [
+        "leguna-abdullahpur-to-kuril-bishwa-road-18",
+        "leguna-abdullahpur-to-badda-notun-bazar-19"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-kuril-bishwa-road",
+      "label": "Kuril Bishwa Road",
+      "slug": "kuril-bishwa-road",
+      "routeIds": [
+        "leguna-abdullahpur-to-kuril-bishwa-road-18"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-bashundhara",
+      "label": "Bashundhara",
+      "slug": "bashundhara",
+      "routeIds": [
+        "leguna-abdullahpur-to-badda-notun-bazar-19"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-nadda",
+      "label": "Nadda",
+      "slug": "nadda",
+      "routeIds": [
+        "leguna-abdullahpur-to-badda-notun-bazar-19"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-shahjadpur",
+      "label": "Shahjadpur",
+      "slug": "shahjadpur",
+      "routeIds": [
+        "leguna-abdullahpur-to-badda-notun-bazar-19"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-badda-notun-bazar",
+      "label": "Badda / Notun Bazar",
+      "slug": "badda-notun-bazar",
+      "routeIds": [
+        "leguna-abdullahpur-to-badda-notun-bazar-19"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-tongi",
+      "label": "Tongi",
+      "slug": "tongi",
+      "routeIds": [
+        "leguna-abdullahpur-to-tongi-20"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-uttara-sectors",
+      "label": "Uttara sectors",
+      "slug": "uttara-sectors",
+      "routeIds": [
+        "leguna-uttara-sectors-to-house-building-21"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-diabari-uttara",
+      "label": "Diabari / Uttara",
+      "slug": "diabari-uttara",
+      "routeIds": [
+        "leguna-diabari-uttara-to-ashulia-23"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-uttara",
+      "label": "Uttara",
+      "slug": "uttara",
+      "routeIds": [
+        "leguna-uttara-to-mirpur-24",
+        "leguna-savar-to-uttara-37"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-diabari",
+      "label": "Diabari",
+      "slug": "diabari",
+      "routeIds": [
+        "leguna-uttara-to-mirpur-24",
+        "leguna-savar-to-uttara-37",
+        "leguna-ashulia-to-uttara-abdullahpur-44"
+      ],
+      "routeCount": 3
+    },
+    {
+      "id": "leguna-stop-mirpur",
+      "label": "Mirpur",
+      "slug": "mirpur",
+      "routeIds": [
+        "leguna-uttara-to-mirpur-24",
+        "leguna-mohammadpur-to-mirpur-30",
+        "leguna-savar-to-mirpur-36",
+        "leguna-ashulia-to-mirpur-43"
+      ],
+      "routeCount": 4
+    },
+    {
+      "id": "leguna-stop-shia-masjid",
+      "label": "Shia Masjid",
+      "slug": "shia-masjid",
+      "routeIds": [
+        "leguna-mohammadpur-to-shyamoli-26",
+        "leguna-shia-masjid-to-asad-gate-dhanmondi-27-28"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-town-hall",
+      "label": "Town Hall",
+      "slug": "town-hall",
+      "routeIds": [
+        "leguna-town-hall-to-asad-gate-27"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-mohammadpur-bus-stand",
+      "label": "Mohammadpur Bus Stand",
+      "slug": "mohammadpur-bus-stand",
+      "routeIds": [
+        "leguna-town-hall-to-asad-gate-27"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-shahbag",
+      "label": "Shahbag",
+      "slug": "shahbag",
+      "routeIds": [
+        "leguna-mohammadpur-to-gulistan-29"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-aminbazar",
+      "label": "Aminbazar",
+      "slug": "aminbazar",
+      "routeIds": [
+        "leguna-gabtoli-to-savar-31",
+        "leguna-savar-to-mirpur-36"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-hemayetpur",
+      "label": "Hemayetpur",
+      "slug": "hemayetpur",
+      "routeIds": [
+        "leguna-gabtoli-to-savar-31",
+        "leguna-savar-to-hemayetpur-32",
+        "leguna-savar-to-mirpur-36"
+      ],
+      "routeCount": 3
+    },
+    {
+      "id": "leguna-stop-savar",
+      "label": "Savar",
+      "slug": "savar",
+      "routeIds": [
+        "leguna-gabtoli-to-savar-31",
+        "leguna-savar-to-hemayetpur-32",
+        "leguna-savar-to-nabinagar-33",
+        "leguna-savar-to-mirpur-36",
+        "leguna-savar-to-uttara-37",
+        "leguna-savar-to-depz-epz-38",
+        "leguna-ashulia-to-savar-42"
+      ],
+      "routeCount": 7
+    },
+    {
+      "id": "leguna-stop-nabinagar",
+      "label": "Nabinagar",
+      "slug": "nabinagar",
+      "routeIds": [
+        "leguna-savar-to-nabinagar-33",
+        "leguna-nabinagar-to-baipayl-34",
+        "leguna-savar-to-depz-epz-38",
+        "leguna-ashulia-to-savar-42"
+      ],
+      "routeCount": 4
+    },
+    {
+      "id": "leguna-stop-depz",
+      "label": "DEPZ",
+      "slug": "depz",
+      "routeIds": [
+        "leguna-nabinagar-to-baipayl-34",
+        "leguna-ashulia-to-depz-46"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-baipayl",
+      "label": "Baipayl",
+      "slug": "baipayl",
+      "routeIds": [
+        "leguna-nabinagar-to-baipayl-34",
+        "leguna-baipayl-to-ashulia-35",
+        "leguna-savar-to-uttara-37",
+        "leguna-zirabo-to-baipayl-41",
+        "leguna-ashulia-to-savar-42"
+      ],
+      "routeCount": 5
+    },
+    {
+      "id": "leguna-stop-jamgora",
+      "label": "Jamgora",
+      "slug": "jamgora",
+      "routeIds": [
+        "leguna-baipayl-to-ashulia-35",
+        "leguna-ashulia-to-jamgora-39",
+        "leguna-jamgora-to-zirabo-40",
+        "leguna-ashulia-to-fantasy-kingdom-area-45",
+        "leguna-ashulia-to-depz-46"
+      ],
+      "routeCount": 5
+    },
+    {
+      "id": "leguna-stop-depz-epz",
+      "label": "DEPZ / EPZ",
+      "slug": "depz-epz",
+      "routeIds": [
+        "leguna-savar-to-depz-epz-38"
+      ],
+      "routeCount": 1
+    },
+    {
+      "id": "leguna-stop-zirabo",
+      "label": "Zirabo",
+      "slug": "zirabo",
+      "routeIds": [
+        "leguna-jamgora-to-zirabo-40",
+        "leguna-zirabo-to-baipayl-41"
+      ],
+      "routeCount": 2
+    },
+    {
+      "id": "leguna-stop-fantasy-kingdom-area",
+      "label": "Fantasy Kingdom area",
+      "slug": "fantasy-kingdom-area",
+      "routeIds": [
+        "leguna-ashulia-to-fantasy-kingdom-area-45"
+      ],
+      "routeCount": 1
+    }
+  ],
+  "routes": [
+    {
+      "id": "leguna-farmgate-to-mohammadpur-0",
+      "origin": "Farmgate",
+      "destination": "Mohammadpur",
+      "via": "Central-west corridor",
+      "stopLabels": [
+        "Farmgate",
+        "Khamarbari",
+        "Asad Gate",
+        "Shyamoli",
+        "Mohammadpur"
+      ],
+      "stopCount": 5,
+      "reportedFareBdt": 10,
+      "confidence": "high",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-farmgate",
+        "leguna-stop-khamarbari",
+        "leguna-stop-asad-gate",
+        "leguna-stop-shyamoli",
+        "leguna-stop-mohammadpur"
+      ]
+    },
+    {
+      "id": "leguna-farmgate-to-mirpur-2-1",
+      "origin": "Farmgate",
+      "destination": "Mirpur-2",
+      "via": "via 60 Foot / Kamal Sarani",
+      "stopLabels": [
+        "Farmgate",
+        "Khamarbari",
+        "Agargaon",
+        "Taltola",
+        "Shewrapara",
+        "Kazipara",
+        "Mirpur-10",
+        "Mirpur-2"
+      ],
+      "stopCount": 8,
+      "reportedFareBdt": 30,
+      "confidence": "high",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-farmgate",
+        "leguna-stop-khamarbari",
+        "leguna-stop-agargaon",
+        "leguna-stop-taltola",
+        "leguna-stop-shewrapara",
+        "leguna-stop-kazipara",
+        "leguna-stop-mirpur-10",
+        "leguna-stop-mirpur-2"
+      ]
+    },
+    {
+      "id": "leguna-agargaon-nins-area-to-mirpur-2-2",
+      "origin": "Agargaon (NINS area)",
+      "destination": "Mirpur-2",
+      "via": "via 60 Foot / Kamal Sarani",
+      "stopLabels": [
+        "Agargaon (NINS area)",
+        "Taltola",
+        "Shewrapara",
+        "Kazipara",
+        "Mirpur-10",
+        "Mirpur-2"
+      ],
+      "stopCount": 6,
+      "reportedFareBdt": 10,
+      "confidence": "medium",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-agargaon-nins-area",
+        "leguna-stop-taltola",
+        "leguna-stop-shewrapara",
+        "leguna-stop-kazipara",
+        "leguna-stop-mirpur-10",
+        "leguna-stop-mirpur-2"
+      ]
+    },
+    {
+      "id": "leguna-mirpur-2-to-farmgate-3",
+      "origin": "Mirpur-2",
+      "destination": "Farmgate",
+      "via": "Main urban corridor",
+      "stopLabels": [
+        "Mirpur-2",
+        "Mirpur-10",
+        "Kazipara",
+        "Shewrapara",
+        "Taltola",
+        "Agargaon",
+        "Khamarbari",
+        "Farmgate"
+      ],
+      "stopCount": 8,
+      "reportedFareBdt": null,
+      "confidence": "high",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-mirpur-2",
+        "leguna-stop-mirpur-10",
+        "leguna-stop-kazipara",
+        "leguna-stop-shewrapara",
+        "leguna-stop-taltola",
+        "leguna-stop-agargaon",
+        "leguna-stop-khamarbari",
+        "leguna-stop-farmgate"
+      ]
+    },
+    {
+      "id": "leguna-farmgate-to-radio-mor-passport-office-area-4",
+      "origin": "Farmgate",
+      "destination": "Radio Mor / Passport Office area",
+      "via": "Segment on Farmgate-Mirpur axis",
+      "stopLabels": [
+        "Farmgate",
+        "Khamarbari",
+        "Agargaon",
+        "Radio Mor",
+        "Passport Office area"
+      ],
+      "stopCount": 5,
+      "reportedFareBdt": 15,
+      "confidence": "medium",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-farmgate",
+        "leguna-stop-khamarbari",
+        "leguna-stop-agargaon",
+        "leguna-stop-radio-mor",
+        "leguna-stop-passport-office-area"
+      ]
+    },
+    {
+      "id": "leguna-farmgate-to-shankar-5",
+      "origin": "Farmgate",
+      "destination": "Shankar",
+      "via": "Central-west corridor",
+      "stopLabels": [
+        "Farmgate",
+        "Khamarbari",
+        "Asad Gate",
+        "Dhanmondi 27",
+        "Shankar"
+      ],
+      "stopCount": 5,
+      "reportedFareBdt": 20,
+      "confidence": "medium",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-farmgate",
+        "leguna-stop-khamarbari",
+        "leguna-stop-asad-gate",
+        "leguna-stop-dhanmondi-27",
+        "leguna-stop-shankar"
+      ]
+    },
+    {
+      "id": "leguna-farmgate-to-zigatola-6",
+      "origin": "Farmgate",
+      "destination": "Zigatola",
+      "via": "Central-west corridor",
+      "stopLabels": [
+        "Farmgate",
+        "Khamarbari",
+        "Asad Gate",
+        "Dhanmondi 27",
+        "Science Lab",
+        "Zigatola"
+      ],
+      "stopCount": 6,
+      "reportedFareBdt": 25,
+      "confidence": "high",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-farmgate",
+        "leguna-stop-khamarbari",
+        "leguna-stop-asad-gate",
+        "leguna-stop-dhanmondi-27",
+        "leguna-stop-science-lab",
+        "leguna-stop-zigatola"
+      ]
+    },
+    {
+      "id": "leguna-bashabo-to-gulistan-7",
+      "origin": "Bashabo",
+      "destination": "Gulistan",
+      "via": "South-central connector",
+      "stopLabels": [
+        "Bashabo",
+        "Khilgaon Flyover area",
+        "Malibagh",
+        "Shantinagar",
+        "Paltan",
+        "Gulistan"
+      ],
+      "stopCount": 6,
+      "reportedFareBdt": 20,
+      "confidence": "medium",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-bashabo",
+        "leguna-stop-khilgaon-flyover-area",
+        "leguna-stop-malibagh",
+        "leguna-stop-shantinagar",
+        "leguna-stop-paltan",
+        "leguna-stop-gulistan"
+      ]
+    },
+    {
+      "id": "leguna-khilgaon-to-gulistan-daily-bangla-8",
+      "origin": "Khilgaon",
+      "destination": "Gulistan / Daily Bangla",
+      "via": "South-central connector",
+      "stopLabels": [
+        "Khilgaon",
+        "Malibagh",
+        "Mouchak",
+        "Shantinagar",
+        "Paltan",
+        "Daily Bangla",
+        "Gulistan"
+      ],
+      "stopCount": 7,
+      "reportedFareBdt": 15,
+      "confidence": "medium",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-khilgaon",
+        "leguna-stop-malibagh",
+        "leguna-stop-mouchak",
+        "leguna-stop-shantinagar",
+        "leguna-stop-paltan",
+        "leguna-stop-daily-bangla",
+        "leguna-stop-gulistan"
+      ]
+    },
+    {
+      "id": "leguna-mirpur-10-to-farmgate-9",
+      "origin": "Mirpur-10",
+      "destination": "Farmgate",
+      "via": "via Kazipara, Shewrapara, Agargaon",
+      "stopLabels": [
+        "Mirpur-10",
+        "Kazipara",
+        "Shewrapara",
+        "Taltola",
+        "Agargaon",
+        "Khamarbari",
+        "Farmgate"
+      ],
+      "stopCount": 7,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mirpur-10",
+        "leguna-stop-kazipara",
+        "leguna-stop-shewrapara",
+        "leguna-stop-taltola",
+        "leguna-stop-agargaon",
+        "leguna-stop-khamarbari",
+        "leguna-stop-farmgate"
+      ]
+    },
+    {
+      "id": "leguna-mirpur-10-to-agargaon-10",
+      "origin": "Mirpur-10",
+      "destination": "Agargaon",
+      "via": "via Taltola, Shewrapara",
+      "stopLabels": [
+        "Mirpur-10",
+        "Kazipara",
+        "Shewrapara",
+        "Taltola",
+        "Agargaon"
+      ],
+      "stopCount": 5,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mirpur-10",
+        "leguna-stop-kazipara",
+        "leguna-stop-shewrapara",
+        "leguna-stop-taltola",
+        "leguna-stop-agargaon"
+      ]
+    },
+    {
+      "id": "leguna-mirpur-1-to-gabtoli-11",
+      "origin": "Mirpur-1",
+      "destination": "Gabtoli",
+      "via": "via Technical",
+      "stopLabels": [
+        "Mirpur-1",
+        "Technical",
+        "Gabtoli"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mirpur-1",
+        "leguna-stop-technical",
+        "leguna-stop-gabtoli"
+      ]
+    },
+    {
+      "id": "leguna-mirpur-1-to-shyamoli-12",
+      "origin": "Mirpur-1",
+      "destination": "Shyamoli",
+      "via": "via Technical / Kallyanpur",
+      "stopLabels": [
+        "Mirpur-1",
+        "Technical",
+        "Kallyanpur",
+        "Shyamoli"
+      ],
+      "stopCount": 4,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mirpur-1",
+        "leguna-stop-technical",
+        "leguna-stop-kallyanpur",
+        "leguna-stop-shyamoli"
+      ]
+    },
+    {
+      "id": "leguna-mirpur-1-to-mohammadpur-13",
+      "origin": "Mirpur-1",
+      "destination": "Mohammadpur",
+      "via": "via Shyamoli / Asad Gate",
+      "stopLabels": [
+        "Mirpur-1",
+        "Technical",
+        "Kallyanpur",
+        "Shyamoli",
+        "Asad Gate",
+        "Mohammadpur"
+      ],
+      "stopCount": 6,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mirpur-1",
+        "leguna-stop-technical",
+        "leguna-stop-kallyanpur",
+        "leguna-stop-shyamoli",
+        "leguna-stop-asad-gate",
+        "leguna-stop-mohammadpur"
+      ]
+    },
+    {
+      "id": "leguna-rupnagar-to-ashulia-14",
+      "origin": "Rupnagar",
+      "destination": "Ashulia",
+      "via": "via Beribadh / Birulia",
+      "stopLabels": [
+        "Rupnagar",
+        "Beribadh",
+        "Birulia",
+        "Ashulia"
+      ],
+      "stopCount": 4,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-rupnagar",
+        "leguna-stop-beribadh",
+        "leguna-stop-birulia",
+        "leguna-stop-ashulia"
+      ]
+    },
+    {
+      "id": "leguna-mirpur-14-to-kuril-kalshi-15",
+      "origin": "Mirpur-14",
+      "destination": "Kuril / Kalshi",
+      "via": "via ECB / Kalshi",
+      "stopLabels": [
+        "Mirpur-14",
+        "ECB",
+        "Kalshi",
+        "Kuril"
+      ],
+      "stopCount": 4,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mirpur-14",
+        "leguna-stop-ecb",
+        "leguna-stop-kalshi",
+        "leguna-stop-kuril"
+      ]
+    },
+    {
+      "id": "leguna-mirpur-2-to-sony-cinema-hall-16",
+      "origin": "Mirpur-2",
+      "destination": "Sony Cinema Hall",
+      "via": "via 60 Foot corridor",
+      "stopLabels": [
+        "Mirpur-2",
+        "Mirpur-10",
+        "Kazipara",
+        "Shewrapara",
+        "Agargaon",
+        "Sony Cinema Hall"
+      ],
+      "stopCount": 6,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mirpur-2",
+        "leguna-stop-mirpur-10",
+        "leguna-stop-kazipara",
+        "leguna-stop-shewrapara",
+        "leguna-stop-agargaon",
+        "leguna-stop-sony-cinema-hall"
+      ]
+    },
+    {
+      "id": "leguna-abdullahpur-to-airport-17",
+      "origin": "Abdullahpur",
+      "destination": "Airport",
+      "via": "via House Building, Azampur, Rajlakshmi, Jashimuddin",
+      "stopLabels": [
+        "Abdullahpur",
+        "House Building",
+        "Azampur",
+        "Rajlakshmi",
+        "Jashimuddin",
+        "Airport"
+      ],
+      "stopCount": 6,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-abdullahpur",
+        "leguna-stop-house-building",
+        "leguna-stop-azampur",
+        "leguna-stop-rajlakshmi",
+        "leguna-stop-jashimuddin",
+        "leguna-stop-airport"
+      ]
+    },
+    {
+      "id": "leguna-abdullahpur-to-kuril-bishwa-road-18",
+      "origin": "Abdullahpur",
+      "destination": "Kuril Bishwa Road",
+      "via": "via Airport, Khilkhet",
+      "stopLabels": [
+        "Abdullahpur",
+        "House Building",
+        "Azampur",
+        "Rajlakshmi",
+        "Jashimuddin",
+        "Airport",
+        "Khilkhet",
+        "Kuril Bishwa Road"
+      ],
+      "stopCount": 8,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-abdullahpur",
+        "leguna-stop-house-building",
+        "leguna-stop-azampur",
+        "leguna-stop-rajlakshmi",
+        "leguna-stop-jashimuddin",
+        "leguna-stop-airport",
+        "leguna-stop-khilkhet",
+        "leguna-stop-kuril-bishwa-road"
+      ]
+    },
+    {
+      "id": "leguna-abdullahpur-to-badda-notun-bazar-19",
+      "origin": "Abdullahpur",
+      "destination": "Badda / Notun Bazar",
+      "via": "via Airport, Kuril, Bashundhara, Nadda, Shahjadpur",
+      "stopLabels": [
+        "Abdullahpur",
+        "House Building",
+        "Airport",
+        "Khilkhet",
+        "Kuril",
+        "Bashundhara",
+        "Nadda",
+        "Shahjadpur",
+        "Badda / Notun Bazar"
+      ],
+      "stopCount": 9,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-abdullahpur",
+        "leguna-stop-house-building",
+        "leguna-stop-airport",
+        "leguna-stop-khilkhet",
+        "leguna-stop-kuril",
+        "leguna-stop-bashundhara",
+        "leguna-stop-nadda",
+        "leguna-stop-shahjadpur",
+        "leguna-stop-badda-notun-bazar"
+      ]
+    },
+    {
+      "id": "leguna-abdullahpur-to-tongi-20",
+      "origin": "Abdullahpur",
+      "destination": "Tongi",
+      "via": "via House Building",
+      "stopLabels": [
+        "Abdullahpur",
+        "House Building",
+        "Tongi"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-abdullahpur",
+        "leguna-stop-house-building",
+        "leguna-stop-tongi"
+      ]
+    },
+    {
+      "id": "leguna-uttara-sectors-to-house-building-21",
+      "origin": "Uttara sectors",
+      "destination": "House Building",
+      "via": "internal sector feeder",
+      "stopLabels": [
+        "Uttara sectors",
+        "Rajlakshmi",
+        "House Building"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-uttara-sectors",
+        "leguna-stop-rajlakshmi",
+        "leguna-stop-house-building"
+      ]
+    },
+    {
+      "id": "leguna-rajlakshmi-to-airport-22",
+      "origin": "Rajlakshmi",
+      "destination": "Airport",
+      "via": "via Jashimuddin, Khilkhet",
+      "stopLabels": [
+        "Rajlakshmi",
+        "Jashimuddin",
+        "Airport"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-rajlakshmi",
+        "leguna-stop-jashimuddin",
+        "leguna-stop-airport"
+      ]
+    },
+    {
+      "id": "leguna-diabari-uttara-to-ashulia-23",
+      "origin": "Diabari / Uttara",
+      "destination": "Ashulia",
+      "via": "via Birulia",
+      "stopLabels": [
+        "Diabari / Uttara",
+        "Beribadh",
+        "Birulia",
+        "Ashulia"
+      ],
+      "stopCount": 4,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-diabari-uttara",
+        "leguna-stop-beribadh",
+        "leguna-stop-birulia",
+        "leguna-stop-ashulia"
+      ]
+    },
+    {
+      "id": "leguna-uttara-to-mirpur-24",
+      "origin": "Uttara",
+      "destination": "Mirpur",
+      "via": "via Beribadh / Birulia",
+      "stopLabels": [
+        "Uttara",
+        "Diabari",
+        "Beribadh",
+        "Birulia",
+        "Rupnagar",
+        "Mirpur"
+      ],
+      "stopCount": 6,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-uttara",
+        "leguna-stop-diabari",
+        "leguna-stop-beribadh",
+        "leguna-stop-birulia",
+        "leguna-stop-rupnagar",
+        "leguna-stop-mirpur"
+      ]
+    },
+    {
+      "id": "leguna-mohammadpur-to-farmgate-25",
+      "origin": "Mohammadpur",
+      "destination": "Farmgate",
+      "via": "via Asad Gate",
+      "stopLabels": [
+        "Mohammadpur",
+        "Asad Gate",
+        "Khamarbari",
+        "Farmgate"
+      ],
+      "stopCount": 4,
+      "reportedFareBdt": null,
+      "confidence": "high",
+      "evidenceType": "direct_leguna",
+      "stopIds": [
+        "leguna-stop-mohammadpur",
+        "leguna-stop-asad-gate",
+        "leguna-stop-khamarbari",
+        "leguna-stop-farmgate"
+      ]
+    },
+    {
+      "id": "leguna-mohammadpur-to-shyamoli-26",
+      "origin": "Mohammadpur",
+      "destination": "Shyamoli",
+      "via": "local feeder corridor",
+      "stopLabels": [
+        "Mohammadpur",
+        "Shia Masjid",
+        "Shyamoli"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mohammadpur",
+        "leguna-stop-shia-masjid",
+        "leguna-stop-shyamoli"
+      ]
+    },
+    {
+      "id": "leguna-town-hall-to-asad-gate-27",
+      "origin": "Town Hall",
+      "destination": "Asad Gate",
+      "via": "short local feeder",
+      "stopLabels": [
+        "Town Hall",
+        "Mohammadpur Bus Stand",
+        "Asad Gate"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-town-hall",
+        "leguna-stop-mohammadpur-bus-stand",
+        "leguna-stop-asad-gate"
+      ]
+    },
+    {
+      "id": "leguna-shia-masjid-to-asad-gate-dhanmondi-27-28",
+      "origin": "Shia Masjid",
+      "destination": "Asad Gate / Dhanmondi 27",
+      "via": "short local feeder",
+      "stopLabels": [
+        "Shia Masjid",
+        "Mohammadpur",
+        "Asad Gate",
+        "Dhanmondi 27"
+      ],
+      "stopCount": 4,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-shia-masjid",
+        "leguna-stop-mohammadpur",
+        "leguna-stop-asad-gate",
+        "leguna-stop-dhanmondi-27"
+      ]
+    },
+    {
+      "id": "leguna-mohammadpur-to-gulistan-29",
+      "origin": "Mohammadpur",
+      "destination": "Gulistan",
+      "via": "via Farmgate/Shahbag or New Market axis",
+      "stopLabels": [
+        "Mohammadpur",
+        "Asad Gate",
+        "Farmgate",
+        "Shahbag",
+        "Paltan",
+        "Gulistan"
+      ],
+      "stopCount": 6,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mohammadpur",
+        "leguna-stop-asad-gate",
+        "leguna-stop-farmgate",
+        "leguna-stop-shahbag",
+        "leguna-stop-paltan",
+        "leguna-stop-gulistan"
+      ]
+    },
+    {
+      "id": "leguna-mohammadpur-to-mirpur-30",
+      "origin": "Mohammadpur",
+      "destination": "Mirpur",
+      "via": "via Shyamoli / Technical",
+      "stopLabels": [
+        "Mohammadpur",
+        "Shyamoli",
+        "Kallyanpur",
+        "Technical",
+        "Mirpur"
+      ],
+      "stopCount": 5,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-mohammadpur",
+        "leguna-stop-shyamoli",
+        "leguna-stop-kallyanpur",
+        "leguna-stop-technical",
+        "leguna-stop-mirpur"
+      ]
+    },
+    {
+      "id": "leguna-gabtoli-to-savar-31",
+      "origin": "Gabtoli",
+      "destination": "Savar",
+      "via": "via Aminbazar",
+      "stopLabels": [
+        "Gabtoli",
+        "Aminbazar",
+        "Hemayetpur",
+        "Savar"
+      ],
+      "stopCount": 4,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-gabtoli",
+        "leguna-stop-aminbazar",
+        "leguna-stop-hemayetpur",
+        "leguna-stop-savar"
+      ]
+    },
+    {
+      "id": "leguna-savar-to-hemayetpur-32",
+      "origin": "Savar",
+      "destination": "Hemayetpur",
+      "via": "short peri-urban feeder",
+      "stopLabels": [
+        "Savar",
+        "Hemayetpur"
+      ],
+      "stopCount": 2,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-savar",
+        "leguna-stop-hemayetpur"
+      ]
+    },
+    {
+      "id": "leguna-savar-to-nabinagar-33",
+      "origin": "Savar",
+      "destination": "Nabinagar",
+      "via": "local trunk corridor",
+      "stopLabels": [
+        "Savar",
+        "Nabinagar"
+      ],
+      "stopCount": 2,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-savar",
+        "leguna-stop-nabinagar"
+      ]
+    },
+    {
+      "id": "leguna-nabinagar-to-baipayl-34",
+      "origin": "Nabinagar",
+      "destination": "Baipayl",
+      "via": "industrial belt corridor",
+      "stopLabels": [
+        "Nabinagar",
+        "DEPZ",
+        "Baipayl"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-nabinagar",
+        "leguna-stop-depz",
+        "leguna-stop-baipayl"
+      ]
+    },
+    {
+      "id": "leguna-baipayl-to-ashulia-35",
+      "origin": "Baipayl",
+      "destination": "Ashulia",
+      "via": "industrial/peri-urban feeder",
+      "stopLabels": [
+        "Baipayl",
+        "Jamgora",
+        "Ashulia"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-baipayl",
+        "leguna-stop-jamgora",
+        "leguna-stop-ashulia"
+      ]
+    },
+    {
+      "id": "leguna-savar-to-mirpur-36",
+      "origin": "Savar",
+      "destination": "Mirpur",
+      "via": "via Beribadh",
+      "stopLabels": [
+        "Savar",
+        "Hemayetpur",
+        "Aminbazar",
+        "Beribadh",
+        "Rupnagar",
+        "Mirpur"
+      ],
+      "stopCount": 6,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-savar",
+        "leguna-stop-hemayetpur",
+        "leguna-stop-aminbazar",
+        "leguna-stop-beribadh",
+        "leguna-stop-rupnagar",
+        "leguna-stop-mirpur"
+      ]
+    },
+    {
+      "id": "leguna-savar-to-uttara-37",
+      "origin": "Savar",
+      "destination": "Uttara",
+      "via": "via Ashulia / Birulia / Abdullahpur edge",
+      "stopLabels": [
+        "Savar",
+        "Baipayl",
+        "Ashulia",
+        "Birulia",
+        "Diabari",
+        "Abdullahpur",
+        "Uttara"
+      ],
+      "stopCount": 7,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-savar",
+        "leguna-stop-baipayl",
+        "leguna-stop-ashulia",
+        "leguna-stop-birulia",
+        "leguna-stop-diabari",
+        "leguna-stop-abdullahpur",
+        "leguna-stop-uttara"
+      ]
+    },
+    {
+      "id": "leguna-savar-to-depz-epz-38",
+      "origin": "Savar",
+      "destination": "DEPZ / EPZ",
+      "via": "industrial worker feeder",
+      "stopLabels": [
+        "Savar",
+        "Nabinagar",
+        "DEPZ / EPZ"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-savar",
+        "leguna-stop-nabinagar",
+        "leguna-stop-depz-epz"
+      ]
+    },
+    {
+      "id": "leguna-ashulia-to-jamgora-39",
+      "origin": "Ashulia",
+      "destination": "Jamgora",
+      "via": "local corridor",
+      "stopLabels": [
+        "Ashulia",
+        "Jamgora"
+      ],
+      "stopCount": 2,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-ashulia",
+        "leguna-stop-jamgora"
+      ]
+    },
+    {
+      "id": "leguna-jamgora-to-zirabo-40",
+      "origin": "Jamgora",
+      "destination": "Zirabo",
+      "via": "local corridor",
+      "stopLabels": [
+        "Jamgora",
+        "Zirabo"
+      ],
+      "stopCount": 2,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-jamgora",
+        "leguna-stop-zirabo"
+      ]
+    },
+    {
+      "id": "leguna-zirabo-to-baipayl-41",
+      "origin": "Zirabo",
+      "destination": "Baipayl",
+      "via": "local corridor",
+      "stopLabels": [
+        "Zirabo",
+        "Baipayl"
+      ],
+      "stopCount": 2,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-zirabo",
+        "leguna-stop-baipayl"
+      ]
+    },
+    {
+      "id": "leguna-ashulia-to-savar-42",
+      "origin": "Ashulia",
+      "destination": "Savar",
+      "via": "via Baipayl",
+      "stopLabels": [
+        "Ashulia",
+        "Baipayl",
+        "Nabinagar",
+        "Savar"
+      ],
+      "stopCount": 4,
+      "reportedFareBdt": null,
+      "confidence": "medium",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-ashulia",
+        "leguna-stop-baipayl",
+        "leguna-stop-nabinagar",
+        "leguna-stop-savar"
+      ]
+    },
+    {
+      "id": "leguna-ashulia-to-mirpur-43",
+      "origin": "Ashulia",
+      "destination": "Mirpur",
+      "via": "via Beribadh / Rupnagar",
+      "stopLabels": [
+        "Ashulia",
+        "Birulia",
+        "Beribadh",
+        "Rupnagar",
+        "Mirpur"
+      ],
+      "stopCount": 5,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-ashulia",
+        "leguna-stop-birulia",
+        "leguna-stop-beribadh",
+        "leguna-stop-rupnagar",
+        "leguna-stop-mirpur"
+      ]
+    },
+    {
+      "id": "leguna-ashulia-to-uttara-abdullahpur-44",
+      "origin": "Ashulia",
+      "destination": "Uttara / Abdullahpur",
+      "via": "via Birulia / Diabari",
+      "stopLabels": [
+        "Ashulia",
+        "Birulia",
+        "Diabari",
+        "Abdullahpur"
+      ],
+      "stopCount": 4,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-ashulia",
+        "leguna-stop-birulia",
+        "leguna-stop-diabari",
+        "leguna-stop-abdullahpur"
+      ]
+    },
+    {
+      "id": "leguna-ashulia-to-fantasy-kingdom-area-45",
+      "origin": "Ashulia",
+      "destination": "Fantasy Kingdom area",
+      "via": "tourism/leisure edge corridor",
+      "stopLabels": [
+        "Ashulia",
+        "Jamgora",
+        "Fantasy Kingdom area"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-ashulia",
+        "leguna-stop-jamgora",
+        "leguna-stop-fantasy-kingdom-area"
+      ]
+    },
+    {
+      "id": "leguna-ashulia-to-depz-46",
+      "origin": "Ashulia",
+      "destination": "DEPZ",
+      "via": "industrial feeder",
+      "stopLabels": [
+        "Ashulia",
+        "Jamgora",
+        "DEPZ"
+      ],
+      "stopCount": 3,
+      "reportedFareBdt": null,
+      "confidence": "low",
+      "evidenceType": "corridor_inference",
+      "stopIds": [
+        "leguna-stop-ashulia",
+        "leguna-stop-jamgora",
+        "leguna-stop-depz"
+      ]
+    }
+  ]
+}

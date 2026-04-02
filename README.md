@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Easy2Go Next.js
 
-## Getting Started
+Easy2Go is a mobile-first Dhaka route planner rebuilt as a production-ready Next.js App Router app with a serverless backend, shared Zod validation, Google Maps rendering, AI-assisted route generation, and fallback mock logic when providers are unavailable.
 
-First, run the development server:
+## Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- Next.js App Router with TypeScript
+- Tailwind CSS v4
+- shadcn-style reusable UI primitives
+- Framer Motion for bottom-sheet and transition polish
+- React Query for client data fetching
+- Google Maps JavaScript API on the client
+- Next.js Route Handlers for serverless APIs
+- Zod for request and response validation
+- OpenAI Responses API for structured Dhaka route planning
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## API routes
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- `POST /api/routes/calculate`
+- `GET /api/locations/search?query=...`
+- `GET /api/searches`
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment variables
 
-## Learn More
+Copy `.env.example` to `.env.local` and configure:
 
-To learn more about Next.js, take a look at the following resources:
+- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
+  Use a referrer-restricted browser key for the client map. This is intentionally public but should be locked down to your domain.
+- `GOOGLE_MAPS_SERVER_API_KEY`
+  Server-only key for geocoding, autocomplete, and directions.
+- `OPENAI_API_KEY`
+  Preferred server-side credential for local and deployed AI requests.
+- `OPENAI_ACCESS_TOKEN`
+  Optional bearer token support. The app also attempts to read the local Codex auth token from `~/.codex/auth.json` during local development if no env credential is set.
+- `OPENAI_ROUTE_MODEL`
+  Optional override. Defaults to `gpt-5-mini`.
+- `OPENAI_LOCATION_MODEL`
+  Optional override for location fallback suggestions. Defaults to `gpt-5-mini`.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Local development
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Install dependencies:
 
-## Deploy on Vercel
+   ```bash
+   npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+2. Configure `.env.local`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Run the dev server:
+
+   ```bash
+   npm run dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000).
+
+## Deployment on Vercel
+
+1. Import the project into Vercel.
+2. Add the same environment variables from `.env.example`.
+3. Restrict the browser Google Maps key to your Vercel domain.
+4. Deploy normally. The route handlers are compatible with Vercel serverless functions.
+
+## Notes
+
+- When Google or OpenAI calls fail, the app falls back to curated Dhaka suggestions and mock route logic so the UX remains usable.
+- Search history is stored in memory per server runtime. For fully durable shared history, swap the `src/db/search-store.ts` module with Vercel KV, Postgres, or another persistent store.
