@@ -660,6 +660,56 @@ function groupRoutesByPath(routes: RouteOption[]) {
   return [...grouped.values()];
 }
 
+function createPresentationSignature(route: RouteOption) {
+  return [
+    route.kind,
+    normalizeTransitText(route.summary),
+    normalizeTransitText(route.boarding.label),
+    normalizeTransitText(route.alighting.label),
+    route.transferStops.map((stop) => normalizeTransitText(stop.label)).join(">"),
+    [...route.serviceLabels]
+      .map((label) => normalizeTransitText(label))
+      .sort()
+      .join("|"),
+  ].join("::");
+}
+
+function groupRoutesByPresentation(routes: RouteOption[]) {
+  const grouped = new Map<string, RouteOption>();
+
+  for (const route of routes) {
+    const presentationSignature = createPresentationSignature(route);
+    const existing = grouped.get(presentationSignature);
+
+    if (!existing) {
+      grouped.set(presentationSignature, route);
+      continue;
+    }
+
+    const base = pickBestRouteCandidate(existing, route);
+    const serviceLabels = dedupeStrings([...existing.serviceLabels, ...route.serviceLabels]);
+    const advisories = dedupeStrings([...existing.advisories, ...route.advisories]);
+    const serviceWindowText = dedupeStrings(
+      [existing.serviceWindowText, route.serviceWindowText].filter(Boolean) as string[],
+    ).join(" | ");
+
+    grouped.set(
+      presentationSignature,
+      finalizeRoute({
+        ...base,
+        id: base.id,
+        serviceLabels,
+        primaryServiceLabel: serviceLabels[0],
+        advisories,
+        serviceWindowText: serviceWindowText || undefined,
+        transferCount: base.transferStops.length,
+      }),
+    );
+  }
+
+  return [...grouped.values()];
+}
+
 function routeScore(route: RouteOption, optimization: RouteOptimization) {
   const duration = route.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
   const cost = route.totalCost ?? FALLBACK_SORT_VALUE;
@@ -681,6 +731,10 @@ function routeScore(route: RouteOption, optimization: RouteOptimization) {
     cost / 5 -
     distance / 3
   );
+}
+
+function routeUsesMetro(route: RouteOption) {
+  return route.segments.some((segment) => segment.mode === "metro");
 }
 
 function pickAlternativeReason(route: RouteOption, fastest: RouteOption) {
@@ -712,7 +766,7 @@ export function surfaceRoutes(routes: RouteOption[], optimization: RouteOptimiza
     return [];
   }
 
-  const grouped = groupRoutesByPath(routes);
+  const grouped = groupRoutesByPresentation(groupRoutesByPath(routes));
   const fastest = [...grouped].sort((a, b) => {
     const aDuration = a.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
     const bDuration = b.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
@@ -735,9 +789,13 @@ export function surfaceRoutes(routes: RouteOption[], optimization: RouteOptimiza
     return confidencePriority[b.confidence] - confidencePriority[a.confidence];
   })[0];
 
-  const alternativeCandidates = grouped.filter(
+  let alternativeCandidates = grouped.filter(
     (route) => route.pathSignature !== fastest.pathSignature,
   );
+
+  if (routeUsesMetro(fastest)) {
+    alternativeCandidates = alternativeCandidates.filter((route) => !routeUsesMetro(route));
+  }
 
   const alternative = alternativeCandidates
     .sort((a, b) => {

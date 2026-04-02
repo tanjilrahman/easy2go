@@ -222,6 +222,197 @@ describe("surfaceRoutes", () => {
     expect(surfaced[0]?.primaryReason).toBe("Fastest total travel time");
     expect(surfaced[1]?.id).toBe("metro-alt");
   });
+
+  it("skips a visually duplicate route when picking the alternative", () => {
+    const fastest = makeRoute({
+      id: "fastest",
+      summary: "Direct bus corridor",
+      estimatedDurationMinutes: 32,
+      totalCost: 45,
+      fareText: "Approx. BDT 45",
+      serviceLabels: ["Anabil"],
+      primaryServiceLabel: "Anabil",
+    });
+    const duplicatePresentation = makeRoute({
+      id: "duplicate-presentation",
+      summary: "Direct bus corridor",
+      estimatedDurationMinutes: 34,
+      totalCost: 45,
+      fareText: "Approx. BDT 45",
+      serviceLabels: ["Anabil"],
+      primaryServiceLabel: "Anabil",
+      segments: [
+        {
+          mode: "walk",
+          instruction: "Walk connector",
+          startLocation: "Farmgate Overbridge",
+          endLocation: "Farmgate",
+          estimatedDurationMinutes: 4,
+          connectorType: "walk",
+        },
+        {
+          mode: "bus",
+          instruction: "Board Anabil",
+          startLocation: "Farmgate",
+          endLocation: "Motijheel",
+          fareText: "Approx. BDT 45",
+          estimatedDistanceKm: 6.2,
+          estimatedDurationMinutes: 30,
+          stopCount: 7,
+        },
+      ],
+      mapPreview: {
+        originLabel: "Farmgate Overbridge",
+        destinationLabel: "Motijheel",
+        originQuery: "Farmgate Overbridge, Dhaka, Bangladesh",
+        destinationQuery: "Motijheel, Dhaka, Bangladesh",
+      },
+    });
+    const metroAlternative = makeRoute({
+      id: "metro-alt",
+      kind: "metro_direct",
+      confidence: "exact",
+      summary: "Metro direct",
+      fareType: "exact",
+      fareText: "BDT 40",
+      totalCost: 40,
+      estimatedDurationMinutes: 37,
+      stationCount: 5,
+      stopCount: undefined,
+      serviceLabels: ["MRT Line 6"],
+      primaryServiceLabel: "MRT Line 6",
+      boarding: { label: "Farmgate Metro", type: "metro_station", id: "farmgate-metro" },
+      alighting: { label: "Motijheel Metro", type: "metro_station", id: "motijheel-metro" },
+      segments: [
+        {
+          mode: "metro",
+          instruction: "Ride Metro Rail Line 6",
+          startLocation: "Farmgate Metro",
+          endLocation: "Motijheel Metro",
+          fareText: "BDT 40",
+          estimatedDistanceKm: 5.4,
+          estimatedDurationMinutes: 37,
+          stationCount: 5,
+        },
+      ],
+      mapPreview: {
+        originLabel: "Farmgate Metro",
+        destinationLabel: "Motijheel Metro",
+        originQuery: "Farmgate Metro, Dhaka, Bangladesh",
+        destinationQuery: "Motijheel Metro, Dhaka, Bangladesh",
+      },
+      transferStops: [],
+    });
+
+    const surfaced = surfaceRoutes(
+      [fastest, duplicatePresentation, metroAlternative],
+      "recommended",
+    );
+
+    expect(surfaced).toHaveLength(2);
+    expect(surfaced[0]?.id).toBe("fastest");
+    expect(surfaced[1]?.id).toBe("metro-alt");
+  });
+
+  it("does not surface another metro-based route when the fastest route already uses metro", () => {
+    const fastestMetro = makeRoute({
+      id: "fastest-metro",
+      kind: "metro_direct",
+      confidence: "exact",
+      summary: "Metro direct",
+      fareType: "exact",
+      fareText: "BDT 40",
+      totalCost: 40,
+      estimatedDurationMinutes: 28,
+      stationCount: 5,
+      stopCount: undefined,
+      serviceLabels: ["MRT Line 6"],
+      primaryServiceLabel: "MRT Line 6",
+      boarding: { label: "Farmgate Metro", type: "metro_station", id: "farmgate-metro" },
+      alighting: { label: "Motijheel Metro", type: "metro_station", id: "motijheel-metro" },
+      segments: [
+        {
+          mode: "metro",
+          instruction: "Ride Metro Rail Line 6",
+          startLocation: "Farmgate Metro",
+          endLocation: "Motijheel Metro",
+          fareText: "BDT 40",
+          estimatedDistanceKm: 5.4,
+          estimatedDurationMinutes: 28,
+          stationCount: 5,
+        },
+      ],
+      mapPreview: {
+        originLabel: "Farmgate Metro",
+        destinationLabel: "Motijheel Metro",
+        originQuery: "Farmgate Metro, Dhaka, Bangladesh",
+        destinationQuery: "Motijheel Metro, Dhaka, Bangladesh",
+      },
+      transferStops: [],
+    });
+    const secondMetro = makeRoute({
+      id: "second-metro",
+      kind: "bus_metro_hybrid",
+      summary: "Bus + Metro link",
+      totalCost: 45,
+      fareText: "Approx. BDT 45",
+      estimatedDurationMinutes: 31,
+      transferCount: 1,
+      stationCount: 3,
+      stopCount: 4,
+      serviceLabels: ["Anabil", "MRT Line 6"],
+      primaryServiceLabel: "Anabil",
+      boarding: { label: "Farmgate", type: "bus_stop", id: "farmgate" },
+      alighting: { label: "Motijheel Metro", type: "metro_station", id: "motijheel-metro" },
+      transferStops: [{ label: "Karwan Bazar Metro", type: "metro_station", id: "karwan-bazar-metro" }],
+      segments: [
+        {
+          mode: "bus",
+          instruction: "Board Anabil",
+          startLocation: "Farmgate",
+          endLocation: "Karwan Bazar",
+          fareText: "Approx. BDT 15",
+          estimatedDistanceKm: 2,
+          estimatedDurationMinutes: 10,
+          stopCount: 4,
+        },
+        {
+          mode: "metro",
+          instruction: "Continue by Metro Rail Line 6",
+          startLocation: "Karwan Bazar Metro",
+          endLocation: "Motijheel Metro",
+          fareText: "BDT 30",
+          estimatedDistanceKm: 3.4,
+          estimatedDurationMinutes: 15,
+          stationCount: 3,
+        },
+      ],
+      mapPreview: {
+        originLabel: "Farmgate",
+        destinationLabel: "Motijheel Metro",
+        originQuery: "Farmgate, Dhaka, Bangladesh",
+        destinationQuery: "Motijheel Metro, Dhaka, Bangladesh",
+      },
+    });
+    const busAlternative = makeRoute({
+      id: "bus-alt",
+      summary: "Direct bus corridor",
+      totalCost: 50,
+      fareText: "Approx. BDT 50",
+      estimatedDurationMinutes: 36,
+      serviceLabels: ["Anabil"],
+      primaryServiceLabel: "Anabil",
+    });
+
+    const surfaced = surfaceRoutes(
+      [fastestMetro, secondMetro, busAlternative],
+      "recommended",
+    );
+
+    expect(surfaced).toHaveLength(2);
+    expect(surfaced[0]?.id).toBe("fastest-metro");
+    expect(surfaced[1]?.id).toBe("bus-alt");
+  });
 });
 
 describe("calculateRoutes", () => {
