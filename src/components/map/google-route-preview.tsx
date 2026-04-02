@@ -1,12 +1,44 @@
 "use client";
 
 import { startTransition, useEffect, useMemo, useState } from "react";
-import { CircleF, DirectionsRenderer, GoogleMap, MarkerF, useJsApiLoader } from "@react-google-maps/api";
+import { CircleF, GoogleMap, PolylineF, useJsApiLoader } from "@react-google-maps/api";
 
 import { DHAKA_CENTER } from "@/lib/maps";
 import { cn } from "@/lib/utils";
 
 const libraries: ("places")[] = ["places"];
+
+type RouteTravelMode = string;
+
+interface RoutePathPoint {
+  lat: number | (() => number);
+  lng: number | (() => number);
+}
+
+interface RouteResult {
+  path?: RoutePathPoint[];
+  viewport?: google.maps.LatLngBounds | null;
+}
+
+interface ComputeRoutesResponse {
+  routes?: RouteResult[];
+}
+
+interface RouteClassLibrary {
+  Route: {
+    computeRoutes(request: {
+      origin: string;
+      destination: string;
+      travelMode: RouteTravelMode;
+      fields: string[];
+      departureTime?: Date;
+    }): Promise<ComputeRoutesResponse>;
+  };
+  TravelMode: {
+    TRANSIT: RouteTravelMode;
+    DRIVING: RouteTravelMode;
+  };
+}
 
 const lightMapStyles: google.maps.MapTypeStyle[] = [
   {
@@ -47,7 +79,8 @@ export function GoogleRoutePreview({
     libraries,
   });
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const [routePath, setRoutePath] = useState<google.maps.LatLngLiteral[]>([]);
+  const [routeViewport, setRouteViewport] = useState<google.maps.LatLngBounds | null>(null);
   const hasRoute = Boolean(originQuery && destinationQuery);
 
   const center = useMemo(
@@ -70,55 +103,88 @@ export function GoogleRoutePreview({
     return Math.round(window.innerHeight * viewportPaddingRatio);
   }, [viewportBottomInsetPx, viewportPaddingRatio]);
 
+  function clearRoutePreview() {
+    startTransition(() => {
+      setRoutePath([]);
+      setRouteViewport(null);
+    });
+  }
+
+  function toLatLngLiteral(point: RoutePathPoint): google.maps.LatLngLiteral {
+    return {
+      lat: typeof point.lat === "function" ? point.lat() : point.lat,
+      lng: typeof point.lng === "function" ? point.lng() : point.lng,
+    };
+  }
+
   useEffect(() => {
     if (!isLoaded || !hasRoute || !originQuery || !destinationQuery || typeof window === "undefined") {
-      startTransition(() => {
-        setDirections(null);
-      });
+      clearRoutePreview();
       return;
     }
 
     let cancelled = false;
 
-    const service = new window.google.maps.DirectionsService();
+    const loadRoute = async () => {
+      const { Route, TravelMode } =
+        (await window.google.maps.importLibrary("routes")) as unknown as RouteClassLibrary;
 
-    service.route(
-      {
-        origin: originQuery,
-        destination: destinationQuery,
-        travelMode: window.google.maps.TravelMode.TRANSIT,
-        provideRouteAlternatives: false,
-      },
-      (result: google.maps.DirectionsResult | null, status: google.maps.DirectionsStatus) => {
+      const computePath = async (travelMode: RouteTravelMode) => {
+        const response = await Route.computeRoutes({
+          origin: originQuery,
+          destination: destinationQuery,
+          travelMode,
+          departureTime: travelMode === TravelMode.TRANSIT ? new Date() : undefined,
+          fields: ["path", "viewport"],
+        });
+
+        const route = response.routes?.[0];
+        const path = route?.path?.map(toLatLngLiteral) ?? [];
+
+        if (!path.length) {
+          return false;
+        }
+
+        if (!cancelled) {
+          startTransition(() => {
+            setRoutePath(path);
+            setRouteViewport(route?.viewport ?? null);
+          });
+        }
+
+        return true;
+      };
+
+      try {
+        const hasTransitPath = await computePath(TravelMode.TRANSIT);
+
+        if (!hasTransitPath && !cancelled) {
+          const hasDrivingPath = await computePath(TravelMode.DRIVING);
+
+          if (!hasDrivingPath && !cancelled) {
+            clearRoutePreview();
+          }
+        }
+      } catch {
         if (cancelled) {
           return;
         }
 
-        if (status === "OK" && result) {
-          setDirections(result);
-          return;
-        }
+        try {
+          const hasDrivingPath = await computePath(TravelMode.DRIVING);
 
-        service.route(
-          {
-            origin: originQuery,
-            destination: destinationQuery,
-            travelMode: window.google.maps.TravelMode.DRIVING,
-            provideRouteAlternatives: false,
-          },
-          (
-            fallbackResult: google.maps.DirectionsResult | null,
-            fallbackStatus: google.maps.DirectionsStatus,
-          ) => {
-            if (!cancelled && fallbackStatus === "OK" && fallbackResult) {
-              setDirections(fallbackResult);
-            } else if (!cancelled) {
-              setDirections(null);
-            }
-          },
-        );
-      },
-    );
+          if (!hasDrivingPath && !cancelled) {
+            clearRoutePreview();
+          }
+        } catch {
+          if (!cancelled) {
+            clearRoutePreview();
+          }
+        }
+      }
+    };
+
+    void loadRoute();
 
     return () => {
       cancelled = true;
@@ -130,8 +196,8 @@ export function GoogleRoutePreview({
       return;
     }
 
-    if (directions?.routes?.[0]?.bounds) {
-      map.fitBounds(directions.routes[0].bounds, {
+    if (routeViewport) {
+      map.fitBounds(routeViewport, {
         top: 24,
         right: 24,
         left: 24,
@@ -148,7 +214,7 @@ export function GoogleRoutePreview({
         map.panBy(0, Math.round(resolvedBottomInsetPx / 2));
       });
     }
-  }, [center, directions, isLoaded, map, resolvedBottomInsetPx, userCoordinates]);
+  }, [center, isLoaded, map, resolvedBottomInsetPx, routeViewport, userCoordinates]);
 
   if (!apiKey) {
     return (
@@ -183,22 +249,18 @@ export function GoogleRoutePreview({
           styles: lightMapStyles,
         }}
       >
-        {directions ? (
-          <DirectionsRenderer
-            directions={directions}
+        {routePath.length ? (
+          <PolylineF
+            path={routePath}
             options={{
-              suppressMarkers: true,
-              preserveViewport: true,
-              polylineOptions: {
-                strokeColor: "#2563eb",
-                strokeOpacity: 0.9,
-                strokeWeight: 5,
-              },
+              strokeColor: "#2563eb",
+              strokeOpacity: 0.9,
+              strokeWeight: 5,
             }}
           />
         ) : null}
 
-        {userCoordinates && !directions ? (
+        {userCoordinates && !routePath.length ? (
           <>
             <CircleF
               center={{ lat: userCoordinates[0], lng: userCoordinates[1] }}
@@ -209,11 +271,10 @@ export function GoogleRoutePreview({
                 fillOpacity: 0.14,
               }}
             />
-            <MarkerF
-              position={{ lat: userCoordinates[0], lng: userCoordinates[1] }}
-              icon={{
-                path: window.google.maps.SymbolPath.CIRCLE,
-                scale: 7,
+            <CircleF
+              center={{ lat: userCoordinates[0], lng: userCoordinates[1] }}
+              radius={12}
+              options={{
                 fillColor: "#2563eb",
                 fillOpacity: 1,
                 strokeColor: "#ffffff",

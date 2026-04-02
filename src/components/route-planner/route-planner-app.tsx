@@ -137,19 +137,25 @@ export function RoutePlannerApp() {
       return;
     }
 
-    startTransition(() => {
-      if (draftOrigin) {
-        setOriginText(draftOrigin.name);
-        setOriginSelection(draftOrigin);
-      }
+    const frameId = window.requestAnimationFrame(() => {
+      startTransition(() => {
+        if (draftOrigin) {
+          setOriginText(draftOrigin.name);
+          setOriginSelection(draftOrigin);
+        }
 
-      if (draftDestination) {
-        setDestinationText(draftDestination.name);
-        setDestinationSelection(draftDestination);
-      }
+        if (draftDestination) {
+          setDestinationText(draftDestination.name);
+          setDestinationSelection(draftDestination);
+        }
 
-      setDraftsHydrated(true);
+        setDraftsHydrated(true);
+      });
     });
+
+    return () => {
+      window.cancelAnimationFrame(frameId);
+    };
   }, [draftDestination, draftOrigin, draftsHydrated, memoryReady]);
 
   const originValue = useMemo(
@@ -176,6 +182,7 @@ export function RoutePlannerApp() {
       null,
     [results, selectedRouteId],
   );
+  const memoryUiReady = draftsHydrated;
 
   const paneCopy = paneMeta(pane, isComposeExpanded);
 
@@ -330,8 +337,8 @@ export function RoutePlannerApp() {
             isLoading={calculateRoutes.isPending}
             isLocating={isLocatingOrigin}
             locationError={locationError}
-            savedPlaces={savedPlaceMap}
-            recentTrips={recentTrips}
+            savedPlaces={memoryUiReady ? savedPlaceMap : {}}
+            recentTrips={memoryUiReady ? recentTrips : []}
           />
         ) : null}
 
@@ -372,8 +379,8 @@ export function RoutePlannerApp() {
 
         {pane === "saved" ? (
           <PlannerSavedPane
-            savedPlaces={savedPlaces}
-            recentTrips={recentTrips}
+            savedPlaces={memoryUiReady ? savedPlaces : []}
+            recentTrips={memoryUiReady ? recentTrips : []}
             currentOrigin={originValue}
             currentDestination={destinationValue}
             onBack={resetToCompose}

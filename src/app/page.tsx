@@ -1,5 +1,5 @@
-import { RoutePlannerApp } from "@/components/route-planner/route-planner-app";
+import { RoutePlannerAppShell } from "@/components/route-planner/route-planner-app-shell";
 
 export default function HomePage() {
-  return <RoutePlannerApp />;
+  return <RoutePlannerAppShell />;
 }
