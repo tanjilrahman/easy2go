@@ -416,6 +416,54 @@ describe("surfaceRoutes", () => {
 });
 
 describe("calculateRoutes", () => {
+  it("uses the official metro fare chart and service window for direct metro trips", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Farmgate Metro Station",
+        canonicalId: "metro-farmgate",
+        type: "metro_station",
+      },
+      destination: {
+        name: "Motijheel Metro Station",
+        canonicalId: "metro-motijheel",
+        type: "metro_station",
+      },
+      optimization: "recommended",
+    });
+
+    expect(response.routes).toHaveLength(1);
+    expect(response.routes[0]?.kind).toBe("metro_direct");
+    expect(response.routes[0]?.fareText).toBe("BDT 30");
+    expect(response.routes[0]?.totalCost).toBe(30);
+    expect(response.routes[0]?.estimatedDurationMinutes).toBe(14);
+    expect(response.routes[0]?.serviceWindowText).toContain("Uttara North 06:30-21:30");
+    expect(response.routes[0]?.serviceWindowText).toContain("Friday: Uttara North 15:00-21:00");
+    expect(response.routes[0]?.segments[0]?.serviceWindowText).toBe(
+      response.routes[0]?.serviceWindowText,
+    );
+  });
+
+  it("uses the exact fare matrix for non-terminal metro station pairs", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Mirpur 11 Metro Station",
+        canonicalId: "metro-mirpur-11",
+        type: "metro_station",
+      },
+      destination: {
+        name: "Agargaon Metro Station",
+        canonicalId: "metro-agargaon",
+        type: "metro_station",
+      },
+      optimization: "recommended",
+    });
+
+    expect(response.routes).toHaveLength(1);
+    expect(response.routes[0]?.kind).toBe("metro_direct");
+    expect(response.routes[0]?.fareText).toBe("BDT 30");
+    expect(response.routes[0]?.totalCost).toBe(30);
+  });
+
   it("falls back to the closest bus corridor plus rickshaw instead of returning no route", async () => {
     const response = await calculateRoutes({
       origin: {

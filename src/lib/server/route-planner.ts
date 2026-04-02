@@ -2,6 +2,7 @@ import { randomUUID } from "crypto";
 
 import { dhakaBusSeedRoutes, dhakaBusSeedStops, type DhakaBusSeedRoute } from "@/lib/data/dhaka-bus-seed";
 import { DHAKA_ACCESS_POINTS } from "@/lib/data/dhaka-access-points";
+import { getDhakaMetroFareBdtBySequence } from "@/lib/data/dhaka-metro";
 import {
   getBusStopPointByLabel,
   getMetroStationById,
@@ -75,12 +76,16 @@ const ACCESS_RICKSHAW_MAX_KM = 2.5;
 const BUS_STOP_SPACING_KM = 0.9;
 const METRO_STATION_SPACING_KM = 1.35;
 const BUS_SPEED_KMPH = 13;
-const METRO_SPEED_KMPH = 30;
+// Calibrated against the published Uttara North <-> Motijheel end-to-end timetable.
+const METRO_SPEED_KMPH = 32;
 const WALK_SPEED_KMPH = 4.6;
 const RICKSHAW_SPEED_KMPH = 10;
 const ADVISORY_CONNECTOR_SPEED_KMPH = 12;
 const BUS_STOP_DELAY_MINUTES = 0.7;
-const METRO_STATION_DELAY_MINUTES = 1.1;
+const METRO_STATION_DELAY_MINUTES = 0.7;
+const METRO_TERMINAL_BUFFER_MINUTES = 2;
+const METRO_SERVICE_WINDOW_TEXT =
+  "Weekdays & Sat/holidays: Uttara North 06:30-21:30, Motijheel 07:15-22:10 | Friday: Uttara North 15:00-21:00, Motijheel 15:20-21:40";
 const TRANSFER_BUFFER_MINUTES = 6;
 const FALLBACK_SORT_VALUE = 99_999;
 
@@ -391,7 +396,10 @@ function estimateMetroDurationMinutes(distanceKm: number, stationCount: number) 
   const runningMinutes = (distanceKm / METRO_SPEED_KMPH) * 60;
   const dwellMinutes = stationCount * METRO_STATION_DELAY_MINUTES;
 
-  return Math.max(6, Math.round(runningMinutes + dwellMinutes + 3));
+  return Math.max(
+    6,
+    Math.round(runningMinutes + dwellMinutes + METRO_TERMINAL_BUFFER_MINUTES),
+  );
 }
 
 function buildServiceWindowText(route: DhakaBusSeedRoute) {
@@ -400,6 +408,11 @@ function buildServiceWindowText(route: DhakaBusSeedRoute) {
   }
 
   return [route.openingTimeText, route.closingTimeText].filter(Boolean).join(" - ") || undefined;
+}
+
+function joinServiceWindows(windows: Array<string | undefined>) {
+  const joined = dedupeStrings(windows.filter(Boolean) as string[]).join(" | ");
+  return joined || undefined;
 }
 
 function getBusDisplayName(route: DhakaBusSeedRoute) {
@@ -1075,8 +1088,7 @@ function getMetroFare(originStationId: string, destinationStationId: string) {
     return null;
   }
 
-  const delta = Math.abs(origin.fareFromNorth - destination.fareFromNorth);
-  return Math.max(20, delta);
+  return getDhakaMetroFareBdtBySequence(origin.sequence, destination.sequence);
 }
 
 function createDirectBusRoute(
@@ -1477,7 +1489,7 @@ function createMetroRoute(
     totalCost: metrics.totalCost,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
-    serviceWindowText: undefined,
+    serviceWindowText: METRO_SERVICE_WINDOW_TEXT,
     stopCount: undefined,
     stationCount,
     transferCount: 0,
@@ -1494,7 +1506,8 @@ function createMetroRoute(
         instruction: "Ride Metro Rail Line 6",
         startLocation: originStation.name,
         endLocation: destinationStation.name,
-        note: "Exact station order and fare are taken from the curated metro dataset.",
+        note: "Exact fare is taken from the official DMTCL chart, and travel time is calibrated from the published timetable.",
+        serviceWindowText: METRO_SERVICE_WINDOW_TEXT,
         fareText: fare ? formatExactFare(fare) : undefined,
         estimatedDistanceKm: roundDistanceKm(metroDistanceKm),
         estimatedDurationMinutes: metroDurationMinutes,
@@ -1589,6 +1602,7 @@ function createHybridRoute(
             startLocation: interchangeStation.name,
             endLocation: destinationStation.name,
             note: "Metro fare is exact for the station pair.",
+            serviceWindowText: METRO_SERVICE_WINDOW_TEXT,
             fareText: fare ? formatExactFare(fare) : undefined,
             estimatedDistanceKm: roundDistanceKm(metroDistanceKm),
             estimatedDurationMinutes: metroDurationMinutes,
@@ -1602,6 +1616,7 @@ function createHybridRoute(
             startLocation: interchangeStation.name,
             endLocation: destinationStation.name,
             note: "Metro fare is exact for the station pair.",
+            serviceWindowText: METRO_SERVICE_WINDOW_TEXT,
             fareText: fare ? formatExactFare(fare) : undefined,
             estimatedDistanceKm: roundDistanceKm(metroDistanceKm),
             estimatedDurationMinutes: metroDurationMinutes,
@@ -1639,7 +1654,10 @@ function createHybridRoute(
     totalCost: metrics.totalCost,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
-    serviceWindowText: busLeg.serviceWindowText,
+    serviceWindowText: joinServiceWindows([
+      busLeg.serviceWindowText ? `${busName}: ${busLeg.serviceWindowText}` : undefined,
+      `MRT Line 6: ${METRO_SERVICE_WINDOW_TEXT}`,
+    ]),
     stopCount: busLeg.stopCount,
     stationCount,
     transferCount: 1,
