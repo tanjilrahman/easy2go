@@ -124,7 +124,7 @@ describe("surfaceRoutes", () => {
     expect(surfaced[0]?.serviceLabels).toEqual(["Anabil", "Bikalpa"]);
   });
 
-  it("surfaces fastest first and keeps one meaningful alternative", () => {
+  it("surfaces fastest first and keeps up to two meaningful alternatives", () => {
     const fastest = makeRoute({
       id: "fastest",
       summary: "Direct bus corridor",
@@ -217,10 +217,11 @@ describe("surfaceRoutes", () => {
 
     const surfaced = surfaceRoutes([fastest, alternative, noisyThird], "recommended");
 
-    expect(surfaced).toHaveLength(2);
+    expect(surfaced).toHaveLength(3);
     expect(surfaced[0]?.id).toBe("fastest");
     expect(surfaced[0]?.primaryReason).toBe("Fastest total travel time");
     expect(surfaced[1]?.id).toBe("metro-alt");
+    expect(surfaced[2]?.id).toBe("slow-third");
   });
 
   it("skips a visually duplicate route when picking the alternative", () => {

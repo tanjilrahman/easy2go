@@ -825,6 +825,24 @@ function pickAlternativeReason(route: RouteOption, fastest: RouteOption) {
   return "Strong alternative";
 }
 
+function scoreAlternativeCandidate(
+  route: RouteOption,
+  fastest: RouteOption,
+  optimization: RouteOptimization,
+) {
+  const reasonBoost =
+    (route.transferCount < fastest.transferCount ? 18 : 0) +
+    (route.kind !== fastest.kind ? 14 : 0) +
+    (route.totalCost !== undefined &&
+    fastest.totalCost !== undefined &&
+    route.totalCost < fastest.totalCost
+      ? 16
+      : 0) +
+    (confidencePriority[route.confidence] > confidencePriority[fastest.confidence] ? 10 : 0);
+
+  return routeScore(route, optimization) + reasonBoost;
+}
+
 export function surfaceRoutes(routes: RouteOption[], optimization: RouteOptimization) {
   if (!routes.length) {
     return [];
@@ -861,31 +879,13 @@ export function surfaceRoutes(routes: RouteOption[], optimization: RouteOptimiza
     alternativeCandidates = alternativeCandidates.filter((route) => !routeUsesMetro(route));
   }
 
-  const alternative = alternativeCandidates
+  const alternatives = alternativeCandidates
     .sort((a, b) => {
-      const aReasonBoost =
-        (a.transferCount < fastest.transferCount ? 18 : 0) +
-        (a.kind !== fastest.kind ? 14 : 0) +
-        (a.totalCost !== undefined &&
-        fastest.totalCost !== undefined &&
-        a.totalCost < fastest.totalCost
-          ? 16
-          : 0) +
-        (confidencePriority[a.confidence] > confidencePriority[fastest.confidence] ? 10 : 0);
-      const bReasonBoost =
-        (b.transferCount < fastest.transferCount ? 18 : 0) +
-        (b.kind !== fastest.kind ? 14 : 0) +
-        (b.totalCost !== undefined &&
-        fastest.totalCost !== undefined &&
-        b.totalCost < fastest.totalCost
-          ? 16
-          : 0) +
-        (confidencePriority[b.confidence] > confidencePriority[fastest.confidence] ? 10 : 0);
-
-      const aScore = routeScore(a, optimization) + aReasonBoost;
-      const bScore = routeScore(b, optimization) + bReasonBoost;
+      const aScore = scoreAlternativeCandidate(a, fastest, optimization);
+      const bScore = scoreAlternativeCandidate(b, fastest, optimization);
       return bScore - aScore;
-    })[0];
+    })
+    .slice(0, 2);
 
   const surfaced = [
     finalizeRoute({
@@ -895,7 +895,7 @@ export function surfaceRoutes(routes: RouteOption[], optimization: RouteOptimiza
     }),
   ];
 
-  if (alternative) {
+  for (const alternative of alternatives) {
     surfaced.push(
       finalizeRoute({
         ...alternative,
@@ -905,7 +905,7 @@ export function surfaceRoutes(routes: RouteOption[], optimization: RouteOptimiza
     );
   }
 
-  return surfaced.slice(0, 2);
+  return surfaced.slice(0, 3);
 }
 
 function findIndexOnRoute(route: DhakaBusSeedRoute, labels: string[]) {
