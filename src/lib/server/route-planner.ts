@@ -18,6 +18,7 @@ import {
   type CalculateRouteRequest,
   type RouteConfidence,
   type RouteKind,
+  type RouteMapPreview,
   type RouteOption,
   type RouteOptimization,
   type RouteSegment,
@@ -436,6 +437,37 @@ function buildMapPreview(labelA: string, labelB: string) {
   };
 }
 
+function buildTripMapPreview(
+  originInput: CalculateRouteRequest["origin"],
+  destinationInput: CalculateRouteRequest["destination"],
+  originResolution: ResolvedTransitInput,
+  destinationResolution: ResolvedTransitInput,
+): RouteMapPreview {
+  const originLabel = originResolution.displayName;
+  const destinationLabel = destinationResolution.displayName;
+
+  return {
+    originLabel,
+    destinationLabel,
+    originQuery:
+      originResolution.place?.address ??
+      originInput.address ??
+      `${originLabel}, Dhaka, Bangladesh`,
+    destinationQuery:
+      destinationResolution.place?.address ??
+      destinationInput.address ??
+      `${destinationLabel}, Dhaka, Bangladesh`,
+    originCoordinates:
+      originResolution.place?.coordinates ??
+      originInput.coordinates ??
+      originResolution.candidates[0]?.coordinates,
+    destinationCoordinates:
+      destinationResolution.place?.coordinates ??
+      destinationInput.coordinates ??
+      destinationResolution.candidates[0]?.coordinates,
+  };
+}
+
 function makeStopReference(
   label: string,
   fallbackType: RouteStopReference["type"] = "bus_stop",
@@ -611,6 +643,25 @@ function finalizeRoute(route: Omit<RouteOption, "pathSignature" | "highlights" |
       highlights: [],
       tradeoffs: [],
     }),
+  });
+}
+
+function applyTripMapPreview(routes: RouteOption[], mapPreview: RouteMapPreview) {
+  return routes.map((route) => {
+    const nextRoute: RouteOption = {
+      ...route,
+      mapPreview,
+      pathSignature: createPathSignature({
+        kind: route.kind,
+        boarding: route.boarding,
+        alighting: route.alighting,
+        transferStops: route.transferStops,
+        segments: route.segments,
+        mapPreview,
+      }),
+    };
+
+    return routeOptionSchema.parse(nextRoute);
   });
 }
 
@@ -1911,6 +1962,12 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
     resolveTransitInput(payload.origin),
     resolveTransitInput(payload.destination),
   ]);
+  const tripMapPreview = buildTripMapPreview(
+    payload.origin,
+    payload.destination,
+    originResolution,
+    destinationResolution,
+  );
 
   const routes: RouteOption[] = [];
 
@@ -1993,15 +2050,16 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
             ),
           ]
         : [];
+  const debugRoutes =
+    surfacedRoutes.length > 0
+      ? allFoundRoutes
+      : fallbackRoutes.length > 0
+        ? allFoundFallbackRoutes
+        : [];
 
   return calculateRouteResponseSchema.parse({
-    routes: finalRoutes,
-    debugRoutes:
-      surfacedRoutes.length > 0
-        ? allFoundRoutes
-        : fallbackRoutes.length > 0
-          ? allFoundFallbackRoutes
-          : [],
+    routes: applyTripMapPreview(finalRoutes, tripMapPreview),
+    debugRoutes: applyTripMapPreview(debugRoutes, tripMapPreview),
     source: "deterministic",
   });
 }

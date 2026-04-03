@@ -54,8 +54,11 @@ export function PlannerDebugRoutes({ routes }: PlannerDebugRoutesProps) {
 
             <p className="mt-2 text-sm font-semibold text-slate-900">{route.summary}</p>
             <p className="mt-0.5 text-xs text-slate-600">
-              {route.boarding.label} to {route.alighting.label}
+              {route.mapPreview.originLabel} to {route.mapPreview.destinationLabel}
             </p>
+            {route.mapPreview.originLabel !== route.boarding.label ? (
+              <p className="mt-1 text-[11px] text-slate-500">Board at {route.boarding.label}</p>
+            ) : null}
 
             <div className="mt-2 flex flex-wrap gap-2 text-xs text-slate-600">
               <span className="compare-metric">

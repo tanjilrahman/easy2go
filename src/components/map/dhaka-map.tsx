@@ -21,6 +21,8 @@ export function DhakaMap({
       <GoogleRoutePreview
         originQuery={activeRoute?.mapPreview.originQuery}
         destinationQuery={activeRoute?.mapPreview.destinationQuery}
+        originCoordinates={activeRoute?.mapPreview.originCoordinates}
+        destinationCoordinates={activeRoute?.mapPreview.destinationCoordinates}
         userCoordinates={userCoordinates}
         viewportPaddingRatio={viewportPaddingRatio}
         viewportBottomInsetPx={viewportBottomInsetPx}

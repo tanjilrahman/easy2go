@@ -88,6 +88,8 @@ export const routeMapPreviewSchema = z.object({
   destinationLabel: z.string(),
   originQuery: z.string(),
   destinationQuery: z.string(),
+  originCoordinates: latLngSchema.optional(),
+  destinationCoordinates: latLngSchema.optional(),
 });
 
 export type RouteMapPreview = z.infer<typeof routeMapPreviewSchema>;

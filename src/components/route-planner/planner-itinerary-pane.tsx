@@ -59,8 +59,11 @@ export function PlannerItineraryPane({
                   {route.summary}
                 </h3>
                 <p className="mt-0.5 text-sm text-slate-600">
-                  {route.boarding.label} to {route.alighting.label}
+                  {route.mapPreview.originLabel} to {route.mapPreview.destinationLabel}
                 </p>
+                {route.mapPreview.originLabel !== route.boarding.label ? (
+                  <p className="mt-1 text-xs text-slate-500">Board at {route.boarding.label}</p>
+                ) : null}
               </div>
               <Button
                 type="button"
@@ -202,16 +205,28 @@ export function PlannerItineraryPane({
           type="button"
           onClick={() =>
             onUseReturnTrip(
-              {
-                name: route.alighting.label,
-                canonicalId: route.alighting.id,
-                type: route.alighting.type,
-              },
-              {
-                name: route.boarding.label,
-                canonicalId: route.boarding.id,
-                type: route.boarding.type,
-              },
+              route.mapPreview.destinationCoordinates
+                ? {
+                    name: route.mapPreview.destinationLabel,
+                    coordinates: route.mapPreview.destinationCoordinates,
+                    type: "place",
+                  }
+                : {
+                    name: route.alighting.label,
+                    canonicalId: route.alighting.id,
+                    type: route.alighting.type,
+                  },
+              route.mapPreview.originCoordinates
+                ? {
+                    name: route.mapPreview.originLabel,
+                    coordinates: route.mapPreview.originCoordinates,
+                    type: "place",
+                  }
+                : {
+                    name: route.boarding.label,
+                    canonicalId: route.boarding.id,
+                    type: route.boarding.type,
+                  },
             )
           }
           className="h-11 w-full rounded-[20px] bg-[linear-gradient(135deg,#5a43d7_0%,#765ef1_100%)] text-sm text-white hover:opacity-95"

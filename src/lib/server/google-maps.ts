@@ -179,44 +179,11 @@ async function geocodeUrlFromInput(input: LocationInput) {
   return url.toString();
 }
 
-export async function resolveLocation(input: LocationInput): Promise<ResolvedLocation> {
-  if (input.coordinates) {
-    return {
-      name: input.name,
-      address: input.address,
-      coordinates: input.coordinates,
-      placeId: input.placeId,
-    };
-  }
-
-  const knownPlace = findKnownPlace(input.name);
-  if (knownPlace?.coordinates) {
-    return {
-      name: knownPlace.name,
-      address: knownPlace.address,
-      coordinates: knownPlace.coordinates,
-      placeId: knownPlace.placeId,
-    };
-  }
-
-  const key = getServerKey();
-  if (!key) {
-    return {
-      name: input.name,
-      address: input.address ?? "Dhaka, Bangladesh",
-      coordinates: DHAKA_CENTER,
-      placeId: input.placeId,
-    };
-  }
-
+async function geocodeLocation(input: LocationInput): Promise<ResolvedLocation | null> {
   const response = await fetch(await geocodeUrlFromInput(input), { cache: "no-store" });
 
   if (!response.ok) {
-    return {
-      name: input.name,
-      address: input.address ?? "Dhaka, Bangladesh",
-      coordinates: DHAKA_CENTER,
-    };
+    return null;
   }
 
   const payload = (await response.json()) as GoogleGeocodeResponse;
@@ -231,10 +198,59 @@ export async function resolveLocation(input: LocationInput): Promise<ResolvedLoc
     };
   }
 
+  return null;
+}
+
+export async function resolveLocation(input: LocationInput): Promise<ResolvedLocation> {
+  if (input.coordinates) {
+    return {
+      name: input.name,
+      address: input.address,
+      coordinates: input.coordinates,
+      placeId: input.placeId,
+    };
+  }
+
+  const key = getServerKey();
+
+  // Respect an exact Google place selection before any fuzzy local fallback.
+  if (input.placeId && key) {
+    const exactLocation = await geocodeLocation(input);
+
+    if (exactLocation) {
+      return exactLocation;
+    }
+  }
+
+  const knownPlace = findKnownPlace(input.name);
+  if (knownPlace?.coordinates) {
+    return {
+      name: input.name,
+      address: input.address ?? knownPlace.address,
+      coordinates: knownPlace.coordinates,
+      placeId: input.placeId ?? knownPlace.placeId,
+    };
+  }
+
+  if (!key) {
+    return {
+      name: input.name,
+      address: input.address ?? "Dhaka, Bangladesh",
+      coordinates: DHAKA_CENTER,
+      placeId: input.placeId,
+    };
+  }
+
+  const geocodedLocation = await geocodeLocation(input);
+  if (geocodedLocation) {
+    return geocodedLocation;
+  }
+
   return {
     name: input.name,
     address: input.address ?? "Dhaka, Bangladesh",
     coordinates: knownPlace?.coordinates ?? DHAKA_CENTER,
+    placeId: input.placeId,
   };
 }
 

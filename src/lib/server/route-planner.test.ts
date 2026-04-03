@@ -416,6 +416,27 @@ describe("surfaceRoutes", () => {
 });
 
 describe("calculateRoutes", () => {
+  it("keeps the selected trip endpoints in the map preview", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Custom start",
+        coordinates: [23.7579, 90.3891],
+        type: "place",
+      },
+      destination: {
+        name: "Motijheel",
+        canonicalId: "hub-motijheel",
+        type: "hub",
+      },
+      optimization: "recommended",
+    });
+
+    expect(response.routes.length).toBeGreaterThan(0);
+    expect(response.routes[0]?.mapPreview.originLabel).toBe("Custom start");
+    expect(response.routes[0]?.mapPreview.originCoordinates).toEqual([23.7579, 90.3891]);
+    expect(response.routes[0]?.mapPreview.destinationLabel).toBe("Motijheel");
+  }, 15000);
+
   it("uses the official metro fare chart and service window for direct metro trips", async () => {
     const response = await calculateRoutes({
       origin: {

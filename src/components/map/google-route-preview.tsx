@@ -1,44 +1,14 @@
 "use client";
 
 import { startTransition, useEffect, useMemo, useState } from "react";
-import { CircleF, GoogleMap, PolylineF, useJsApiLoader } from "@react-google-maps/api";
+import { CircleF, DirectionsRenderer, GoogleMap, useJsApiLoader } from "@react-google-maps/api";
 
 import { DHAKA_CENTER } from "@/lib/maps";
 import { cn } from "@/lib/utils";
 
 const libraries: ("places")[] = ["places"];
 
-type RouteTravelMode = string;
-
-interface RoutePathPoint {
-  lat: number | (() => number);
-  lng: number | (() => number);
-}
-
-interface RouteResult {
-  path?: RoutePathPoint[];
-  viewport?: google.maps.LatLngBounds | null;
-}
-
-interface ComputeRoutesResponse {
-  routes?: RouteResult[];
-}
-
-interface RouteClassLibrary {
-  Route: {
-    computeRoutes(request: {
-      origin: string;
-      destination: string;
-      travelMode: RouteTravelMode;
-      fields: string[];
-      departureTime?: Date;
-    }): Promise<ComputeRoutesResponse>;
-  };
-  TravelMode: {
-    TRANSIT: RouteTravelMode;
-    DRIVING: RouteTravelMode;
-  };
-}
+type RouteTravelMode = google.maps.TravelMode;
 
 const lightMapStyles: google.maps.MapTypeStyle[] = [
   {
@@ -59,6 +29,8 @@ const lightMapStyles: google.maps.MapTypeStyle[] = [
 interface GoogleRoutePreviewProps {
   originQuery?: string;
   destinationQuery?: string;
+  originCoordinates?: [number, number];
+  destinationCoordinates?: [number, number];
   className?: string;
   userCoordinates?: [number, number] | null;
   viewportPaddingRatio?: number;
@@ -68,6 +40,8 @@ interface GoogleRoutePreviewProps {
 export function GoogleRoutePreview({
   originQuery,
   destinationQuery,
+  originCoordinates,
+  destinationCoordinates,
   className,
   userCoordinates,
   viewportPaddingRatio = 0.36,
@@ -79,9 +53,10 @@ export function GoogleRoutePreview({
     libraries,
   });
   const [map, setMap] = useState<google.maps.Map | null>(null);
-  const [routePath, setRoutePath] = useState<google.maps.LatLngLiteral[]>([]);
-  const [routeViewport, setRouteViewport] = useState<google.maps.LatLngBounds | null>(null);
-  const hasRoute = Boolean(originQuery && destinationQuery);
+  const [directions, setDirections] = useState<google.maps.DirectionsResult | null>(null);
+  const hasRoute = Boolean(
+    (originCoordinates || originQuery) && (destinationCoordinates || destinationQuery),
+  );
 
   const center = useMemo(
     () =>
@@ -105,20 +80,34 @@ export function GoogleRoutePreview({
 
   function clearRoutePreview() {
     startTransition(() => {
-      setRoutePath([]);
-      setRouteViewport(null);
+      setDirections(null);
     });
   }
 
-  function toLatLngLiteral(point: RoutePathPoint): google.maps.LatLngLiteral {
-    return {
-      lat: typeof point.lat === "function" ? point.lat() : point.lat,
-      lng: typeof point.lng === "function" ? point.lng() : point.lng,
-    };
+  function buildRouteEndpoint(
+    coordinates: [number, number] | undefined,
+    query: string | undefined,
+  ): string | google.maps.LatLngLiteral | null {
+    if (coordinates) {
+      return {
+        lat: coordinates[0],
+        lng: coordinates[1],
+      } satisfies google.maps.LatLngLiteral;
+    }
+
+    return query ?? null;
   }
 
   useEffect(() => {
-    if (!isLoaded || !hasRoute || !originQuery || !destinationQuery || typeof window === "undefined") {
+    if (!isLoaded || !hasRoute || typeof window === "undefined") {
+      clearRoutePreview();
+      return;
+    }
+
+    const origin = buildRouteEndpoint(originCoordinates, originQuery);
+    const destination = buildRouteEndpoint(destinationCoordinates, destinationQuery);
+
+    if (!origin || !destination) {
       clearRoutePreview();
       return;
     }
@@ -126,29 +115,28 @@ export function GoogleRoutePreview({
     let cancelled = false;
 
     const loadRoute = async () => {
-      const { Route, TravelMode } =
-        (await window.google.maps.importLibrary("routes")) as unknown as RouteClassLibrary;
+      const service = new window.google.maps.DirectionsService();
 
       const computePath = async (travelMode: RouteTravelMode) => {
-        const response = await Route.computeRoutes({
-          origin: originQuery,
-          destination: destinationQuery,
+        const response = await service.route({
+          origin,
+          destination,
           travelMode,
-          departureTime: travelMode === TravelMode.TRANSIT ? new Date() : undefined,
-          fields: ["path", "viewport"],
+          transitOptions:
+            travelMode === window.google.maps.TravelMode.TRANSIT
+              ? {
+                  departureTime: new Date(),
+                }
+              : undefined,
         });
 
-        const route = response.routes?.[0];
-        const path = route?.path?.map(toLatLngLiteral) ?? [];
-
-        if (!path.length) {
+        if (!response.routes?.length) {
           return false;
         }
 
         if (!cancelled) {
           startTransition(() => {
-            setRoutePath(path);
-            setRouteViewport(route?.viewport ?? null);
+            setDirections(response);
           });
         }
 
@@ -156,10 +144,10 @@ export function GoogleRoutePreview({
       };
 
       try {
-        const hasTransitPath = await computePath(TravelMode.TRANSIT);
+        const hasTransitPath = await computePath(window.google.maps.TravelMode.TRANSIT);
 
         if (!hasTransitPath && !cancelled) {
-          const hasDrivingPath = await computePath(TravelMode.DRIVING);
+          const hasDrivingPath = await computePath(window.google.maps.TravelMode.DRIVING);
 
           if (!hasDrivingPath && !cancelled) {
             clearRoutePreview();
@@ -171,7 +159,7 @@ export function GoogleRoutePreview({
         }
 
         try {
-          const hasDrivingPath = await computePath(TravelMode.DRIVING);
+          const hasDrivingPath = await computePath(window.google.maps.TravelMode.DRIVING);
 
           if (!hasDrivingPath && !cancelled) {
             clearRoutePreview();
@@ -189,15 +177,24 @@ export function GoogleRoutePreview({
     return () => {
       cancelled = true;
     };
-  }, [destinationQuery, hasRoute, isLoaded, originQuery]);
+  }, [
+    destinationCoordinates,
+    destinationQuery,
+    hasRoute,
+    isLoaded,
+    originCoordinates,
+    originQuery,
+  ]);
 
   useEffect(() => {
     if (!map || !isLoaded || typeof window === "undefined") {
       return;
     }
 
-    if (routeViewport) {
-      map.fitBounds(routeViewport, {
+    const routeBounds = directions?.routes[0]?.bounds;
+
+    if (routeBounds) {
+      map.fitBounds(routeBounds, {
         top: 24,
         right: 24,
         left: 24,
@@ -214,7 +211,7 @@ export function GoogleRoutePreview({
         map.panBy(0, Math.round(resolvedBottomInsetPx / 2));
       });
     }
-  }, [center, isLoaded, map, resolvedBottomInsetPx, routeViewport, userCoordinates]);
+  }, [center, directions, isLoaded, map, resolvedBottomInsetPx, userCoordinates]);
 
   if (!apiKey) {
     return (
@@ -249,18 +246,18 @@ export function GoogleRoutePreview({
           styles: lightMapStyles,
         }}
       >
-        {routePath.length ? (
-          <PolylineF
-            path={routePath}
+        {directions ? (
+          <DirectionsRenderer
+            directions={directions}
             options={{
-              strokeColor: "#2563eb",
-              strokeOpacity: 0.9,
-              strokeWeight: 5,
+              preserveViewport: true,
+              suppressMarkers: false,
+              suppressInfoWindows: true,
             }}
           />
         ) : null}
 
-        {userCoordinates && !routePath.length ? (
+        {userCoordinates && !directions ? (
           <>
             <CircleF
               center={{ lat: userCoordinates[0], lng: userCoordinates[1] }}

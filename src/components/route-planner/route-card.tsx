@@ -88,8 +88,13 @@ export function RouteCard({ route, selected, onClick }: RouteCardProps) {
             {route.summary}
           </h3>
           <p className="mt-1 text-sm text-muted-foreground">
-            {route.boarding.label} to {route.alighting.label}
+            {route.mapPreview.originLabel} to {route.mapPreview.destinationLabel}
           </p>
+          {route.mapPreview.originLabel !== route.boarding.label ? (
+            <p className="mt-1 text-xs text-muted-foreground/90">
+              Board at {route.boarding.label}
+            </p>
+          ) : null}
         </div>
 
         <ArrowRight className="mt-1 h-5 w-5 text-muted-foreground" />

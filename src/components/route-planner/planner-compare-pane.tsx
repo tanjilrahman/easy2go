@@ -54,8 +54,11 @@ function CompareRow({
           </div>
           <h3 className="font-display text-base font-semibold text-slate-900">{route.summary}</h3>
           <p className="mt-0.5 text-sm text-slate-600">
-            {route.boarding.label} to {route.alighting.label}
+            {route.mapPreview.originLabel} to {route.mapPreview.destinationLabel}
           </p>
+          {route.mapPreview.originLabel !== route.boarding.label ? (
+            <p className="mt-1 text-xs text-slate-500">Board at {route.boarding.label}</p>
+          ) : null}
           {route.primaryReason ? (
             <p className="mt-2 inline-flex items-center gap-2 rounded-full bg-[rgba(90,67,215,0.1)] px-2.5 py-1 text-[11px] font-semibold text-[rgb(72,53,173)]">
               <CheckCircle2 className="h-3.5 w-3.5" />
