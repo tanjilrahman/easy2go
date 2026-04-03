@@ -32,15 +32,40 @@ export interface ResolvedTransitInput {
   directMatch: boolean;
 }
 
-const busStopPoints: TransitPoint[] = dhakaBusSeedStops.map((stop) => ({
-  id: stop.id,
-  name: stop.label,
-  address: "Bus stop, Dhaka",
-  type: "bus_stop",
-  aliases: [stop.labelEn, stop.labelBn ?? "", stop.label],
-  busStopLabels: [stop.label],
-  advisories: [],
-}));
+const busStopPoints: TransitPoint[] = dhakaBusSeedStops.flatMap((stop) => {
+  if (stop.variants?.length) {
+    return stop.variants.map((variant, index) => ({
+      id: `${stop.id}::variant-${index + 1}`,
+      name: variant.placeName ?? variant.name,
+      address: variant.address ?? stop.address ?? "Bus stop, Dhaka",
+      type: "bus_stop" as const,
+      coordinates: variant.coordinates,
+      aliases: [
+        stop.labelEn,
+        stop.labelBn ?? "",
+        stop.label,
+        stop.placeName ?? "",
+        variant.name,
+        variant.placeName ?? "",
+      ],
+      busStopLabels: [stop.label],
+      advisories: [],
+    }));
+  }
+
+  return [
+    {
+      id: stop.id,
+      name: stop.placeName ?? stop.label,
+      address: stop.address ?? "Bus stop, Dhaka",
+      type: "bus_stop" as const,
+      coordinates: stop.coordinates,
+      aliases: [stop.labelEn, stop.labelBn ?? "", stop.label, stop.placeName ?? ""],
+      busStopLabels: [stop.label],
+      advisories: [],
+    },
+  ];
+});
 
 const metroPoints: TransitPoint[] = DHAKA_METRO_STATIONS.map((station) => ({
   id: station.id,
@@ -67,7 +92,7 @@ const hubPoints: TransitPoint[] = DHAKA_ACCESS_POINTS.map((point) => ({
 }));
 
 const localSuggestionCatalog = [...hubPoints, ...metroPoints, ...busStopPoints];
-const coordinateCandidates = [...hubPoints, ...metroPoints].filter(
+const coordinateCandidates = [...hubPoints, ...metroPoints, ...busStopPoints].filter(
   (point) => point.coordinates,
 );
 
@@ -117,7 +142,10 @@ function dedupeSuggestions(suggestions: LocationSuggestion[]) {
   const seen = new Set<string>();
 
   return suggestions.filter((suggestion) => {
-    const key = normalizeTransitText(`${suggestion.type}:${suggestion.name}`);
+    const key =
+      suggestion.canonicalId ??
+      suggestion.id ??
+      normalizeTransitText(`${suggestion.type}:${suggestion.name}:${suggestion.address ?? ""}`);
     if (seen.has(key)) {
       return false;
     }
@@ -275,7 +303,11 @@ export function getMetroPoints() {
 
 export function getBusStopPointByLabel(label: string) {
   const normalizedLabel = normalizeTransitText(label);
-  return busStopPoints.find((point) => normalizeTransitText(point.name) === normalizedLabel);
+  return busStopPoints.find(
+    (point) =>
+      point.busStopLabels.some((stopLabel) => normalizeTransitText(stopLabel) === normalizedLabel) ||
+      normalizeTransitText(point.name) === normalizedLabel,
+  );
 }
 
 export function getMetroPointForStation(station: DhakaMetroStation) {

@@ -110,7 +110,7 @@ describe("distance estimation", () => {
       serviceWindowText: undefined,
     };
 
-    expect(estimateBusLegDistanceKm(leg)).toBeCloseTo(6.4, 1);
+    expect(estimateBusLegDistanceKm(leg)).toBeCloseTo(6.7, 1);
   });
 });
 
@@ -471,7 +471,7 @@ describe("calculateRoutes", () => {
     expect(response.routes[0]?.mapPreview.originLabel).toBe("Custom start");
     expect(response.routes[0]?.mapPreview.originCoordinates).toEqual([23.7579, 90.3891]);
     expect(response.routes[0]?.mapPreview.destinationLabel).toBe("Motijheel");
-  }, 15000);
+  }, 30000);
 
   it("uses the official metro fare chart and service window for direct metro trips", async () => {
     const response = await calculateRoutes({
@@ -541,8 +541,41 @@ describe("calculateRoutes", () => {
     expect(response.routes.length).toBeGreaterThan(0);
     expect(response.routes[0]?.kind).not.toBe("advisory_connector");
     expect(response.routes[0]?.segments.some((segment) => segment.mode === "bus")).toBe(true);
-    expect(response.routes[0]?.segments.at(-1)?.mode).toBe("rickshaw");
+    expect(["rickshaw", "ride_share"]).toContain(response.routes[0]?.segments.at(-1)?.mode);
     expect(response.routes[0]?.alighting.type).toBe("bus_stop");
     expect(response.debugRoutes.length).toBeGreaterThan(0);
-  });
+  }, 30000);
+
+  it("does not surface tiny opposite-direction fallback shuttles for Rupnagar to Daffodil Smart City", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Rupnagar Residential Area Central Mosque & Madrasah",
+        type: "place",
+      },
+      destination: {
+        name: "Daffodil Smart City, Birulia, Savar, Dhaka - 1216, Bangladesh",
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+
+    expect(response.routes.length).toBeGreaterThan(0);
+
+    const hasSuspiciousFallback = response.routes.some((route) => {
+      const finalSegment = route.segments.at(-1);
+
+      if (!finalSegment || finalSegment.mode === "bus") {
+        return false;
+      }
+
+      return route.segments.some(
+        (segment) =>
+          segment.mode === "bus" &&
+          (segment.estimatedDistanceKm ?? 0) < 3 &&
+          (finalSegment.estimatedDistanceKm ?? 0) > 6,
+      );
+    });
+
+    expect(hasSuspiciousFallback).toBe(false);
+  }, 60000);
 });

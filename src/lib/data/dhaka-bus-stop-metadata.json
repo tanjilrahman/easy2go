@@ -1,0 +1,1751 @@
+[
+  {
+    "labels": [
+      "Abdullahpur"
+    ],
+    "coordinates": [
+      23.8749,
+      90.3989
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Agargaon"
+    ],
+    "coordinates": [
+      23.7784,
+      90.3798
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Arambagh",
+      "Arambagh (আরামবাগ)",
+      "আরামবাগ"
+    ],
+    "coordinates": [
+      23.7308424,
+      90.4212047
+    ],
+    "source": "photon:Arambagh bus stop, Dhaka, Bangladesh",
+    "address": "Arambagh Bus stop, আউটার সার্কুলার রোড, আরামবাগ, মতিঝিল, ঢাকা, Bangladesh",
+    "placeName": "Arambagh Bus stop"
+  },
+  {
+    "labels": [
+      "Asad Gate",
+      "Asad Gate (আসাদ গেট)",
+      "আসাদ গেট"
+    ],
+    "coordinates": [
+      23.7598615,
+      90.3730456
+    ],
+    "source": "nominatim:Asad Gate bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Ashulia",
+      "Ashulia (আশুলিয়া)",
+      "আশুলিয়া"
+    ],
+    "coordinates": [
+      23.8975797,
+      90.3309306
+    ],
+    "source": "photon:Ashulia bus stop, Dhaka, Bangladesh",
+    "address": "Ashulia Bazaar Bus stop, ঢাকা–আশুলিয়া এলিভেটেড এক্সপ্রেসওয়ে, আশুলিয়া, সুজাবাদ, Bangladesh",
+    "placeName": "Ashulia Bazaar Bus stop"
+  },
+  {
+    "labels": [
+      "Azampur",
+      "Azampur (আজমপুর)",
+      "আজমপুর"
+    ],
+    "coordinates": [
+      23.8680114,
+      90.4004821
+    ],
+    "source": "nominatim:Azampur bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Azimpur",
+      "Azimpur (আজিমপুর)",
+      "আজিমপুর"
+    ],
+    "coordinates": [
+      23.7274628,
+      90.3864092
+    ],
+    "source": "photon:Azimpur bus stop, Dhaka, Bangladesh",
+    "address": "Azimpur Bus stop, Azimpur Rd, Dhaka, মিরপুর রোড, পলাশী, আজিমপুর, ঢাকা, Bangladesh",
+    "placeName": "Azimpur Bus stop"
+  },
+  {
+    "labels": [
+      "Babubazar",
+      "Babubazar (বাবুবাজার)",
+      "বাবুবাজার"
+    ],
+    "coordinates": [
+      23.7106991,
+      90.4029699
+    ],
+    "source": "photon:Babubazar bus stop, Dhaka, Bangladesh",
+    "address": "Babu Bazaar Bridge Bus stop, Babu Bazaar Bridge, Babubazar Bridge, Dhaka, Akmol Khan Road, জিন্দাবাহার, বাবু বাজার, ঢাকা, Bangladesh",
+    "placeName": "Babu Bazaar Bridge Bus stop"
+  },
+  {
+    "labels": [
+      "Badda",
+      "Uttar Badda",
+      "Madhya Badda",
+      "Merul Badda",
+      "Badda Link Road"
+    ],
+    "coordinates": [
+      23.7809,
+      90.4257
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Baipayl",
+      "Baipayl (বাইপাইল)",
+      "বাইপাইল"
+    ],
+    "coordinates": [
+      23.9377342,
+      90.2695888
+    ],
+    "source": "photon:Baipayl bus stop, Dhaka, Bangladesh",
+    "address": "Baipayl Bus Stop, নবীনগর - চন্দ্রা মহাসড়ক, বাইপাইল, Bangladesh",
+    "placeName": "Baipayl Bus Stop"
+  },
+  {
+    "labels": [
+      "Bakshi Bazar",
+      "Bakshi Bazar (বকশী বাজার)",
+      "বকশী বাজার"
+    ],
+    "coordinates": [
+      23.7225591,
+      90.3955594
+    ],
+    "source": "photon:Bakshi Bazar bus stop, Dhaka, Bangladesh",
+    "address": "Bokshi Bazaar Bus stop, Bakshi Bazar Road, Dhaka, অর্ফানেজ রোড, খাজে দেওয়ান, বকশীবাজার, ঢাকা, Bangladesh",
+    "placeName": "Bokshi Bazaar Bus stop"
+  },
+  {
+    "labels": [
+      "Banani"
+    ],
+    "coordinates": [
+      23.7936,
+      90.4066
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Banasree",
+      "Banasree (বনশ্রী)",
+      "বনশ্রী"
+    ],
+    "coordinates": [
+      23.7679175,
+      90.4231695
+    ],
+    "source": "photon:Banasree bus stop, Dhaka, Bangladesh",
+    "address": "Rampura Bridge Bus Stop, Banasree-Hatirjheel U Loop, উলন, রামপুরা, ঢাকা, Bangladesh",
+    "placeName": "Rampura Bridge Bus Stop"
+  },
+  {
+    "labels": [
+      "Bashtola",
+      "Bashtola (বাঁশতলা)",
+      "বাঁশতলা"
+    ],
+    "coordinates": [
+      23.7943849,
+      90.4240761
+    ],
+    "source": "photon:Bashtola bus stop, Dhaka, Bangladesh",
+    "address": "Bashtola Bus Stand, বীর উত্তম রফিকুল ইসলাম এভিনিউ, গুপিপাড়া, গুলশান, ঢাকা, Bangladesh",
+    "placeName": "Bashtola Bus Stand"
+  },
+  {
+    "labels": [
+      "Bata Signal",
+      "Bata Signal (বাটা সিগন্যাল)",
+      "বাটা সিগন্যাল"
+    ],
+    "coordinates": [
+      23.7389887,
+      90.388255
+    ],
+    "source": "photon:Bata Signal bus stop, Dhaka, Bangladesh",
+    "address": "Bata Signal Bus Stop, Science Laboratory Rd, কাঁটাবন, শাহবাগ, Dhaka, Bangladesh",
+    "placeName": "Bata Signal Bus Stop"
+  },
+  {
+    "labels": [
+      "Beribadh",
+      "Beribadh (বেড়িবাঁধ)",
+      "বেড়িবাঁধ"
+    ],
+    "coordinates": [
+      23.7566448,
+      90.3562044
+    ],
+    "source": "photon:Beribadh bus stop, Dhaka, Bangladesh",
+    "address": "Beribadh Tin Rastar Mor Bus Stop, Bus stop, বেড়িবাধ সড়ক, মোহাম্মদিয়া হাউজিং লি:, মোহাম্মদপুর, ঢাকা, Bangladesh",
+    "placeName": "Beribadh Tin Rastar Mor Bus Stop"
+  },
+  {
+    "labels": [
+      "Birulia",
+      "Birulia (বিরুলিয়া)",
+      "বিরুলিয়া"
+    ],
+    "coordinates": [
+      23.8505948,
+      90.3409259
+    ],
+    "source": "photon:Birulia bus stop, Dhaka, Bangladesh",
+    "address": "Birulia Bridge Bus stop, ঢাকা, Bangladesh",
+    "placeName": "Birulia Bridge Bus stop"
+  },
+  {
+    "labels": [
+      "Board Bazar",
+      "Board Bazar (বোর্ড বাজার)",
+      "বোর্ড বাজার"
+    ],
+    "coordinates": [
+      23.9452769,
+      90.3827366
+    ],
+    "source": "photon:Board Bazar bus stop, Dhaka, Bangladesh",
+    "address": "Board Bazar Bus Stop বোর্ড বাজার বাস স্টপ, ঢাকা-ময়মনসিংহ মহাসড়ক, গাজীপুরা, টঙ্গী, Bangladesh",
+    "placeName": "Board Bazar Bus Stop বোর্ড বাজার বাস স্টপ"
+  },
+  {
+    "labels": [
+      "Bosila",
+      "Bosila (বসিলা)",
+      "বসিলা"
+    ],
+    "coordinates": [
+      23.7450945,
+      90.3475527
+    ],
+    "source": "photon:Bosila bus stop, Dhaka, Bangladesh",
+    "address": "Bosila Bus Stop, শহীদ বুদ্ধিজীবি সেতু, ওয়াশপুর, ঘাটারচর, Bangladesh",
+    "placeName": "Bosila Bus Stop"
+  },
+  {
+    "labels": [
+      "Cantonment",
+      "Cantonment (ক্যান্টনমেন্ট)",
+      "ক্যান্টনমেন্ট"
+    ],
+    "coordinates": [
+      23.7910321,
+      90.3879287
+    ],
+    "source": "photon:Cantonment bus stop, Dhaka, Bangladesh",
+    "address": "Kochukhet - Cantonment Circle, Bus stop, Mirpur Road No.14, কচুক্ষেত, কাফরুল, ঢাকা, Bangladesh",
+    "placeName": "Kochukhet - Cantonment Circle"
+  },
+  {
+    "labels": [
+      "Chairman Bari",
+      "Chairman Bari (চেয়ারম্যান বাড়ী)",
+      "চেয়ারম্যান বাড়ী"
+    ],
+    "coordinates": [
+      23.78786,
+      90.400098
+    ],
+    "source": "photon:Chairman Bari bus stop, Dhaka, Bangladesh",
+    "address": "Chairman Bari Bus Stop, নতুন বিমানবন্দর সড়ক, চেয়ারম্যান বাড়ি, গুলশান, ঢাকা, Bangladesh",
+    "placeName": "Chairman Bari Bus Stop"
+  },
+  {
+    "labels": [
+      "Chandra",
+      "Chandra (চন্দ্রা)",
+      "চন্দ্রা"
+    ],
+    "coordinates": [
+      24.0475688,
+      90.2387973
+    ],
+    "source": "photon:Chandra bus stop, Dhaka, Bangladesh",
+    "address": "Chandra Bus Stop, নবীনগর - চন্দ্রা মহাসড়ক, জিরানী, Bangladesh",
+    "placeName": "Chandra Bus Stop"
+  },
+  {
+    "labels": [
+      "Chankhar Pul",
+      "Chankhar Pul (চাঁকহার পুল)",
+      "চাঁকহার পুল"
+    ],
+    "coordinates": [
+      23.7238334,
+      90.4003441
+    ],
+    "source": "photon:Chankhar Pul bus stop, Dhaka, Bangladesh",
+    "address": "Chankhar Pul Bus Stop, Zahir Raihan Rd, Dhaka, সৈয়দ কামরুজ্জামান সরণী, আনন্দবাজার, বংশাল, ঢাকা, Bangladesh",
+    "placeName": "Chankhar Pul Bus Stop"
+  },
+  {
+    "labels": [
+      "Chasara",
+      "Chasara (চাষারা)",
+      "চাষারা"
+    ],
+    "coordinates": [
+      23.6237322,
+      90.4994847
+    ],
+    "source": "photon:Chasara bus stop, Dhaka, Bangladesh",
+    "address": "Chasara Bus Stop, ঢাকা-নারায়ণগঞ্জ সড়ক, নারায়ণগঞ্জ, Bangladesh",
+    "placeName": "Chasara Bus Stop"
+  },
+  {
+    "labels": [
+      "City College",
+      "City College (সিটি কলেজ)",
+      "সিটি কলেজ"
+    ],
+    "coordinates": [
+      23.7391036,
+      90.3833174
+    ],
+    "source": "nominatim:City College bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Darussalam",
+      "Darussalam (দারুস্সালাম)",
+      "দারুস্সালাম"
+    ],
+    "coordinates": [
+      23.7800468,
+      90.3542107
+    ],
+    "source": "photon:Darussalam bus stop, Dhaka, Bangladesh",
+    "address": "Darussalam Bus stop, Bus stop, মিরপুর রোড, নন্দেরবাগ, গাবতলী, ঢাকা, Bangladesh",
+    "placeName": "Darussalam Bus stop"
+  },
+  {
+    "labels": [
+      "Dhakeshwari",
+      "Dhakeshwari (ঢাকেশ্বরী)",
+      "ঢাকেশ্বরী"
+    ],
+    "coordinates": [
+      23.7224743,
+      90.3897214
+    ],
+    "source": "photon:Dhakeshwari bus stop, Dhaka, Bangladesh",
+    "address": "Dhakeshwari Mandir Bus stop, Azad Staff Quarter Dhakeshwari Rd, Dhaka, অর্ফানেজ রোড, খাজে দেওয়ান, বকশীবাজার, ঢাকা, Bangladesh",
+    "placeName": "Dhakeshwari Mandir Bus stop"
+  },
+  {
+    "labels": [
+      "Dhanmondi",
+      "Dhanmondi (ধানমন্ডি)",
+      "ধানমন্ডি"
+    ],
+    "coordinates": [
+      23.7560325,
+      90.3757211
+    ],
+    "source": "photon:Dhanmondi bus stop, Dhaka, Bangladesh",
+    "address": "Dhanmondi 27 Bus stop, মিরপুর রোড, লেক সার্কাস, সোবহানবাগ, ঢাকা, Bangladesh",
+    "placeName": "Dhanmondi 27 Bus stop"
+  },
+  {
+    "labels": [
+      "Dhanmondi 15",
+      "Dhanmondi 15 (ধানমন্ডি ১৫)",
+      "ধানমন্ডি ১৫"
+    ],
+    "coordinates": [
+      23.7443576,
+      90.3728855
+    ],
+    "source": "photon:Dhanmondi 15 bus stop, Dhaka, Bangladesh",
+    "address": "Dhanmondi 15 Bus stop, Road 8A, ধানমন্ডি আবাসিক এলাকা, ধানমন্ডি, ঢাকা, Bangladesh",
+    "placeName": "Dhanmondi 15 Bus stop"
+  },
+  {
+    "labels": [
+      "Dhanmondi 27"
+    ],
+    "coordinates": [
+      23.7465,
+      90.3741
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Dhanmondi 32",
+      "Dhanmondi 32 (ধানমন্ডি ৩২)",
+      "ধানমন্ডি ৩২"
+    ],
+    "coordinates": [
+      23.7517296,
+      90.3778703
+    ],
+    "source": "photon:Dhanmondi 32 bus stop, Dhaka, Bangladesh",
+    "address": "Dhanmondi 32 No. Bus Stopage, মিরপুর রোড, মোহাম্মদপুর, ঢাকা, Bangladesh",
+    "placeName": "Dhanmondi 32 No. Bus Stopage"
+  },
+  {
+    "labels": [
+      "Dholairpar",
+      "Dholairpar (ধলাইড়পাড়)",
+      "ধলাইড়পাড়"
+    ],
+    "coordinates": [
+      23.702791,
+      90.4351668
+    ],
+    "source": "photon:Dholairpar bus stop, Dhaka, Bangladesh",
+    "address": "Dholairpar Bus Stop, ঢাকা-মাওয়া এক্সপ্রেসওয়ে, পশ্চিম ধোলাইরপাড়, ধোলাইরপাড়, ঢাকা, Bangladesh",
+    "placeName": "Dholairpar Bus Stop"
+  },
+  {
+    "labels": [
+      "Dhour",
+      "Dhour (ঢাউর)",
+      "ঢাউর"
+    ],
+    "coordinates": [
+      23.8933082,
+      90.3666085
+    ],
+    "source": "photon:Dhour bus stop, Dhaka, Bangladesh",
+    "address": "Dhour Bus Stopage, Dhour Main Road, ধউর, Bangladesh",
+    "placeName": "Dhour Bus Stopage"
+  },
+  {
+    "labels": [
+      "Farmgate"
+    ],
+    "coordinates": [
+      23.7589,
+      90.389
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Fulbaria",
+      "Fulbaria (ফুলবাড়িয়া)",
+      "ফুলবাড়িয়া"
+    ],
+    "coordinates": [
+      23.7234456,
+      90.4056048
+    ],
+    "source": "photon:Fulbaria bus stop, Dhaka, Bangladesh",
+    "address": "Bongo Bazaar Bus stop, Fulbaria Rd, Dhaka, নাজিমউদ্দিন সড়ক, আনন্দবাজার, গুলিস্তান, ঢাকা, Bangladesh",
+    "placeName": "Bongo Bazaar Bus stop"
+  },
+  {
+    "labels": [
+      "Gabtoli",
+      "Gabtoli (গাবতলি)",
+      "গাবতলি"
+    ],
+    "coordinates": [
+      23.7834217,
+      90.3438107
+    ],
+    "source": "nominatim:Gabtoli bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Golapbagh Chowrasta",
+      "Golapbagh Chowrasta (গোলাপবাগ চৌরাস্তা)",
+      "গোলাপবাগ চৌরাস্তা"
+    ],
+    "coordinates": [
+      23.7172934,
+      90.4295357
+    ],
+    "source": "photon:Golapbagh Chowrasta bus stop, Dhaka, Bangladesh",
+    "address": "Golapbagh Chowrasta Bus stop, ধলপুর নতুন রাস্তা, ধলপুর, গোলাপবাগ, ঢাকা, Bangladesh",
+    "placeName": "Golapbagh Chowrasta Bus stop"
+  },
+  {
+    "labels": [
+      "Gulistan",
+      "GPO"
+    ],
+    "coordinates": [
+      23.7234,
+      90.4108
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Gulshan 1"
+    ],
+    "coordinates": [
+      23.7808,
+      90.4161
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Gulshan 2"
+    ],
+    "coordinates": [
+      23.7926,
+      90.4143
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Gulshan Bridge",
+      "Gulshan Bridge (গুলশান ব্রিজ)",
+      "গুলশান ব্রিজ"
+    ],
+    "coordinates": [
+      23.780372,
+      90.4129214
+    ],
+    "source": "photon:Gulshan Bridge bus stop, Dhaka, Bangladesh",
+    "address": "Gulshan Bridge Bus Stop, বীর উত্তম এ. কে. খন্দকার সড়ক, গুলশান ১, গুলশান, ঢাকা, Bangladesh",
+    "placeName": "Gulshan Bridge Bus Stop"
+  },
+  {
+    "labels": [
+      "Hasnabad",
+      "Hasnabad (হাসনাবাদ)",
+      "হাসনাবাদ"
+    ],
+    "coordinates": [
+      23.6831264,
+      90.4226066
+    ],
+    "source": "photon:Hasnabad bus stop, Dhaka, Bangladesh",
+    "address": "Hasnabad Bus Stop, হাসনাবাদ হাউজিং সেন্টার সড়ক, ইকুরিয়া, হাসনাবাদ, Bangladesh",
+    "placeName": "Hasnabad Bus Stop"
+  },
+  {
+    "labels": [
+      "Hazaribag",
+      "Hazaribag (হাজারিবাগ)",
+      "হাজারিবাগ"
+    ],
+    "coordinates": [
+      23.7323936,
+      90.3628446
+    ],
+    "source": "photon:Hazaribag bus stop, Dhaka, Bangladesh",
+    "address": "Hazaribagh Bus stop, সদরঘাট - গাবতলী সড়ক, শিকদার এস্টেট, নবাবগঞ্জ, ঢাকা, Bangladesh",
+    "placeName": "Hazaribagh Bus stop"
+  },
+  {
+    "labels": [
+      "Hemayetpur",
+      "Hemayetpur (হেমায়েতপুর)",
+      "হেমায়েতপুর"
+    ],
+    "coordinates": [
+      23.793063,
+      90.271944
+    ],
+    "source": "photon:Hemayetpur, Dhaka, Bangladesh",
+    "address": "Hemayetpur, ঢাকা-আরিচা মহাসড়ক, বলিয়ারপুর, Bangladesh",
+    "placeName": "Hemayetpur"
+  },
+  {
+    "labels": [
+      "High Court",
+      "High Court (উচ্চ আদালত)",
+      "উচ্চ আদালত"
+    ],
+    "coordinates": [
+      23.731685,
+      90.4048858
+    ],
+    "source": "nominatim:High Court bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "House Building",
+      "House Building (হাউজ বিল্ডিং)",
+      "হাউজ বিল্ডিং"
+    ],
+    "coordinates": [
+      23.8748268,
+      90.4006897
+    ],
+    "source": "nominatim:House Building, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Jahangir Gate",
+      "Jahangir Gate (জাহাঙ্গীর গেট)",
+      "জাহাঙ্গীর গেট"
+    ],
+    "coordinates": [
+      23.7757744,
+      90.3900382
+    ],
+    "source": "photon:Jahangir Gate bus stop, Dhaka, Bangladesh",
+    "address": "Jahangir Gate Bus stop, বীর উত্তম জিয়াউর রহমান সড়ক, আরজতপাড়া, নাখালপাড়া, ঢাকা, Bangladesh",
+    "placeName": "Jahangir Gate Bus stop"
+  },
+  {
+    "labels": [
+      "Jalkuri",
+      "Jalkuri (জলকুড়ি)",
+      "জলকুড়ি"
+    ],
+    "coordinates": [
+      23.6632342,
+      90.486848
+    ],
+    "source": "photon:Jalkuri bus stop, Dhaka, Bangladesh",
+    "address": "Jalkuri BRTC AC Bus Stop জালকুরী বি আর টি সি এসি বাস স্টপ, ঢাকা-নারায়ণগঞ্জ সংযোগ সড়ক, ভুঁইগড়, নারায়ণগঞ্জ, Bangladesh",
+    "placeName": "Jalkuri BRTC AC Bus Stop জালকুরী বি আর টি সি এসি বাস স্টপ"
+  },
+  {
+    "labels": [
+      "Jamgora",
+      "Jamgora (জামগড়া)",
+      "জামগড়া"
+    ],
+    "coordinates": [
+      23.958134,
+      90.3130902
+    ],
+    "source": "photon:Jamgora bus stop, Dhaka, Bangladesh",
+    "address": "Baghbari Madrasha Bus Stop, Jamgora-Bagbari Road, গাজীপুর, Bangladesh",
+    "placeName": "Baghbari Madrasha Bus Stop"
+  },
+  {
+    "labels": [
+      "Jashimuddin",
+      "Jashimuddin (জসিমউদ্দিন)",
+      "জসিমউদ্দিন"
+    ],
+    "coordinates": [
+      23.8592618,
+      90.4015608
+    ],
+    "source": "photon:Jashimuddin bus stop, Dhaka, Bangladesh",
+    "address": "Jashimuddin Bus stop, সড়ক ৪, কসাইবাড়ী, ঢাকা, Bangladesh",
+    "placeName": "Jashimuddin Bus stop"
+  },
+  {
+    "labels": [
+      "Jatrabari",
+      "Sayapabad"
+    ],
+    "coordinates": [
+      23.711,
+      90.4342
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Kakrail",
+      "Kakrail (কাকরাইল)",
+      "কাকরাইল"
+    ],
+    "coordinates": [
+      23.7376473,
+      90.4083108
+    ],
+    "source": "photon:Kakrail bus stop, Dhaka, Bangladesh",
+    "address": "Kakrail Bus stop, আঞ্জুমান মুফিদুল ইসলাম সড়ক, কাকরাইল, নয়া পল্টন, ঢাকা, Bangladesh",
+    "placeName": "Kakrail Bus stop"
+  },
+  {
+    "labels": [
+      "Kalabagan",
+      "Kalabagan (কলাবাগান)",
+      "কলাবাগান"
+    ],
+    "coordinates": [
+      23.7489662,
+      90.3795211
+    ],
+    "source": "photon:Kalabagan bus stop, Dhaka, Bangladesh",
+    "address": "Kalabagan West Bus Stop, মিরপুর রোড, লেক সার্কাস, কলাবাগান, ঢাকা, Bangladesh",
+    "placeName": "Kalabagan West Bus Stop"
+  },
+  {
+    "labels": [
+      "Kallyanpur",
+      "Kallyanpur (কল্যাণপুর)",
+      "কল্যাণপুর"
+    ],
+    "coordinates": [
+      23.7777584,
+      90.3610369
+    ],
+    "source": "nominatim:Kallyanpur bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Kamalapur",
+      "Kamalapur (কমলাপুর)",
+      "কমলাপুর"
+    ],
+    "coordinates": [
+      23.7315099,
+      90.4252674
+    ],
+    "source": "photon:Kamalapur bus stop, Dhaka, Bangladesh",
+    "address": "Kamalapur Railway Station Bus stop, আউটার সার্কুলার রোড, কমলাপুর ইনল্যান্ড কন্টেইনার ডিপো, কমলাপুর, ঢাকা, Bangladesh",
+    "placeName": "Kamalapur Railway Station Bus stop"
+  },
+  {
+    "labels": [
+      "Kamarpara",
+      "Kamarpara (কামারপাড়া)",
+      "কামারপাড়া"
+    ],
+    "coordinates": [
+      23.8916243,
+      90.3885659
+    ],
+    "source": "photon:Kamarpara bus stop, Dhaka, Bangladesh",
+    "address": "Kamarpara Bus stop, ঢাকা - আশুলিয়া মহাসড়ক, সেক্টর ১০, ভাটুলিয়া, Bangladesh",
+    "placeName": "Kamarpara Bus stop"
+  },
+  {
+    "labels": [
+      "Kamrangirchar",
+      "Kamrangirchar (কামরাঙ্গীরচর)",
+      "কামরাঙ্গীরচর"
+    ],
+    "coordinates": [
+      23.7145473,
+      90.3813578
+    ],
+    "source": "photon:Kamrangirchar bus stop, Dhaka, Bangladesh",
+    "address": "Kamrangirchar Bus Stop, সদরঘাট - গাবতলী সড়ক, বাদামতলী, বাবু বাজার, ঢাকা, Bangladesh",
+    "placeName": "Kamrangirchar Bus Stop"
+  },
+  {
+    "labels": [
+      "Katabon",
+      "Katabon (কাটাবন)",
+      "কাটাবন"
+    ],
+    "coordinates": [
+      23.7386356,
+      90.3914195
+    ],
+    "source": "photon:Katabon bus stop, Dhaka, Bangladesh",
+    "address": "Katabon Bus stop, Shahbagh Rd, Dhaka, শাহবাগ রোড, কাঁটাবন, শাহবাগ, ঢাকা, Bangladesh",
+    "placeName": "Katabon Bus stop"
+  },
+  {
+    "labels": [
+      "Kawran Bazar"
+    ],
+    "coordinates": [
+      23.7514,
+      90.3938
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Kazipara"
+    ],
+    "coordinates": [
+      23.8095,
+      90.3687
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Kazla",
+      "Kazla (কাজলা)",
+      "কাজলা"
+    ],
+    "coordinates": [
+      24.3644369,
+      88.632798
+    ],
+    "source": "photon:Kazla bus stop, Dhaka, Bangladesh",
+    "address": "Kazla Bus Stop, Dhaka - Rajshahi Highway, Bangladesh",
+    "placeName": "Kazla Bus Stop"
+  },
+  {
+    "labels": [
+      "Keraniganj",
+      "Keraniganj (কেরাণীগঞ্জ)",
+      "কেরাণীগঞ্জ"
+    ],
+    "coordinates": [
+      23.692886,
+      90.3997856
+    ],
+    "source": "photon:Keraniganj bus stop, Dhaka, Bangladesh",
+    "address": "Hijoltola Bus stop, Keraniganj, Dhaka, বাবু বাজার সেতু (বুড়িগঙ্গা ২য় সেতু), ঝাউবাড়ি, নাজিরাবাগ, শুভাড্ডা, Bangladesh",
+    "placeName": "Hijoltola Bus stop"
+  },
+  {
+    "labels": [
+      "Khamar Bari",
+      "Khamar Bari (খামার বাড়ি)",
+      "খামার বাড়ি"
+    ],
+    "coordinates": [
+      23.7591274,
+      90.383882
+    ],
+    "source": "photon:Khamar Bari bus stop, Dhaka, Bangladesh",
+    "address": "Khamar Bari Bus stop, বেগম রোকেয়া সরণী, মণিপুরি পাড়া, রাজাবাজার, ঢাকা, Bangladesh",
+    "placeName": "Khamar Bari Bus stop"
+  },
+  {
+    "labels": [
+      "Khejur Bagan",
+      "Khejur Bagan (খেজুর বাগান)",
+      "খেজুর বাগান"
+    ],
+    "coordinates": [
+      23.8898191,
+      90.3219224
+    ],
+    "source": "photon:Khejur Bagan bus stop, Dhaka, Bangladesh",
+    "address": "Khejur Bagan Bus Stop, Anowar Jung Road, আশুলিয়া, গৌরিপুর, Bangladesh",
+    "placeName": "Khejur Bagan Bus Stop"
+  },
+  {
+    "labels": [
+      "Khilgaon",
+      "Khilgaon (খিলগাঁও)",
+      "খিলগাঁও"
+    ],
+    "coordinates": [
+      23.7481057,
+      90.4236954
+    ],
+    "source": "photon:Khilgaon bus stop, Dhaka, Bangladesh",
+    "address": "Khilgaon Bus Stop, অতিশ দীপঙ্কর সড়ক, বকশীবাগ, খিলগাঁও, ঢাকা, Bangladesh",
+    "placeName": "Khilgaon Bus Stop"
+  },
+  {
+    "labels": [
+      "Khilkhet",
+      "Khilkhet (খিলক্ষেত)",
+      "খিলক্ষেত"
+    ],
+    "coordinates": [
+      23.8294051,
+      90.4200925
+    ],
+    "source": "photon:Khilkhet bus stop, Dhaka, Bangladesh",
+    "address": "Khilkhet Bus stop, Bus stop, নতুন বিমানবন্দর সড়ক, নিকুঞ্জ ২, খিলক্ষেত, ঢাকা, Bangladesh",
+    "placeName": "Khilkhet Bus stop"
+  },
+  {
+    "labels": [
+      "Kochukhet",
+      "Kochukhet (কচুক্ষেত)",
+      "কচুক্ষেত"
+    ],
+    "coordinates": [
+      23.7910321,
+      90.3879287
+    ],
+    "source": "photon:Kochukhet bus stop, Dhaka, Bangladesh",
+    "address": "Kochukhet - Cantonment Circle, Bus stop, Mirpur Road No.14, কচুক্ষেত, কাফরুল, ঢাকা, Bangladesh",
+    "placeName": "Kochukhet - Cantonment Circle"
+  },
+  {
+    "labels": [
+      "Konabari",
+      "Konabari (কোনাবাড়ি)",
+      "কোনাবাড়ি"
+    ],
+    "coordinates": [
+      24.0109423,
+      90.3215164
+    ],
+    "source": "photon:Konabari bus stop, Dhaka, Bangladesh",
+    "address": "Konabari Bus Stop, Dhaka - Tangail Highway, কোনাবাড়ী, Bangladesh",
+    "placeName": "Konabari Bus Stop"
+  },
+  {
+    "labels": [
+      "Kuril Bishwa Road",
+      "Kuril Bishwa Road (কুড়িল বিশ্ব রোড)",
+      "কুড়িল বিশ্ব রোড"
+    ],
+    "coordinates": [
+      23.8207235,
+      90.417603
+    ],
+    "source": "nominatim:Kuril Bishwa Road bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Kuril Flyover",
+      "Kuril Flyover (কুড়িল ফ্লাইওভার)",
+      "কুড়িল ফ্লাইওভার"
+    ],
+    "coordinates": [
+      23.825092,
+      90.4211825
+    ],
+    "source": "photon:Kuril Flyover bus stop, Dhaka, Bangladesh",
+    "address": "BRTC Double Decker Bus Stop, Kuril Flyover, নিকুঞ্জ ১, কুড়িল, ঢাকা, Bangladesh",
+    "placeName": "BRTC Double Decker Bus Stop"
+  },
+  {
+    "labels": [
+      "Malibaag Moor",
+      "Mouchak"
+    ],
+    "coordinates": [
+      23.7535,
+      90.4149
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Malibagh",
+      "Malibagh (মালিবাগ)",
+      "মালিবাগ"
+    ],
+    "coordinates": [
+      23.7496972,
+      90.4126346
+    ],
+    "source": "photon:Malibagh bus stop, Dhaka, Bangladesh",
+    "address": "Malibagh Railgate South Bus Stop, মগবাজার-মৌচাক ফ্লাইওভার, টিএন্ডটি কলোনী, মগবাজার, ঢাকা, Bangladesh",
+    "placeName": "Malibagh Railgate South Bus Stop"
+  },
+  {
+    "labels": [
+      "Malibagh Railgate",
+      "Malibagh Railgate (মালিবাগ রেলগেট)",
+      "মালিবাগ রেলগেট"
+    ],
+    "coordinates": [
+      23.7496972,
+      90.4126346
+    ],
+    "source": "photon:Malibagh Railgate bus stop, Dhaka, Bangladesh",
+    "address": "Malibagh Railgate South Bus Stop, মগবাজার-মৌচাক ফ্লাইওভার, টিএন্ডটি কলোনী, মগবাজার, ঢাকা, Bangladesh",
+    "placeName": "Malibagh Railgate South Bus Stop"
+  },
+  {
+    "labels": [
+      "Manik Nagar",
+      "Manik Nagar (মানিক নগর)",
+      "মানিক নগর"
+    ],
+    "coordinates": [
+      23.7224852,
+      90.4289394
+    ],
+    "source": "photon:Manik Nagar bus stop, Dhaka, Bangladesh",
+    "address": "Manik Nagar Bus stop, Maniknagar Road, পুকুরপাড়, মানিকনগর, ঢাকা, Bangladesh",
+    "placeName": "Manik Nagar Bus stop"
+  },
+  {
+    "labels": [
+      "Maowa",
+      "Maowa (মাওয়া)",
+      "মাওয়া"
+    ],
+    "coordinates": [
+      23.4740429,
+      90.2552704
+    ],
+    "source": "photon:Maowa bus stop, Dhaka, Bangladesh",
+    "address": "Maowa Bus Stand, Dhaka - Barisal Highway, Mawa, মাওয়া-ভাঙ্গা এক্সপ্রেসওয়ে, মাওয়া, Bangladesh",
+    "placeName": "Maowa Bus Stand"
+  },
+  {
+    "labels": [
+      "Matuail",
+      "Matuail (মাতুয়াইল)",
+      "মাতুয়াইল"
+    ],
+    "coordinates": [
+      23.6949652,
+      90.4663909
+    ],
+    "source": "photon:Matuail bus stop, Dhaka, Bangladesh",
+    "address": "Matuail medical bus stop, ঢাকা–কুমিল্লা মহাসড়ক, শিমরাইল, কাঁচপুর, Bangladesh",
+    "placeName": "Matuail medical bus stop"
+  },
+  {
+    "labels": [
+      "Mazar Road",
+      "Mazar Road (মাজার রোড)",
+      "মাজার রোড"
+    ],
+    "coordinates": [
+      23.7950254,
+      90.3486124
+    ],
+    "source": "photon:Mazar Road bus stop, Dhaka, Bangladesh",
+    "address": "Mazar Road Konabari, Bus stop, মিরপুর বেড়িবাধ সড়ক, উত্তর বিশিল, বিশিল, ঢাকা, Bangladesh",
+    "placeName": "Mazar Road Konabari"
+  },
+  {
+    "labels": [
+      "MES",
+      "MES (এমইএস)",
+      "এমইএস"
+    ],
+    "coordinates": [
+      23.8161374,
+      90.4054005
+    ],
+    "source": "photon:MES bus stop, Dhaka, Bangladesh",
+    "address": "MES Bus Stop, নতুন বিমানবন্দর সড়ক, নিকুঞ্জ ১, জোয়ার সাহারা, ঢাকা, Bangladesh",
+    "placeName": "MES Bus Stop"
+  },
+  {
+    "labels": [
+      "Mill Gate",
+      "Mill Gate (মিল গেট)",
+      "মিল গেট"
+    ],
+    "coordinates": [
+      23.8960141,
+      90.3993768
+    ],
+    "source": "photon:Mill Gate bus stop, Dhaka, Bangladesh",
+    "address": "Mill Gate Bus Stop মিল গেট বাস স্টপ, ঢাকা-ময়মনসিংহ মহাসড়ক, চেরাগ আলী, টঙ্গী, Bangladesh",
+    "placeName": "Mill Gate Bus Stop মিল গেট বাস স্টপ"
+  },
+  {
+    "labels": [
+      "Mirpur 1",
+      "Mirpur 1 (মিরপুর ১)",
+      "মিরপুর ১"
+    ],
+    "coordinates": [
+      23.7983759,
+      90.353468
+    ],
+    "source": "photon:Mirpur 1 bus stop, Dhaka, Bangladesh",
+    "address": "Mirpur 1 Bus Stop, Bus station, মিরপুর-১ ফুটওভার ব্রিজ, কলওয়ালা পাড়া, শাহ আলী বাগ, ঢাকা, Bangladesh",
+    "placeName": "Mirpur 1 Bus Stop"
+  },
+  {
+    "labels": [
+      "Mirpur 10"
+    ],
+    "coordinates": [
+      23.8044,
+      90.3667
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Mirpur 13",
+      "Mirpur 13 (মিরপুর ১৩)",
+      "মিরপুর ১৩"
+    ],
+    "coordinates": [
+      23.8045178,
+      90.376564
+    ],
+    "source": "photon:Mirpur 13 bus stop, Dhaka, Bangladesh",
+    "address": "Mirpur 13, Bus stop, মিরপুর ১৪, মিরপুর ১৪, ইব্রাহিমপুর, ঢাকা, Bangladesh",
+    "placeName": "Mirpur 13"
+  },
+  {
+    "labels": [
+      "Mirpur 14",
+      "Mirpur 14 (মিরপুর ১৪)",
+      "মিরপুর ১৪"
+    ],
+    "coordinates": [
+      23.7987123,
+      90.3867674
+    ],
+    "source": "photon:Mirpur 14 bus stop, Dhaka, Bangladesh",
+    "address": "Mirpur 14 Bus stop, Mirpur road-14, মিরপুর ১৪, ইব্রাহিমপুর, ঢাকা, Bangladesh",
+    "placeName": "Mirpur 14 Bus stop"
+  },
+  {
+    "labels": [
+      "Mirpur 2",
+      "Mirpur 2 (মিরপুর ২)",
+      "মিরপুর ২"
+    ],
+    "coordinates": [
+      23.805394,
+      90.3631338
+    ],
+    "source": "photon:Mirpur 2 bus stop, Dhaka, Bangladesh",
+    "address": "Mirpur 2 Bus Stop, Mirpur Road, মিরপুর ২, বড়বাগ, Dhaka, Bangladesh",
+    "placeName": "Mirpur 2 Bus Stop"
+  },
+  {
+    "labels": [
+      "Mirpur 6",
+      "Mirpur 6 (মিরপুর ৬)",
+      "মিরপুর ৬"
+    ],
+    "coordinates": [
+      23.8053029,
+      90.3633273
+    ],
+    "source": "photon:Mirpur 6 bus stop, Dhaka, Bangladesh",
+    "address": "Mirpur 2 Bus stop, Milk Vita Road, Mirpur 6, মিরপুর, ঢাকা, Bangladesh",
+    "placeName": "Mirpur 2 Bus stop"
+  },
+  {
+    "labels": [
+      "Mohakhali"
+    ],
+    "coordinates": [
+      23.7775,
+      90.3972
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Mohammadpur",
+      "Mohammadpur (মোহাম্মদপুর)",
+      "মোহাম্মদপুর"
+    ],
+    "coordinates": [
+      23.7571876,
+      90.3605733
+    ],
+    "source": "photon:Mohammadpur bus stop, Dhaka, Bangladesh",
+    "address": "Mohammadpur Bus stop, মোহাম্মদপুর বেড়িবাঁধ সংযোগ সড়ক, কাটাসুর, লালমাটিয়া, ঢাকা, Bangladesh",
+    "placeName": "Mohammadpur Bus stop"
+  },
+  {
+    "labels": [
+      "Motijheel"
+    ],
+    "coordinates": [
+      23.7325,
+      90.4172
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Mugdapara",
+      "Mugdapara (মুগদাপাড়া)",
+      "মুগদাপাড়া"
+    ],
+    "coordinates": [
+      23.7311981,
+      90.4285295
+    ],
+    "source": "photon:Mugdapara bus stop, Dhaka, Bangladesh",
+    "address": "Mugdapara Bus stop, অতিশ দীপঙ্কর সড়ক, টিটিপাড়া, গোলাপবাগ, ঢাকা, Bangladesh",
+    "placeName": "Mugdapara Bus stop"
+  },
+  {
+    "labels": [
+      "Naya Bazar",
+      "Naya Bazar (নয়া বাজার)",
+      "নয়া বাজার"
+    ],
+    "coordinates": [
+      23.7146123,
+      90.408536
+    ],
+    "source": "photon:Naya Bazar bus stop, Dhaka, Bangladesh",
+    "address": "Naya Bazar Bus Stop, Nawab Eusuf Rd, Dhaka, নর্থ সাউথ রোড, আলু বাজার, বংশাল, ঢাকা, Bangladesh",
+    "placeName": "Naya Bazar Bus Stop"
+  },
+  {
+    "labels": [
+      "Nilkhet",
+      "Nilkhet (নীলক্ষেত)",
+      "নীলক্ষেত"
+    ],
+    "coordinates": [
+      23.7322403,
+      90.3950982
+    ],
+    "source": "photon:Nilkhet bus stop, Dhaka, Bangladesh",
+    "address": "Varsity Bus Stops, Nilkhet Rd, Dhaka, শহীদ মিনার সড়ক, কাঁটাবন, শাহবাগ, ঢাকা, Bangladesh",
+    "placeName": "Varsity Bus Stops"
+  },
+  {
+    "labels": [
+      "Nimtola",
+      "Nimtola (নিমতলা)",
+      "নিমতলা"
+    ],
+    "coordinates": [
+      23.6158023,
+      90.3320661
+    ],
+    "source": "photon:Nimtola bus stop, Dhaka, Bangladesh",
+    "address": "Nimtola Bus stop, Dhaka - Mawa Hwy, Solepur, ঢাকা-মাওয়া এক্সপ্রেসওয়ে, হাসাড়া, Bangladesh",
+    "placeName": "Nimtola Bus stop"
+  },
+  {
+    "labels": [
+      "Nobinagar",
+      "Nobinagar (নবীনগর)",
+      "নবীনগর"
+    ],
+    "coordinates": [
+      23.7059999,
+      90.4312589
+    ],
+    "source": "photon:Nobinagar bus stop, Dhaka, Bangladesh",
+    "address": "Mir Hazirbagh Bus stop, South Jatrabari, Nobinagar, Dhaka, দয়াগঞ্জ নতুন রাস্তা, পশ্চিম যাত্রাবাড়ী, দয়াগঞ্জ, ঢাকা, Bangladesh",
+    "placeName": "Mir Hazirbagh Bus stop"
+  },
+  {
+    "labels": [
+      "Notun Bazar",
+      "Notun Bazar (নতুন বাজার)",
+      "নতুন বাজার"
+    ],
+    "coordinates": [
+      23.7969059,
+      90.4237478
+    ],
+    "source": "nominatim:Notun Bazar bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Pallabi"
+    ],
+    "coordinates": [
+      23.8216,
+      90.3653
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Palli Bidyut",
+      "Palli Bidyut (পল্লী বিদ্যুৎ)",
+      "পল্লী বিদ্যুৎ"
+    ],
+    "coordinates": [
+      23.924306,
+      90.263235
+    ],
+    "source": "photon:Palli Bidyut, Dhaka, Bangladesh",
+    "address": "Palli Bidyut, নবীনগর - চন্দ্রা মহাসড়ক, নবীনগর, Bangladesh",
+    "placeName": "Palli Bidyut"
+  },
+  {
+    "labels": [
+      "Paltan",
+      "Paltan (পল্টন)",
+      "পল্টন"
+    ],
+    "coordinates": [
+      23.7303048,
+      90.4098134
+    ],
+    "source": "nominatim:Paltan bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Paturia",
+      "Paturia (পাটুরিয়া)",
+      "পাটুরিয়া"
+    ],
+    "coordinates": [
+      23.7894754,
+      89.8095946
+    ],
+    "source": "photon:Paturia bus stop, Dhaka, Bangladesh",
+    "address": "Paturia Bus Tarminal, ঢাকা - আরিচা মহাসড়ক, পাটুরিয়া, Bangladesh",
+    "placeName": "Paturia Bus Tarminal"
+  },
+  {
+    "labels": [
+      "Press Club",
+      "Press Club (প্রেস ক্লাব)",
+      "প্রেস ক্লাব"
+    ],
+    "coordinates": [
+      23.7301359,
+      90.4073461
+    ],
+    "source": "nominatim:Press Club bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Purobi",
+      "Purobi (পুরবী)",
+      "পুরবী"
+    ],
+    "coordinates": [
+      22.3327554,
+      91.8522559
+    ],
+    "source": "photon:Purobi bus stop, Dhaka, Bangladesh",
+    "address": "Purobi Bus Service, New Bridge Bus Stop, Dhaka - Chittagong Hwy, Chattogram, ঢাকা-চট্টগ্রাম মহাসড়ক, বকশীর হাট, চট্টগ্রাম, Bangladesh",
+    "placeName": "Purobi Bus Service"
+  },
+  {
+    "labels": [
+      "Rajarbag",
+      "Rajarbag (রাজারবাগ)",
+      "রাজারবাগ"
+    ],
+    "coordinates": [
+      23.7397866,
+      90.4200593
+    ],
+    "source": "photon:Rajarbag bus stop, Dhaka, Bangladesh",
+    "address": "Rajarbagh Bus stop, আউটার সার্কুলার রোড, কমলাপুর ইনল্যান্ড কন্টেইনার ডিপো, কমলাপুর, ঢাকা, Bangladesh",
+    "placeName": "Rajarbagh Bus stop"
+  },
+  {
+    "labels": [
+      "Rajendrapur",
+      "Rajendrapur (রাজেন্দ্রপুর)",
+      "রাজেন্দ্রপুর"
+    ],
+    "coordinates": [
+      23.6633331,
+      90.3901193
+    ],
+    "source": "photon:Rajendrapur bus stop, Dhaka, Bangladesh",
+    "address": "Rajendrapur Bus Stop, Dhaka - Mawa Hwy, Baghair, ঢাকা-মাওয়া এক্সপ্রেসওয়ে, ঝিলমিল আবাসিক, Bangladesh",
+    "placeName": "Rajendrapur Bus Stop"
+  },
+  {
+    "labels": [
+      "Rajlakshmi",
+      "Rajlakshmi (রাজলক্ষ্মী)",
+      "রাজলক্ষ্মী"
+    ],
+    "coordinates": [
+      23.8643282,
+      90.3999441
+    ],
+    "source": "nominatim:Rajlakshmi bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Rampura Bridge",
+      "Rampura Bazar"
+    ],
+    "coordinates": [
+      23.7641,
+      90.4247
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Rayerbag",
+      "Rayerbag (রায়েরবাগ)",
+      "রায়েরবাগ"
+    ],
+    "coordinates": [
+      23.699431,
+      90.457022
+    ],
+    "source": "photon:Rayerbag bus stop, Dhaka, Bangladesh",
+    "address": "Rayerbag bus stop, ঢাকা–কুমিল্লা মহাসড়ক, শিমরাইল, কাঁচপুর, Bangladesh",
+    "placeName": "Rayerbag bus stop"
+  },
+  {
+    "labels": [
+      "Rupnagar",
+      "Rupnagar (রূপনগর)",
+      "রূপনগর"
+    ],
+    "coordinates": [
+      23.827317,
+      90.3453653
+    ],
+    "source": "photon:Rupnagar bus stop, Dhaka, Bangladesh",
+    "address": "Rupnagar Bus Stop, Bus stop, Beribad-Pallabih, ইস্টার্ন হাউজিং, পল্লবী, ঢাকা, Bangladesh",
+    "placeName": "Rupnagar Bus Stop"
+  },
+  {
+    "labels": [
+      "Sanarpar",
+      "Sanarpar (সানারপাড়)",
+      "সানারপাড়"
+    ],
+    "coordinates": [
+      23.6949106,
+      90.4902493
+    ],
+    "source": "photon:Sanarpar bus stop, Dhaka, Bangladesh",
+    "address": "sanarpar bus stop, ঢাকা–কুমিল্লা মহাসড়ক, শিমরাইল, কাঁচপুর, Bangladesh",
+    "placeName": "sanarpar bus stop"
+  },
+  {
+    "labels": [
+      "Saudi Colony",
+      "Saudi Colony (সৌদি কলোনি)",
+      "সৌদি কলোনি"
+    ],
+    "coordinates": [
+      23.7783443,
+      90.3893653
+    ],
+    "source": "photon:Saudi Colony bus stop, Dhaka, Bangladesh",
+    "address": "Saudi Colony Bus Stop, বীর উত্তম জিয়াউর রহমান সড়ক, আরজতপাড়া, নাখালপাড়া, ঢাকা, Bangladesh",
+    "placeName": "Saudi Colony Bus Stop"
+  },
+  {
+    "labels": [
+      "Savar",
+      "Savar (সাভার)",
+      "সাভার"
+    ],
+    "coordinates": [
+      23.8472494,
+      90.2572989
+    ],
+    "source": "photon:Savar bus stop, Dhaka, Bangladesh",
+    "address": "Savar Bazar Bus Stop, ঢাকা - আরিচা মহাসড়ক, দক্ষিণপাড়া, সাভার, Bangladesh",
+    "placeName": "Savar Bazar Bus Stop"
+  },
+  {
+    "labels": [
+      "Science Lab",
+      "New Market"
+    ],
+    "coordinates": [
+      23.7398,
+      90.3855
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Shahbag"
+    ],
+    "coordinates": [
+      23.7383,
+      90.3953
+    ],
+    "source": "seed_hub_alignment"
+  },
+  {
+    "labels": [
+      "Shahjadpur",
+      "Shahjadpur (শাহজাদপুর)",
+      "শাহজাদপুর"
+    ],
+    "coordinates": [
+      23.7920887,
+      90.4245009
+    ],
+    "source": "photon:Shahjadpur bus stop, Dhaka, Bangladesh",
+    "address": "Shahjadpur Bus Stop, বীর উত্তম রফিকুল ইসলাম এভিনিউ, গুপিপাড়া, গুলশান, ঢাকা, Bangladesh",
+    "placeName": "Shahjadpur Bus Stop"
+  },
+  {
+    "labels": [
+      "Shantinagar",
+      "Shantinagar (শান্তিনগর)",
+      "শান্তিনগর"
+    ],
+    "coordinates": [
+      22.8713933,
+      91.3958444
+    ],
+    "source": "photon:Shantinagar bus stop, Dhaka, Bangladesh",
+    "address": "Shantinagar Bus Stop, Feni - Sonagazi - Muhuriganj Project Road, Sujapur, Bangladesh",
+    "placeName": "Shantinagar Bus Stop"
+  },
+  {
+    "labels": [
+      "Shewra",
+      "Shewra (শেওড়া)",
+      "শেওড়া"
+    ],
+    "coordinates": [
+      23.8190439,
+      90.4155151
+    ],
+    "source": "photon:Shewra bus stop, Dhaka, Bangladesh",
+    "address": "Shewra Bus stop, নতুন বিমানবন্দর সড়ক, নিকুঞ্জ ১, জোয়ার সাহারা, ঢাকা, Bangladesh",
+    "placeName": "Shewra Bus stop"
+  },
+  {
+    "labels": [
+      "Shimultola",
+      "Shimultola (সিমুলতলা)",
+      "সিমুলতলা"
+    ],
+    "coordinates": [
+      23.9374033,
+      90.2857143
+    ],
+    "source": "photon:Shimultola bus stop, Dhaka, Bangladesh",
+    "address": "Shimultola Bus Stand, আশুলিয়া মহাসড়ক, আশুলিয়া, সুজাবাদ, Bangladesh",
+    "placeName": "Shimultola Bus Stand"
+  },
+  {
+    "labels": [
+      "Shishu Mela",
+      "Shishu Mela (শিশু মেলা)",
+      "শিশু মেলা"
+    ],
+    "coordinates": [
+      23.7729437,
+      90.3671489
+    ],
+    "source": "nominatim:Shishu Mela bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Shiyal Bari",
+      "Shiyal Bari (শিয়াল বাড়ি)",
+      "শিয়াল বাড়ি"
+    ],
+    "coordinates": [
+      23.8081946,
+      90.3580172
+    ],
+    "source": "photon:Shiyal Bari bus stop, Dhaka, Bangladesh",
+    "address": "Shiyal Bari Mor Bus Stop, Hazi Road, শিয়ালবাড়ী, বড়বাগ, ঢাকা, Bangladesh",
+    "placeName": "Shiyal Bari Mor Bus Stop"
+  },
+  {
+    "labels": [
+      "Shukrabad",
+      "Shukrabad (শুক্রাবাদ)",
+      "শুক্রাবাদ"
+    ],
+    "coordinates": [
+      23.7524661,
+      90.377664
+    ],
+    "source": "photon:Shukrabad bus stop, Dhaka, Bangladesh",
+    "address": "Shukrabad Bus Stopage, মিরপুর রোড, লেক সার্কাস, সোবহানবাগ, ঢাকা, Bangladesh",
+    "placeName": "Shukrabad Bus Stopage"
+  },
+  {
+    "labels": [
+      "Shyamoli",
+      "Shyamoli (শ্যামলী)",
+      "শ্যামলী"
+    ],
+    "coordinates": [
+      23.7749659,
+      90.365708
+    ],
+    "source": "nominatim:শ্যামলী bus stop, Dhaka, Bangladesh"
+  },
+  {
+    "labels": [
+      "Sign Board",
+      "Sign Board (সাইন বোর্ড)",
+      "সাইন বোর্ড"
+    ],
+    "coordinates": [
+      23.9536405,
+      90.3810245
+    ],
+    "source": "photon:Sign Board bus stop, Dhaka, Bangladesh",
+    "address": "Sign Board Bus Stop সাইন বোর্ড বাস স্টপ, Dhaka-Mymensingh, বোর্ড বাজার, গাজীপুর, Bangladesh",
+    "placeName": "Sign Board Bus Stop সাইন বোর্ড বাস স্টপ"
+  },
+  {
+    "labels": [
+      "Signal",
+      "Signal (সিগন্যাল)",
+      "সিগন্যাল"
+    ],
+    "coordinates": [
+      23.7389887,
+      90.388255
+    ],
+    "source": "photon:Signal bus stop, Dhaka, Bangladesh",
+    "address": "Bata Signal Bus Stop, Science Laboratory Rd, কাঁটাবন, শাহবাগ, Dhaka, Bangladesh",
+    "placeName": "Bata Signal Bus Stop"
+  },
+  {
+    "labels": [
+      "Station Road",
+      "Station Road (স্টেশন রোড)",
+      "স্টেশন রোড"
+    ],
+    "coordinates": [
+      23.8930564,
+      90.4020295
+    ],
+    "source": "photon:Station Road bus stop, Dhaka, Bangladesh",
+    "address": "Station Road Bus Stop স্টেশন রোড বাস স্টপ, ঢাকা-ময়মনসিংহ মহাসড়ক, চেরাগ আলী, টঙ্গী, Bangladesh",
+    "placeName": "Station Road Bus Stop স্টেশন রোড বাস স্টপ"
+  },
+  {
+    "labels": [
+      "Taltola",
+      "Taltola (তালতলা)",
+      "তালতলা"
+    ],
+    "coordinates": [
+      23.0140126,
+      89.4122389
+    ],
+    "source": "photon:Taltola bus stop, Dhaka, Bangladesh",
+    "address": "Taltola Bazar Bus Stop, Jessoe-Khulna Hwy, নওয়াপাড়া, Bangladesh",
+    "placeName": "Taltola Bazar Bus Stop"
+  },
+  {
+    "labels": [
+      "Technical",
+      "Technical (টেকনিক্যাল)",
+      "টেকনিক্যাল"
+    ],
+    "coordinates": [
+      23.7818634,
+      90.3513823
+    ],
+    "source": "photon:Technical bus stop, Dhaka, Bangladesh",
+    "address": "Technical Mor Bus stop, Bus stop, মিরপুর রোড, বাগবাড়ী, গাবতলী, ঢাকা, Bangladesh",
+    "placeName": "Technical Mor Bus stop"
+  },
+  {
+    "labels": [
+      "Tikatuli",
+      "Tikatuli (টিকাটুলি)",
+      "টিকাটুলি"
+    ],
+    "coordinates": [
+      23.7160547,
+      90.4209227
+    ],
+    "source": "photon:Tikatuli bus stop, Dhaka, Bangladesh",
+    "address": "Doiyaganj City Corporation Market Bus stop, Doyaganj Municipal Market, Tikatuli, Dhaka, দয়াগঞ্জ সড়ক, ঋষিপাড়া, দয়াগঞ্জ, ঢাকা, Bangladesh",
+    "placeName": "Doiyaganj City Corporation Market Bus stop"
+  },
+  {
+    "labels": [
+      "Tolarbag",
+      "Tolarbag (টোলারবাগ)",
+      "টোলারবাগ"
+    ],
+    "coordinates": [
+      23.7871935,
+      90.353776
+    ],
+    "source": "photon:Tolarbag bus stop, Dhaka, Bangladesh",
+    "address": "Tolarbag Bus Stop, Bus stop, দারুস সালাম রোড, কলওয়ালা পাড়া, টোলারবাগ, ঢাকা, Bangladesh",
+    "placeName": "Tolarbag Bus Stop"
+  },
+  {
+    "labels": [
+      "Tongi",
+      "Tongi (টঙ্গী)",
+      "টঙ্গী"
+    ],
+    "coordinates": [
+      23.8937895,
+      90.4034861
+    ],
+    "source": "photon:Tongi bus stop, Dhaka, Bangladesh",
+    "address": "Tongi Bus Stop, Tongi Kaliganj Highway, চেরাগ আলী, টঙ্গী, Bangladesh",
+    "placeName": "Tongi Bus Stop"
+  },
+  {
+    "labels": [
+      "Uttara",
+      "Uttara (উত্তরা)",
+      "উত্তরা"
+    ],
+    "coordinates": [
+      23.8742893,
+      90.4004176
+    ],
+    "source": "photon:Uttara bus stop, Dhaka, Bangladesh",
+    "address": "Uttara House Building Bus stop, ঢাকা-ময়মনসিংহ মহাসড়ক, সেক্টর ৯, উত্তরা, Bangladesh",
+    "placeName": "Uttara House Building Bus stop"
+  },
+  {
+    "labels": [
+      "Wireless",
+      "Wireless (ওয়্যারলেস)",
+      "ওয়্যারলেস"
+    ],
+    "coordinates": [
+      23.5998872,
+      89.8267507
+    ],
+    "source": "photon:Wireless, Dhaka, Bangladesh",
+    "address": "Dhaka-Faridpur Hwy / Wireless Para Rd, ফরিদপুর, Bangladesh",
+    "placeName": "Dhaka-Faridpur Hwy / Wireless Para Rd"
+  },
+  {
+    "labels": [
+      "Workshop",
+      "Workshop (ওয়ার্কশপ)",
+      "ওয়ার্কশপ"
+    ],
+    "coordinates": [
+      23.7884215,
+      90.3912342
+    ],
+    "source": "photon:Workshop bus stop, Dhaka, Bangladesh",
+    "address": "Workshop Bus Stop, স্বাধীনতা সরণী, চেয়ারম্যান বাড়ি, গুলশান, ঢাকা, Bangladesh",
+    "placeName": "Workshop Bus Stop"
+  },
+  {
+    "labels": [
+      "Zirabo",
+      "Zirabo (জিরাবো)",
+      "জিরাবো"
+    ],
+    "coordinates": [
+      23.9131721,
+      90.3187806
+    ],
+    "source": "photon:Zirabo bus stop, Dhaka, Bangladesh",
+    "address": "Zirabo Bus stop, Bus stop, Dewan Idris Sarak, জিরাবো, Bangladesh",
+    "placeName": "Zirabo Bus stop"
+  },
+  {
+    "labels": [
+      "Zirani Bazar",
+      "Zirani Bazar (জিরানী বাজার)",
+      "জিরানী বাজার"
+    ],
+    "coordinates": [
+      23.9935433,
+      90.2556357
+    ],
+    "source": "photon:Zirani Bazar, Dhaka, Bangladesh",
+    "address": "Zirani Bazar, নবীনগর - চন্দ্রা মহাসড়ক, Bangladesh",
+    "placeName": "Zirani Bazar"
+  }
+]

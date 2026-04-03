@@ -10,7 +10,9 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "build:bus-dataset": "node scripts/build-dhaka-bus-seed.mjs",
-    "build:leguna-dataset": "node scripts/build-dhaka-leguna-seed.mjs"
+    "build:leguna-dataset": "node scripts/build-dhaka-leguna-seed.mjs",
+    "geocode:bus-stops": "node scripts/geocode-dhaka-bus-stops.mjs",
+    "merge:bus-stop-coordinates": "node scripts/geocode-dhaka-bus-stops.mjs --merge-approved"
   },
   "dependencies": {
     "@radix-ui/react-scroll-area": "^1.2.10",

@@ -1,6 +1,11 @@
 import { randomUUID } from "crypto";
 
-import { dhakaBusSeedRoutes, dhakaBusSeedStops, type DhakaBusSeedRoute } from "@/lib/data/dhaka-bus-seed";
+import {
+  dhakaBusSeedRoutes,
+  dhakaBusSeedStops,
+  getDhakaBusStopCoordinatesByLabel,
+  type DhakaBusSeedRoute,
+} from "@/lib/data/dhaka-bus-seed";
 import { DHAKA_ACCESS_POINTS } from "@/lib/data/dhaka-access-points";
 import { DHAKA_METRO_STATIONS, getDhakaMetroFareBdtBySequence } from "@/lib/data/dhaka-metro";
 import {
@@ -55,6 +60,10 @@ interface FallbackDirectBusCandidate {
   leg: BusLeg;
   alightingCoordinates: [number, number];
   remainingDistanceKm: number;
+  busDistanceKm: number;
+  progressDistanceKm?: number;
+  progressShare?: number;
+  directionScore: number;
 }
 
 interface FallbackTransferBusCandidate {
@@ -63,6 +72,10 @@ interface FallbackTransferBusCandidate {
   transferLabel: string;
   alightingCoordinates: [number, number];
   remainingDistanceKm: number;
+  busDistanceKm: number;
+  progressDistanceKm?: number;
+  progressShare?: number;
+  directionScore: number;
 }
 
 const busStopCoordinateLookup = new Map(
@@ -139,7 +152,10 @@ function dedupeStrings(values: string[]) {
 }
 
 function findBusStopCoordinates(label: string) {
-  return busStopCoordinateLookup.get(normalizeTransitText(label));
+  return (
+    getDhakaBusStopCoordinatesByLabel(label) ??
+    busStopCoordinateLookup.get(normalizeTransitText(label))
+  );
 }
 
 function sumCoordinateDistanceKm(coordinates: [number, number][]) {
@@ -1050,6 +1066,66 @@ function findDirectBusLegs(originLabels: string[], destinationLabels: string[]) 
   return legs;
 }
 
+function buildFallbackDirectionMetrics(
+  originCoordinates: [number, number] | undefined,
+  destinationCoordinates: [number, number],
+  remainingDistanceKm: number,
+  busDistanceKm: number,
+) {
+  if (!originCoordinates) {
+    return {
+      progressDistanceKm: undefined,
+      progressShare: undefined,
+      directionScore: remainingDistanceKm * 6 + busDistanceKm,
+    };
+  }
+
+  const baselineDistanceKm = haversineDistanceKm(originCoordinates, destinationCoordinates);
+  const progressDistanceKm = baselineDistanceKm - remainingDistanceKm;
+  const progressShare = baselineDistanceKm > 0 ? progressDistanceKm / baselineDistanceKm : 0;
+  const detourPenaltyKm = Math.max(0, busDistanceKm - Math.max(progressDistanceKm, 0));
+
+  return {
+    progressDistanceKm,
+    progressShare,
+    directionScore:
+      remainingDistanceKm * 6 +
+      detourPenaltyKm * 4 +
+      busDistanceKm -
+      Math.max(progressDistanceKm, 0) * 3 -
+      Math.max(progressShare, 0) * 20,
+  };
+}
+
+function shouldKeepFallbackCandidate(
+  remainingDistanceKm: number,
+  busDistanceKm: number,
+  progressDistanceKm?: number,
+  progressShare?: number,
+) {
+  if (remainingDistanceKm <= 3) {
+    return true;
+  }
+
+  if (progressDistanceKm === undefined || progressShare === undefined) {
+    return true;
+  }
+
+  if (progressDistanceKm <= 0) {
+    return false;
+  }
+
+  if (remainingDistanceKm > 5 && progressDistanceKm < 2 && progressShare < 0.2) {
+    return false;
+  }
+
+  if (remainingDistanceKm > 5 && busDistanceKm > 0 && progressDistanceKm / busDistanceKm < 0.55) {
+    return false;
+  }
+
+  return true;
+}
+
 function findTransferBusLegs(originLabels: string[], destinationLabels: string[]) {
   const legs: Array<{
     firstLeg: BusLeg;
@@ -1110,6 +1186,7 @@ function findTransferBusLegs(originLabels: string[], destinationLabels: string[]
 
 function findClosestDirectBusCandidates(
   originLabels: string[],
+  originCoordinates: [number, number] | undefined,
   destinationCoordinates: [number, number],
 ) {
   const candidates: FallbackDirectBusCandidate[] = [];
@@ -1129,22 +1206,51 @@ function findClosestDirectBusCandidates(
         continue;
       }
 
+      const leg: BusLeg = {
+        route,
+        boardingLabel: route.stopLabels[boarding.index],
+        alightingLabel,
+        stopCount: alightingIndex - boarding.index,
+        serviceWindowText: buildServiceWindowText(route),
+      };
+      const remainingDistanceKm = haversineDistanceKm(alightingCoordinates, destinationCoordinates);
+      const busDistanceKm = estimateBusLegDistanceKm(leg);
+      const directionMetrics = buildFallbackDirectionMetrics(
+        originCoordinates,
+        destinationCoordinates,
+        remainingDistanceKm,
+        busDistanceKm,
+      );
+
+      if (
+        !shouldKeepFallbackCandidate(
+          remainingDistanceKm,
+          busDistanceKm,
+          directionMetrics.progressDistanceKm,
+          directionMetrics.progressShare,
+        )
+      ) {
+        continue;
+      }
+
       candidates.push({
-        leg: {
-          route,
-          boardingLabel: route.stopLabels[boarding.index],
-          alightingLabel,
-          stopCount: alightingIndex - boarding.index,
-          serviceWindowText: buildServiceWindowText(route),
-        },
+        leg,
         alightingCoordinates,
-        remainingDistanceKm: haversineDistanceKm(alightingCoordinates, destinationCoordinates),
+        remainingDistanceKm,
+        busDistanceKm,
+        progressDistanceKm: directionMetrics.progressDistanceKm,
+        progressShare: directionMetrics.progressShare,
+        directionScore: directionMetrics.directionScore,
       });
     }
   }
 
   return candidates
     .sort((a, b) => {
+      if (a.directionScore !== b.directionScore) {
+        return a.directionScore - b.directionScore;
+      }
+
       if (a.remainingDistanceKm !== b.remainingDistanceKm) {
         return a.remainingDistanceKm - b.remainingDistanceKm;
       }
@@ -1156,6 +1262,7 @@ function findClosestDirectBusCandidates(
 
 function findClosestTransferBusCandidates(
   originLabels: string[],
+  originCoordinates: [number, number] | undefined,
   destinationCoordinates: [number, number],
 ) {
   const candidates: FallbackTransferBusCandidate[] = [];
@@ -1195,24 +1302,51 @@ function findClosestTransferBusCandidates(
             continue;
           }
 
+          const firstLeg: BusLeg = {
+            route: firstRoute,
+            boardingLabel: firstRoute.stopLabels[firstBoarding.index],
+            alightingLabel: transferLabel,
+            stopCount: transferIndex - firstBoarding.index,
+            serviceWindowText: buildServiceWindowText(firstRoute),
+          };
+          const secondLeg: BusLeg = {
+            route: secondRoute,
+            boardingLabel: transferLabel,
+            alightingLabel,
+            stopCount: secondAlightingIndex - secondTransfer,
+            serviceWindowText: buildServiceWindowText(secondRoute),
+          };
+          const remainingDistanceKm = haversineDistanceKm(alightingCoordinates, destinationCoordinates);
+          const busDistanceKm =
+            estimateBusLegDistanceKm(firstLeg) + estimateBusLegDistanceKm(secondLeg);
+          const directionMetrics = buildFallbackDirectionMetrics(
+            originCoordinates,
+            destinationCoordinates,
+            remainingDistanceKm,
+            busDistanceKm,
+          );
+
+          if (
+            !shouldKeepFallbackCandidate(
+              remainingDistanceKm,
+              busDistanceKm,
+              directionMetrics.progressDistanceKm,
+              directionMetrics.progressShare,
+            )
+          ) {
+            continue;
+          }
+
           candidates.push({
-            firstLeg: {
-              route: firstRoute,
-              boardingLabel: firstRoute.stopLabels[firstBoarding.index],
-              alightingLabel: transferLabel,
-              stopCount: transferIndex - firstBoarding.index,
-              serviceWindowText: buildServiceWindowText(firstRoute),
-            },
-            secondLeg: {
-              route: secondRoute,
-              boardingLabel: transferLabel,
-              alightingLabel,
-              stopCount: secondAlightingIndex - secondTransfer,
-              serviceWindowText: buildServiceWindowText(secondRoute),
-            },
+            firstLeg,
+            secondLeg,
             transferLabel,
             alightingCoordinates,
-            remainingDistanceKm: haversineDistanceKm(alightingCoordinates, destinationCoordinates),
+            remainingDistanceKm,
+            busDistanceKm,
+            progressDistanceKm: directionMetrics.progressDistanceKm,
+            progressShare: directionMetrics.progressShare,
+            directionScore: directionMetrics.directionScore + TRANSFER_BUFFER_MINUTES,
           });
         }
       }
@@ -1221,6 +1355,10 @@ function findClosestTransferBusCandidates(
 
   return candidates
     .sort((a, b) => {
+      if (a.directionScore !== b.directionScore) {
+        return a.directionScore - b.directionScore;
+      }
+
       if (a.remainingDistanceKm !== b.remainingDistanceKm) {
         return a.remainingDistanceKm - b.remainingDistanceKm;
       }
@@ -2068,6 +2206,7 @@ function collectFallbackBusRoutes(
 
     const directCandidates = findClosestDirectBusCandidates(
       originPoint.busStopLabels,
+      originPoint.coordinates,
       destinationCoordinates,
     );
 
@@ -2086,7 +2225,11 @@ function collectFallbackBusRoutes(
       continue;
     }
 
-    for (const candidate of findClosestTransferBusCandidates(originPoint.busStopLabels, destinationCoordinates)) {
+    for (const candidate of findClosestTransferBusCandidates(
+      originPoint.busStopLabels,
+      originPoint.coordinates,
+      destinationCoordinates,
+    )) {
       routes.push(
         createFallbackTransferBusRoute(
           candidate,

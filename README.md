@@ -66,3 +66,20 @@ Copy `.env.example` to `.env.local` and configure:
 
 - When Google or OpenAI calls fail, the app falls back to curated Dhaka suggestions and mock route logic so the UX remains usable.
 - Search history is stored in memory per server runtime. For fully durable shared history, swap the `src/db/search-store.ts` module with Vercel KV, Postgres, or another persistent store.
+
+## Bus stop coordinate workflow
+
+- Seed and approved bus stop coordinates live in `src/lib/data/dhaka-bus-stop-coordinates.json`.
+- To generate reviewable suggestions for missing bus stops, run:
+
+  ```bash
+  npm run geocode:bus-stops -- --limit 25
+  ```
+
+- This writes `src/lib/data/dhaka-bus-stop-coordinate-suggestions.json` with candidate matches and a `recommended` coordinate for each stop.
+- Review that file and change any trusted rows from `"status": "suggested"` to `"status": "approved"`.
+- Then merge approved rows into the production override file:
+
+  ```bash
+  npm run merge:bus-stop-coordinates
+  ```
