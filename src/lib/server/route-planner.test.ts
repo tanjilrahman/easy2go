@@ -1,8 +1,11 @@
 import { describe, expect, it } from "vitest";
 
+import { dhakaBusSeedRoutes } from "@/lib/data/dhaka-bus-seed";
 import {
   calculateRoutes,
   createPathSignature,
+  estimateBusLegDistanceKm,
+  estimateMetroDistanceKm,
   estimateRickshawFareBdt,
   surfaceRoutes,
 } from "@/lib/server/route-planner";
@@ -76,6 +79,38 @@ describe("estimateRickshawFareBdt", () => {
     expect(estimateRickshawFareBdt(1)).toBe(25);
     expect(estimateRickshawFareBdt(1.2)).toBe(35);
     expect(estimateRickshawFareBdt(3.4)).toBe(70);
+  });
+});
+
+describe("distance estimation", () => {
+  it("uses the metro line path instead of a straight line for displayed distance", () => {
+    expect(estimateMetroDistanceKm("metro-farmgate", "metro-motijheel", 5)).toBeCloseTo(5.6, 1);
+  });
+
+  it("uses known bus corridor anchors to improve displayed distance", () => {
+    const route = dhakaBusSeedRoutes.find(
+      (candidate) => candidate.id === "route-al-madina-plus-one-nandan-park-to-kamalapur-9",
+    );
+
+    expect(route).toBeDefined();
+
+    const boardingIndex =
+      route?.stopLabels.findIndex((label) => label.includes("Farmgate")) ?? -1;
+    const alightingIndex =
+      route?.stopLabels.findIndex((label) => label.includes("Motijheel")) ?? -1;
+
+    expect(boardingIndex).toBeGreaterThanOrEqual(0);
+    expect(alightingIndex).toBeGreaterThan(boardingIndex);
+
+    const leg: Parameters<typeof estimateBusLegDistanceKm>[0] = {
+      route: route!,
+      boardingLabel: route!.stopLabels[boardingIndex]!,
+      alightingLabel: route!.stopLabels[alightingIndex]!,
+      stopCount: alightingIndex - boardingIndex,
+      serviceWindowText: undefined,
+    };
+
+    expect(estimateBusLegDistanceKm(leg)).toBeCloseTo(6.4, 1);
   });
 });
 
@@ -457,12 +492,14 @@ describe("calculateRoutes", () => {
     expect(response.routes[0]?.kind).toBe("metro_direct");
     expect(response.routes[0]?.fareText).toBe("BDT 30");
     expect(response.routes[0]?.totalCost).toBe(30);
+    expect(response.routes[0]?.estimatedDistanceKm).toBe(5.6);
     expect(response.routes[0]?.estimatedDurationMinutes).toBe(14);
     expect(response.routes[0]?.serviceWindowText).toContain("Uttara North 06:30-21:30");
     expect(response.routes[0]?.serviceWindowText).toContain("Friday: Uttara North 15:00-21:00");
     expect(response.routes[0]?.segments[0]?.serviceWindowText).toBe(
       response.routes[0]?.serviceWindowText,
     );
+    expect(response.routes[0]?.segments[0]?.estimatedDistanceKm).toBe(5.6);
   });
 
   it("uses the exact fare matrix for non-terminal metro station pairs", async () => {
