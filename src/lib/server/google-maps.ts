@@ -8,6 +8,21 @@ import type {
 } from "@/lib/validations/routes";
 
 type RouteGeometrySource = "directions_steps" | "directions_overview";
+type GoogleRouteMode = "walking" | "driving" | "transit";
+export interface SegmentDirectionsResult {
+  coordinates: [number, number][];
+  geometrySource: RouteGeometrySource;
+  isApproximate: boolean;
+  distanceText: string;
+  distanceMeters: number;
+  durationText: string;
+  durationMinutes: number;
+}
+
+export interface RoadMetricsCacheEntry {
+  expiresAt: number;
+  result: SegmentDirectionsResult | null;
+}
 
 export interface ResolvedLocation {
   name: string;
@@ -71,6 +86,9 @@ type GoogleDirectionsStep = {
   };
   steps?: GoogleDirectionsStep[];
 };
+
+const ROAD_METRICS_CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000;
+const roadMetricsCache = new Map<string, RoadMetricsCacheEntry>();
 
 function getServerKey() {
   return process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
@@ -391,48 +409,83 @@ function transportModeToGoogle(mode: TransportMode) {
   switch (mode) {
     case "walk":
       return "walking";
-    case "metro":
     case "bus":
-      return "transit";
     case "ride_share":
     case "rickshaw":
       return "driving";
+    case "metro":
+      return "transit";
     default:
       return "driving";
   }
 }
 
-function applyModeSpecificDirectionsParams(url: URL, mode: TransportMode) {
-  if (mode === "bus") {
+function applyModeSpecificDirectionsParams(
+  url: URL,
+  googleMode: GoogleRouteMode,
+  transportMode: TransportMode,
+) {
+  if (googleMode === "transit" && transportMode === "bus") {
     url.searchParams.set("transit_mode", "bus");
     url.searchParams.set("transit_routing_preference", "fewer_transfers");
   }
 
-  if (mode === "metro") {
+  if (googleMode === "transit" && transportMode === "metro") {
     url.searchParams.set("transit_mode", "rail");
     url.searchParams.set("transit_routing_preference", "fewer_transfers");
   }
+}
+
+function roundCoordinate(value: number) {
+  return value.toFixed(4);
+}
+
+function createRoadMetricsCacheKey(
+  start: [number, number],
+  end: [number, number],
+  mode: GoogleRouteMode,
+) {
+  return [
+    mode,
+    roundCoordinate(start[0]),
+    roundCoordinate(start[1]),
+    roundCoordinate(end[0]),
+    roundCoordinate(end[1]),
+  ].join(":");
+}
+
+export function clearRoadMetricsCache() {
+  roadMetricsCache.clear();
 }
 
 export async function fetchSegmentDirections(
   start: [number, number],
   end: [number, number],
   mode: TransportMode,
-) {
+): Promise<SegmentDirectionsResult | null> {
   const key = getServerKey();
   if (!key) {
     return null;
   }
 
+  const googleMode = transportModeToGoogle(mode);
+  const cacheKey = createRoadMetricsCacheKey(start, end, googleMode);
+  const now = Date.now();
+  const cached = roadMetricsCache.get(cacheKey);
+
+  if (cached && cached.expiresAt > now) {
+    return cached.result;
+  }
+
   const url = new URL("https://maps.googleapis.com/maps/api/directions/json");
   url.searchParams.set("origin", `${start[0]},${start[1]}`);
   url.searchParams.set("destination", `${end[0]},${end[1]}`);
-  url.searchParams.set("mode", transportModeToGoogle(mode));
+  url.searchParams.set("mode", googleMode);
   url.searchParams.set("key", key);
-  if (mode !== "walk") {
+  if (googleMode !== "walking") {
     url.searchParams.set("departure_time", "now");
   }
-  applyModeSpecificDirectionsParams(url, mode);
+  applyModeSpecificDirectionsParams(url, googleMode, mode);
 
   const response = await fetch(url.toString(), { cache: "no-store" });
   if (!response.ok) {
@@ -445,7 +498,7 @@ export async function fetchSegmentDirections(
   const geometry = first ? buildDirectionsGeometry(first, start, end) : null;
 
   if (payload.status === "OK" && geometry) {
-    return {
+    const result = {
       coordinates: geometry.coordinates,
       geometrySource: geometry.geometrySource,
       isApproximate: geometry.isApproximate,
@@ -454,7 +507,19 @@ export async function fetchSegmentDirections(
       durationText: leg?.duration?.text ?? "",
       durationMinutes: leg?.duration?.value ? Math.max(1, Math.round(leg.duration.value / 60)) : 0,
     };
+
+    roadMetricsCache.set(cacheKey, {
+      expiresAt: now + ROAD_METRICS_CACHE_TTL_MS,
+      result,
+    });
+
+    return result;
   }
+
+  roadMetricsCache.set(cacheKey, {
+    expiresAt: now + ROAD_METRICS_CACHE_TTL_MS,
+    result: null,
+  });
 
   return null;
 }

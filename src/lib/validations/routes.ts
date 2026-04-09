@@ -47,9 +47,34 @@ export const fareTypeSchema = z.enum(["exact", "unknown", "advisory"]);
 
 export type FareType = z.infer<typeof fareTypeSchema>;
 
-export const connectorTypeSchema = z.enum(["walk", "rickshaw", "advisory"]);
+export const connectorTypeSchema = z.enum([
+  "walk",
+  "rickshaw",
+  "long_rickshaw",
+  "advisory",
+]);
 
 export type ConnectorType = z.infer<typeof connectorTypeSchema>;
+
+export const pricingConfidenceSchema = z.enum([
+  "exact",
+  "regulated_estimate",
+  "estimated",
+]);
+
+export type PricingConfidence = z.infer<typeof pricingConfidenceSchema>;
+
+export const distanceSourceSchema = z.enum([
+  "local_estimate",
+  "google_road",
+  "metro_exact",
+]);
+
+export type DistanceSource = z.infer<typeof distanceSourceSchema>;
+
+export const connectorBurdenSchema = z.enum(["low", "medium", "high"]);
+
+export type ConnectorBurden = z.infer<typeof connectorBurdenSchema>;
 
 export const locationSuggestionSchema = z.object({
   id: z.string(),
@@ -78,6 +103,10 @@ export const routeStopReferenceSchema = z.object({
   id: z.string().optional(),
   label: z.string(),
   type: locationSuggestionTypeSchema,
+  variantId: z.string().optional(),
+  canonicalId: z.string().optional(),
+  canonicalLabel: z.string().optional(),
+  coordinates: latLngSchema.optional(),
 });
 
 export type RouteStopReference = z.infer<typeof routeStopReferenceSchema>;
@@ -108,6 +137,10 @@ export const routeSegmentSchema = z.object({
   connectorType: connectorTypeSchema.optional(),
   connectorDistanceKm: z.number().nonnegative().optional(),
   connectorFare: z.number().int().nonnegative().optional(),
+  distanceSource: distanceSourceSchema.optional(),
+  pricingConfidence: pricingConfidenceSchema.optional(),
+  costLowBdt: z.number().int().nonnegative().optional(),
+  costHighBdt: z.number().int().nonnegative().optional(),
 });
 
 export type RouteSegment = z.infer<typeof routeSegmentSchema>;
@@ -121,6 +154,8 @@ export const routeOptionSchema = z.object({
   fareType: fareTypeSchema,
   fareText: z.string(),
   totalCost: z.number().nonnegative().optional(),
+  totalCostLowBdt: z.number().nonnegative().optional(),
+  totalCostHighBdt: z.number().nonnegative().optional(),
   estimatedDistanceKm: z.number().nonnegative().optional(),
   estimatedDurationMinutes: z.number().int().nonnegative().optional(),
   serviceWindowText: z.string().optional(),
@@ -135,6 +170,8 @@ export const routeOptionSchema = z.object({
   highlights: z.array(z.string()).default([]),
   tradeoffs: z.array(z.string()).default([]),
   primaryReason: z.string().optional(),
+  scoringReason: z.string().optional(),
+  connectorBurden: connectorBurdenSchema.optional(),
   segments: z.array(routeSegmentSchema).min(1),
   mapPreview: routeMapPreviewSchema,
   advisories: z.array(z.string()).default([]),

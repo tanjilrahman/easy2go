@@ -6,7 +6,13 @@ import { GoogleRoutePreview } from "@/components/map/google-route-preview";
 import { BottomSheet } from "@/components/route-planner/bottom-sheet";
 import { Badge } from "@/components/ui/badge";
 import { TransportIcon } from "@/components/transport-icon";
-import { getConfidenceTone, getRouteKindLabel, getRouteKindTone, transportModeMeta } from "@/lib/transport";
+import {
+  getConfidenceTone,
+  getPricingConfidenceLabel,
+  getRouteKindLabel,
+  getRouteKindTone,
+  transportModeMeta,
+} from "@/lib/transport";
 import type { RouteOption } from "@/lib/validations/routes";
 
 interface RouteDetailsSheetProps {
@@ -52,6 +58,12 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
               <h3 className="font-display text-[1.7rem] font-semibold text-primary">
                 {route.boarding.label}
               </h3>
+              {route.boarding.canonicalLabel &&
+              route.boarding.canonicalLabel !== route.boarding.label ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Parent stop: {route.boarding.canonicalLabel}
+                </p>
+              ) : null}
             </div>
 
             <div className="mt-4">
@@ -59,6 +71,12 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
               <h3 className="font-display text-[1.35rem] font-semibold text-foreground">
                 {route.alighting.label}
               </h3>
+              {route.alighting.canonicalLabel &&
+              route.alighting.canonicalLabel !== route.alighting.label ? (
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Parent stop: {route.alighting.canonicalLabel}
+                </p>
+              ) : null}
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-4 text-sm text-muted-foreground">
@@ -164,6 +182,11 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
                           {segment.fareText}
                         </Badge>
                       ) : null}
+                      {getPricingConfidenceLabel(segment.pricingConfidence) ? (
+                        <Badge className="border border-border bg-white px-2 py-1 text-xs text-muted-foreground">
+                          {getPricingConfidenceLabel(segment.pricingConfidence)}
+                        </Badge>
+                      ) : null}
                     </div>
 
                     {segment.serviceWindowText ? (
@@ -175,6 +198,12 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
                     {segment.note ? (
                       <p className="mt-3 rounded-2xl bg-muted px-3 py-2 text-sm text-muted-foreground">
                         {segment.note}
+                      </p>
+                    ) : null}
+                    {segment.connectorType === "long_rickshaw" ? (
+                      <p className="mt-3 rounded-2xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                        This is a long rickshaw connector. Expect a larger last-mile hop than the
+                        usual short connector.
                       </p>
                     ) : null}
                   </div>

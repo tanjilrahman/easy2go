@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { resolveLocation } from "@/lib/server/google-maps";
+import { clearRoadMetricsCache, resolveLocation } from "@/lib/server/google-maps";
 
 describe("resolveLocation", () => {
   const originalFetch = global.fetch;
@@ -13,6 +13,7 @@ describe("resolveLocation", () => {
     global.fetch = originalFetch;
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
+    clearRoadMetricsCache();
   });
 
   it("prefers an exact placeId geocode over fuzzy known-place matching", async () => {

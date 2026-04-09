@@ -1,6 +1,7 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { dhakaBusSeedRoutes } from "@/lib/data/dhaka-bus-seed";
+import { DHAKA_METRO_STATIONS } from "@/lib/data/dhaka-metro";
 import {
   calculateRoutes,
   createPathSignature,
@@ -9,6 +10,7 @@ import {
   estimateRickshawFareBdt,
   surfaceRoutes,
 } from "@/lib/server/route-planner";
+import { clearRoadMetricsCache } from "@/lib/server/google-maps";
 import { routeOptionSchema, type RouteOption } from "@/lib/validations/routes";
 
 function makeRoute(overrides: Partial<RouteOption> = {}) {
@@ -74,11 +76,25 @@ function makeRoute(overrides: Partial<RouteOption> = {}) {
   return routeOptionSchema.parse(withSignature);
 }
 
+const originalFetch = global.fetch;
+
+beforeEach(() => {
+  vi.stubEnv("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", "");
+  clearRoadMetricsCache();
+});
+
+afterEach(() => {
+  global.fetch = originalFetch;
+  vi.restoreAllMocks();
+  vi.unstubAllEnvs();
+  clearRoadMetricsCache();
+});
+
 describe("estimateRickshawFareBdt", () => {
-  it("uses the stepped fare heuristic with a cap", () => {
-    expect(estimateRickshawFareBdt(1)).toBe(25);
-    expect(estimateRickshawFareBdt(1.2)).toBe(35);
-    expect(estimateRickshawFareBdt(3.4)).toBe(70);
+  it("uses the calibrated advisory fare heuristic", () => {
+    expect(estimateRickshawFareBdt(1)).toBe(30);
+    expect(estimateRickshawFareBdt(1.2)).toBe(40);
+    expect(estimateRickshawFareBdt(3.4)).toBe(80);
   });
 });
 
@@ -159,7 +175,7 @@ describe("surfaceRoutes", () => {
     expect(surfaced[0]?.serviceLabels).toEqual(["Anabil", "Bikalpa"]);
   });
 
-  it("surfaces fastest first and keeps up to two meaningful alternatives", () => {
+  it("surfaces the best recommended route first and keeps up to two meaningful alternatives", () => {
     const fastest = makeRoute({
       id: "fastest",
       summary: "Direct bus corridor",
@@ -254,9 +270,89 @@ describe("surfaceRoutes", () => {
 
     expect(surfaced).toHaveLength(3);
     expect(surfaced[0]?.id).toBe("fastest");
-    expect(surfaced[0]?.primaryReason).toBe("Fastest total travel time");
+    expect(surfaced[0]?.primaryReason).toBe("Best overall balance");
     expect(surfaced[1]?.id).toBe("metro-alt");
     expect(surfaced[2]?.id).toBe("slow-third");
+  });
+
+  it("lets recommended differ from fastest when connector burden and fare are meaningfully better", () => {
+    const fastest = makeRoute({
+      id: "fastest-metro",
+      kind: "metro_direct",
+      confidence: "exact",
+      fareType: "exact",
+      fareText: "BDT 60",
+      totalCost: 60,
+      estimatedDurationMinutes: 24,
+      stationCount: 5,
+      stopCount: undefined,
+      serviceLabels: ["MRT Line 6"],
+      primaryServiceLabel: "MRT Line 6",
+      boarding: { label: "Farmgate Metro", type: "metro_station", id: "farmgate-metro" },
+      alighting: { label: "Motijheel Metro", type: "metro_station", id: "motijheel-metro" },
+      segments: [
+        {
+          mode: "walk",
+          instruction: "Walk connector",
+          startLocation: "Home",
+          endLocation: "Farmgate Metro",
+          estimatedDurationMinutes: 8,
+          estimatedDistanceKm: 0.7,
+          connectorType: "walk",
+          connectorDistanceKm: 0.7,
+          distanceSource: "local_estimate",
+        },
+        {
+          mode: "metro",
+          instruction: "Ride Metro Rail Line 6",
+          startLocation: "Farmgate Metro",
+          endLocation: "Motijheel Metro",
+          fareText: "BDT 60",
+          estimatedDistanceKm: 5.4,
+          estimatedDurationMinutes: 16,
+          stationCount: 5,
+          distanceSource: "metro_exact",
+          pricingConfidence: "exact",
+          costLowBdt: 60,
+          costHighBdt: 60,
+        },
+      ],
+      mapPreview: {
+        originLabel: "Home",
+        destinationLabel: "Motijheel Metro",
+        originQuery: "Home, Dhaka, Bangladesh",
+        destinationQuery: "Motijheel Metro, Dhaka, Bangladesh",
+      },
+      transferStops: [],
+    });
+    const balancedBus = makeRoute({
+      id: "balanced-bus",
+      summary: "Direct bus corridor",
+      totalCost: 22,
+      fareText: "Approx. BDT 22",
+      estimatedDurationMinutes: 31,
+      totalCostLowBdt: 22,
+      totalCostHighBdt: 22,
+      segments: [
+        {
+          mode: "bus",
+          instruction: "Board Anabil",
+          startLocation: "Farmgate",
+          endLocation: "Motijheel",
+          fareText: "Approx. BDT 22",
+          estimatedDistanceKm: 6.2,
+          estimatedDurationMinutes: 31,
+          stopCount: 7,
+          distanceSource: "google_road",
+          pricingConfidence: "regulated_estimate",
+          costLowBdt: 22,
+          costHighBdt: 22,
+        },
+      ],
+    });
+
+    expect(surfaceRoutes([fastest, balancedBus], "fastest")[0]?.id).toBe("fastest-metro");
+    expect(surfaceRoutes([fastest, balancedBus], "recommended")[0]?.id).toBe("balanced-bus");
   });
 
   it("skips a visually duplicate route when picking the alternative", () => {
@@ -523,6 +619,41 @@ describe("calculateRoutes", () => {
     expect(response.routes[0]?.totalCost).toBe(30);
   });
 
+  it("still considers metro routes for nearby place coordinates in the variant planner", async () => {
+    const farmgateMetro = DHAKA_METRO_STATIONS.find((station) => station.id === "metro-farmgate");
+    const motijheelMetro = DHAKA_METRO_STATIONS.find((station) => station.id === "metro-motijheel");
+
+    expect(farmgateMetro?.coordinates).toBeDefined();
+    expect(motijheelMetro?.coordinates).toBeDefined();
+
+    if (!farmgateMetro?.coordinates || !motijheelMetro?.coordinates) {
+      throw new Error("Expected Farmgate and Motijheel metro coordinates in test data.");
+    }
+
+    const response = await calculateRoutes({
+      origin: {
+        name: "Near Farmgate Metro",
+        coordinates: [
+          farmgateMetro.coordinates[0] + 0.0002,
+          farmgateMetro.coordinates[1] + 0.0002,
+        ],
+        type: "place",
+      },
+      destination: {
+        name: "Near Motijheel Metro",
+        coordinates: [
+          motijheelMetro.coordinates[0] + 0.0002,
+          motijheelMetro.coordinates[1] + 0.0002,
+        ],
+        type: "place",
+      },
+      optimization: "fastest",
+    });
+
+    expect(response.routes.length).toBeGreaterThan(0);
+    expect(response.debugRoutes.some((route) => route.kind === "metro_direct")).toBe(true);
+  });
+
   it("falls back to the closest bus corridor plus rickshaw instead of returning no route", async () => {
     const response = await calculateRoutes({
       origin: {
@@ -578,4 +709,47 @@ describe("calculateRoutes", () => {
 
     expect(hasSuspiciousFallback).toBe(false);
   }, 60000);
+
+  it("keeps bus distance anchored to the local corridor estimate instead of inflating from road-driving detours", async () => {
+    vi.stubEnv("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", "test-key");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        status: "OK",
+        routes: [
+          {
+            overview_polyline: { points: "a~l~Fjk~uOwHJy@P" },
+            legs: [
+              {
+                distance: { text: "11 km", value: 11000 },
+                duration: { text: "28 mins", value: 1680 },
+                steps: [],
+              },
+            ],
+          },
+        ],
+      }),
+    }) as typeof fetch;
+
+    const response = await calculateRoutes({
+      origin: {
+        name: "Farmgate",
+        canonicalId: "hub-farmgate",
+        type: "hub",
+      },
+      destination: {
+        name: "Demra fringe",
+        coordinates: [23.6905, 90.5045],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+
+    const busSegment = response.debugRoutes
+      .flatMap((route) => route.segments)
+      .find((segment) => segment.mode === "bus");
+
+    expect(busSegment).toBeDefined();
+    expect(busSegment!.distanceSource).toBe("local_estimate");
+  }, 30000);
 });

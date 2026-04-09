@@ -50,6 +50,10 @@ function RouteMetric({ route }: { route: RouteOption }) {
 }
 
 export function RouteCard({ route, selected, onClick }: RouteCardProps) {
+  const hasVariantBoarding =
+    route.boarding.canonicalLabel &&
+    route.boarding.canonicalLabel !== route.boarding.label;
+
   return (
     <motion.button
       type="button"
@@ -95,6 +99,11 @@ export function RouteCard({ route, selected, onClick }: RouteCardProps) {
               Board at {route.boarding.label}
             </p>
           ) : null}
+          {hasVariantBoarding ? (
+            <p className="mt-1 text-xs text-muted-foreground/80">
+              Parent stop: {route.boarding.canonicalLabel}
+            </p>
+          ) : null}
         </div>
 
         <ArrowRight className="mt-1 h-5 w-5 text-muted-foreground" />
@@ -123,6 +132,12 @@ export function RouteCard({ route, selected, onClick }: RouteCardProps) {
       {route.transferStops.length ? (
         <p className="mb-3 text-sm text-muted-foreground">
           Transfer via {route.transferStops.map((stop) => stop.label).join(", ")}
+        </p>
+      ) : null}
+
+      {route.primaryReason || route.scoringReason ? (
+        <p className="mb-3 text-xs text-muted-foreground">
+          {route.primaryReason ?? route.scoringReason}
         </p>
       ) : null}
 

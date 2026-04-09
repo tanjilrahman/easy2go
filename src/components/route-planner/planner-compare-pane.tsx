@@ -65,6 +65,11 @@ function CompareRow({
               {route.primaryReason}
             </p>
           ) : null}
+          {route.connectorBurden ? (
+            <p className="mt-2 text-xs text-slate-500">
+              Connector burden: {route.connectorBurden}
+            </p>
+          ) : null}
         </div>
         <ArrowRight className="mt-1 h-5 w-5 text-slate-400" />
       </div>

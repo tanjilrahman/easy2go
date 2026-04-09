@@ -5,7 +5,13 @@ import { ArrowLeft, Coins, History, Route, Timer } from "lucide-react";
 import { PlannerDebugRoutes } from "@/components/route-planner/planner-debug-routes";
 import { Button } from "@/components/ui/button";
 import { TransportIcon } from "@/components/transport-icon";
-import { formatBdt, getConfidenceTone, getRouteKindLabel, getRouteKindTone } from "@/lib/transport";
+import {
+  formatBdt,
+  getConfidenceTone,
+  getPricingConfidenceLabel,
+  getRouteKindLabel,
+  getRouteKindTone,
+} from "@/lib/transport";
 import { cn } from "@/lib/utils";
 import type { LocationInput, RouteOption } from "@/lib/validations/routes";
 
@@ -64,6 +70,12 @@ export function PlannerItineraryPane({
                 {route.mapPreview.originLabel !== route.boarding.label ? (
                   <p className="mt-1 text-xs text-slate-500">Board at {route.boarding.label}</p>
                 ) : null}
+                {route.boarding.canonicalLabel &&
+                route.boarding.canonicalLabel !== route.boarding.label ? (
+                  <p className="mt-1 text-xs text-slate-500">
+                    Parent stop: {route.boarding.canonicalLabel}
+                  </p>
+                ) : null}
               </div>
               <Button
                 type="button"
@@ -102,6 +114,9 @@ export function PlannerItineraryPane({
                   </span>
                 ))}
               </div>
+            ) : null}
+            {route.scoringReason ? (
+              <p className="mt-2 text-xs text-slate-500">{route.scoringReason}</p>
             ) : null}
           </div>
 
@@ -169,9 +184,20 @@ export function PlannerItineraryPane({
                             {segment.fareText}
                           </span>
                         ) : null}
+                        {getPricingConfidenceLabel(segment.pricingConfidence) ? (
+                          <span className="rounded-full bg-slate-100 px-2.5 py-1">
+                            {getPricingConfidenceLabel(segment.pricingConfidence)}
+                          </span>
+                        ) : null}
                       </div>
                       {segment.note ? (
                         <p className="mt-2 text-xs leading-5 text-slate-500">{segment.note}</p>
+                      ) : null}
+                      {segment.connectorType === "long_rickshaw" ? (
+                        <p className="mt-2 text-xs leading-5 text-amber-700">
+                          Long connector: this rickshaw hop is larger than the normal short-mile
+                          connector.
+                        </p>
                       ) : null}
                     </div>
                   </div>

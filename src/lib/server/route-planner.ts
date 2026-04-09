@@ -7,7 +7,10 @@ import {
   type DhakaBusSeedRoute,
 } from "@/lib/data/dhaka-bus-seed";
 import { DHAKA_ACCESS_POINTS } from "@/lib/data/dhaka-access-points";
-import { DHAKA_METRO_STATIONS, getDhakaMetroFareBdtBySequence } from "@/lib/data/dhaka-metro";
+import {
+  DHAKA_METRO_STATIONS,
+  getDhakaMetroFareBdtBySequence,
+} from "@/lib/data/dhaka-metro";
 import {
   getBusStopPointByLabel,
   getMetroStationById,
@@ -15,14 +18,20 @@ import {
   type ResolvedTransitInput,
   type TransitPoint,
 } from "@/lib/server/transit-resolver";
-import { haversineDistanceKm, normalizeTransitText } from "@/lib/server/transit-support";
+import { fetchSegmentDirections } from "@/lib/server/google-maps";
+import {
+  haversineDistanceKm,
+  normalizeTransitText,
+} from "@/lib/server/transit-support";
 import {
   calculateRouteResponseSchema,
   routeOptionSchema,
+  type ConnectorBurden,
   type ConnectorType,
   type CalculateRouteRequest,
+  type DistanceSource,
+  type PricingConfidence,
   type RouteConfidence,
-  type RouteKind,
   type RouteMapPreview,
   type RouteOption,
   type RouteOptimization,
@@ -43,6 +52,8 @@ interface RouteMetrics {
   distanceKm?: number;
   durationMinutes?: number;
   costBdt?: number;
+  costLowBdt?: number;
+  costHighBdt?: number;
 }
 
 interface AccessLeg {
@@ -51,9 +62,33 @@ interface AccessLeg {
   distanceKm: number;
   durationMinutes: number;
   costBdt?: number;
+  costLowBdt?: number;
+  costHighBdt?: number;
   startLocation: string;
   endLocation: string;
   note: string;
+  pricingConfidence?: PricingConfidence;
+  distanceSource?: DistanceSource;
+}
+
+interface ConnectorCandidate {
+  point: TransitPoint;
+  accessLeg: AccessLeg | null;
+  score: number;
+}
+
+interface PlannerRoadContext {
+  lookups: number;
+  maxLookups: number;
+}
+
+interface RouteSkeleton {
+  route: RouteOption;
+  roughScore: number;
+}
+
+interface EnrichedRouteSkeleton extends RouteSkeleton {
+  enriched: boolean;
 }
 
 interface FallbackDirectBusCandidate {
@@ -91,12 +126,24 @@ const busStopCoordinateLookup = new Map(
 const preferredTransferLabels = new Set(
   [
     ...DHAKA_ACCESS_POINTS.flatMap((point) => point.busStopLabels),
-    ...dhakaBusSeedStops.filter((stop) => stop.routeCount >= 4).map((stop) => stop.label),
+    ...dhakaBusSeedStops
+      .filter((stop) => stop.routeCount >= 4)
+      .map((stop) => stop.label),
   ].map((label) => normalizeTransitText(label)),
 );
+const directBusLegCache = new Map<string, BusLeg[]>();
+const transferBusLegCache = new Map<
+  string,
+  Array<{
+    firstLeg: BusLeg;
+    secondLeg: BusLeg;
+    transferLabel: string;
+  }>
+>();
 
 const ACCESS_WALK_MAX_KM = 0.8;
-const ACCESS_RICKSHAW_MAX_KM = 2.5;
+const ACCESS_RICKSHAW_MAX_KM = 3.5;
+const LONG_RICKSHAW_MAX_KM = 6;
 const BUS_STOP_SPACING_KM = 0.9;
 const METRO_STATION_SPACING_KM = 1.35;
 const BUS_SPEED_KMPH = 13;
@@ -112,19 +159,17 @@ const METRO_SERVICE_WINDOW_TEXT =
   "Weekdays & Sat/holidays: Uttara North 06:30-21:30, Motijheel 07:15-22:10 | Friday: Uttara North 15:00-21:00, Motijheel 15:20-21:40";
 const TRANSFER_BUFFER_MINUTES = 6;
 const FALLBACK_SORT_VALUE = 99_999;
+const BUS_FARE_PER_KM_BDT = 2.42;
+const CANDIDATE_POOL_LIMIT = 20;
+const SURFACED_CANDIDATE_LIMIT = 8;
+const ENRICHED_ROUTES_LIMIT = 25;
+const GOOGLE_ROUTE_LOOKUP_LIMIT = 60;
+const GOOGLE_ROUTE_CONCURRENCY_LIMIT = 6;
 
 const confidencePriority: Record<RouteConfidence, number> = {
   exact: 3,
   verified: 2,
   advisory: 1,
-};
-
-const kindPriority: Record<RouteKind, number> = {
-  metro_direct: 5,
-  bus_direct: 4,
-  bus_metro_hybrid: 3,
-  bus_transfer: 2,
-  advisory_connector: 1,
 };
 
 function roundDistanceKm(distanceKm: number) {
@@ -135,16 +180,37 @@ function formatApproxFare(costBdt: number) {
   return `Approx. BDT ${Math.round(costBdt)}`;
 }
 
+function formatApproxFareRange(lowBdt: number, highBdt: number) {
+  return lowBdt === highBdt
+    ? `Approx. BDT ${Math.round(lowBdt)}`
+    : `Approx. BDT ${Math.round(lowBdt)}-${Math.round(highBdt)}`;
+}
+
 function formatExactFare(costBdt: number) {
   return `BDT ${Math.round(costBdt)}`;
 }
 
-function formatRouteTotal(costBdt?: number, fareType: "exact" | "advisory" = "advisory") {
+function formatRouteTotal(
+  costBdt?: number,
+  fareType: "exact" | "advisory" = "advisory",
+  costLowBdt?: number,
+  costHighBdt?: number,
+) {
   if (costBdt === undefined) {
     return "Fare varies";
   }
 
-  return fareType === "exact" ? formatExactFare(costBdt) : formatApproxFare(costBdt);
+  if (
+    fareType !== "exact" &&
+    costLowBdt !== undefined &&
+    costHighBdt !== undefined
+  ) {
+    return formatApproxFareRange(costLowBdt, costHighBdt);
+  }
+
+  return fareType === "exact"
+    ? formatExactFare(costBdt)
+    : formatApproxFare(costBdt);
 }
 
 function dedupeStrings(values: string[]) {
@@ -164,13 +230,17 @@ function sumCoordinateDistanceKm(coordinates: [number, number][]) {
       return distanceKm;
     }
 
-    return distanceKm + haversineDistanceKm(coordinates[index - 1]!, coordinate);
+    return (
+      distanceKm + haversineDistanceKm(coordinates[index - 1]!, coordinate)
+    );
   }, 0);
 }
 
 function findBusLegStopIndices(leg: BusLeg) {
   const boardingIndex = leg.route.stopLabels.findIndex(
-    (stopLabel) => normalizeTransitText(stopLabel) === normalizeTransitText(leg.boardingLabel),
+    (stopLabel) =>
+      normalizeTransitText(stopLabel) ===
+      normalizeTransitText(leg.boardingLabel),
   );
 
   if (boardingIndex < 0) {
@@ -180,7 +250,9 @@ function findBusLegStopIndices(leg: BusLeg) {
   const alightingOffset = leg.route.stopLabels
     .slice(boardingIndex + 1)
     .findIndex(
-      (stopLabel) => normalizeTransitText(stopLabel) === normalizeTransitText(leg.alightingLabel),
+      (stopLabel) =>
+        normalizeTransitText(stopLabel) ===
+        normalizeTransitText(leg.alightingLabel),
     );
 
   if (alightingOffset < 0) {
@@ -194,8 +266,14 @@ function findBusLegStopIndices(leg: BusLeg) {
 }
 
 function combineRouteMetrics(parts: RouteMetrics[]) {
-  const totalDistanceKm = parts.reduce((sum, part) => sum + (part.distanceKm ?? 0), 0);
-  const totalDurationMinutes = parts.reduce((sum, part) => sum + (part.durationMinutes ?? 0), 0);
+  const totalDistanceKm = parts.reduce(
+    (sum, part) => sum + (part.distanceKm ?? 0),
+    0,
+  );
+  const totalDurationMinutes = parts.reduce(
+    (sum, part) => sum + (part.durationMinutes ?? 0),
+    0,
+  );
   const costParts = parts.filter((part) => part.costBdt !== undefined);
 
   return {
@@ -203,10 +281,57 @@ function combineRouteMetrics(parts: RouteMetrics[]) {
       costParts.length > 0
         ? costParts.reduce((sum, part) => sum + (part.costBdt ?? 0), 0)
         : undefined,
-    estimatedDistanceKm: totalDistanceKm > 0 ? roundDistanceKm(totalDistanceKm) : undefined,
+    costLowBdt:
+      costParts.length > 0
+        ? costParts.reduce(
+            (sum, part) => sum + (part.costLowBdt ?? part.costBdt ?? 0),
+            0,
+          )
+        : undefined,
+    costHighBdt:
+      costParts.length > 0
+        ? costParts.reduce(
+            (sum, part) => sum + (part.costHighBdt ?? part.costBdt ?? 0),
+            0,
+          )
+        : undefined,
+    estimatedDistanceKm:
+      totalDistanceKm > 0 ? roundDistanceKm(totalDistanceKm) : undefined,
     estimatedDurationMinutes:
       totalDurationMinutes > 0 ? Math.round(totalDurationMinutes) : undefined,
   };
+}
+
+function isMatchedTransitPoint(
+  resolution: ResolvedTransitInput,
+  point: TransitPoint,
+) {
+  if (resolution.matchedPointIds.includes(point.id)) {
+    return true;
+  }
+
+  if (
+    point.variantId &&
+    resolution.matchedPointIds.includes(point.variantId)
+  ) {
+    return true;
+  }
+
+  if (
+    point.canonicalBusStopId &&
+    resolution.matchedPointIds.includes(point.canonicalBusStopId)
+  ) {
+    return true;
+  }
+
+  if (
+    point.metroStationId &&
+    resolution.matchedPointIds.includes(point.metroStationId)
+  ) {
+    return true;
+  }
+
+  return false;
 }
 
 export function estimateRickshawFareBdt(distanceKm: number) {
@@ -214,25 +339,47 @@ export function estimateRickshawFareBdt(distanceKm: number) {
     return undefined;
   }
 
-  if (distanceKm <= 1) {
-    return 25;
+  if (distanceKm <= 0.5) {
+    return 20;
   }
 
-  const extraSteps = Math.ceil((distanceKm - 1) / 0.5);
-  return Math.min(70, 25 + extraSteps * 10);
+  return Math.ceil((20 + (distanceKm - 0.5) * 20) / 10) * 10;
+}
+
+function estimateRickshawFareRangeBdt(distanceKm: number) {
+  const estimate = estimateRickshawFareBdt(distanceKm);
+
+  if (estimate === undefined) {
+    return {
+      estimate: undefined,
+      low: undefined,
+      high: undefined,
+    };
+  }
+
+  return {
+    estimate,
+    low: Math.max(20, estimate - 10),
+    high: estimate + 10,
+  };
 }
 
 function estimateExtendedRickshawFareBdt(distanceKm: number) {
-  if (distanceKm <= 0) {
-    return undefined;
+  return estimateRickshawFareBdt(distanceKm);
+}
+
+async function consumeRoadMetrics(
+  roadContext: PlannerRoadContext,
+  start: [number, number],
+  end: [number, number],
+  mode: TransportMode,
+) {
+  if (roadContext.lookups >= roadContext.maxLookups) {
+    return null;
   }
 
-  if (distanceKm <= ACCESS_RICKSHAW_MAX_KM) {
-    return estimateRickshawFareBdt(distanceKm);
-  }
-
-  const extraSteps = Math.ceil((distanceKm - 1) / 0.5);
-  return 25 + extraSteps * 10;
+  roadContext.lookups += 1;
+  return fetchSegmentDirections(start, end, mode);
 }
 
 function createAccessLeg(
@@ -240,11 +387,18 @@ function createAccessLeg(
   point: TransitPoint,
   role: "origin" | "destination",
 ): AccessLeg | null {
-  if (resolution.directMatch || !resolution.place?.coordinates || !point.coordinates) {
+  if (
+    isMatchedTransitPoint(resolution, point) ||
+    !resolution.place?.coordinates ||
+    !point.coordinates
+  ) {
     return null;
   }
 
-  const distanceKm = haversineDistanceKm(resolution.place.coordinates, point.coordinates);
+  const distanceKm = haversineDistanceKm(
+    resolution.place.coordinates,
+    point.coordinates,
+  );
 
   if (!Number.isFinite(distanceKm) || distanceKm <= 0.05) {
     return null;
@@ -255,9 +409,13 @@ function createAccessLeg(
       connectorType: "walk",
       mode: "walk",
       distanceKm,
-      durationMinutes: Math.max(4, Math.round((distanceKm / WALK_SPEED_KMPH) * 60)),
+      durationMinutes: Math.max(
+        4,
+        Math.round((distanceKm / WALK_SPEED_KMPH) * 60),
+      ),
       startLocation: role === "origin" ? resolution.displayName : point.name,
       endLocation: role === "origin" ? point.name : resolution.displayName,
+      distanceSource: "local_estimate",
       note:
         role === "origin"
           ? `Short walking connector to ${point.name}.`
@@ -270,10 +428,17 @@ function createAccessLeg(
       connectorType: "rickshaw",
       mode: "rickshaw",
       distanceKm,
-      durationMinutes: Math.max(6, Math.round((distanceKm / RICKSHAW_SPEED_KMPH) * 60)),
+      durationMinutes: Math.max(
+        6,
+        Math.round((distanceKm / RICKSHAW_SPEED_KMPH) * 60),
+      ),
       costBdt: estimateRickshawFareBdt(distanceKm),
+      costLowBdt: estimateRickshawFareRangeBdt(distanceKm).low,
+      costHighBdt: estimateRickshawFareRangeBdt(distanceKm).high,
       startLocation: role === "origin" ? resolution.displayName : point.name,
       endLocation: role === "origin" ? point.name : resolution.displayName,
+      pricingConfidence: "estimated",
+      distanceSource: "local_estimate",
       note:
         role === "origin"
           ? `Rickshaw connector to ${point.name}.`
@@ -281,13 +446,154 @@ function createAccessLeg(
     };
   }
 
+  if (distanceKm <= LONG_RICKSHAW_MAX_KM) {
+    const fare = estimateRickshawFareRangeBdt(distanceKm);
+
+    return {
+      connectorType: "long_rickshaw",
+      mode: "rickshaw",
+      distanceKm,
+      durationMinutes: Math.max(
+        10,
+        Math.round((distanceKm / RICKSHAW_SPEED_KMPH) * 60),
+      ),
+      costBdt: fare.estimate,
+      costLowBdt: fare.low,
+      costHighBdt: fare.high,
+      startLocation: role === "origin" ? resolution.displayName : point.name,
+      endLocation: role === "origin" ? point.name : resolution.displayName,
+      pricingConfidence: "estimated",
+      distanceSource: "local_estimate",
+      note:
+        role === "origin"
+          ? `Long rickshaw connector to ${point.name}.`
+          : `Long rickshaw connector from ${point.name}.`,
+    };
+  }
+
   return {
     connectorType: "advisory",
     mode: "ride_share",
     distanceKm,
-    durationMinutes: Math.max(10, Math.round((distanceKm / ADVISORY_CONNECTOR_SPEED_KMPH) * 60)),
+    durationMinutes: Math.max(
+      10,
+      Math.round((distanceKm / ADVISORY_CONNECTOR_SPEED_KMPH) * 60),
+    ),
     startLocation: role === "origin" ? resolution.displayName : point.name,
     endLocation: role === "origin" ? point.name : resolution.displayName,
+    distanceSource: "local_estimate",
+    note:
+      role === "origin"
+        ? `${point.name} is farther from ${resolution.displayName}; plan a longer rickshaw or ride-share connector.`
+        : `${resolution.displayName} sits beyond short rickshaw range from ${point.name}; plan a longer connector after transit.`,
+  };
+}
+
+async function createAccessLegWithRoadMetrics(
+  resolution: ResolvedTransitInput,
+  point: TransitPoint,
+  role: "origin" | "destination",
+  roadContext: PlannerRoadContext,
+): Promise<AccessLeg | null> {
+  const fallbackLeg = createAccessLeg(resolution, point, role);
+
+  if (
+    isMatchedTransitPoint(resolution, point) ||
+    !resolution.place?.coordinates ||
+    !point.coordinates
+  ) {
+    return fallbackLeg;
+  }
+
+  const walkMetrics = await consumeRoadMetrics(
+    roadContext,
+    resolution.place.coordinates,
+    point.coordinates,
+    "walk",
+  );
+
+  if (
+    walkMetrics &&
+    walkMetrics.distanceMeters > 0 &&
+    walkMetrics.distanceMeters / 1000 <= ACCESS_WALK_MAX_KM
+  ) {
+    return {
+      connectorType: "walk",
+      mode: "walk",
+      distanceKm: roundDistanceKm(walkMetrics.distanceMeters / 1000),
+      durationMinutes: walkMetrics.durationMinutes,
+      startLocation: role === "origin" ? resolution.displayName : point.name,
+      endLocation: role === "origin" ? point.name : resolution.displayName,
+      distanceSource: "google_road",
+      note:
+        role === "origin"
+          ? `Short walking connector to ${point.name}.`
+          : `Short walking connector from ${point.name}.`,
+    };
+  }
+
+  const driveMetrics = await consumeRoadMetrics(
+    roadContext,
+    resolution.place.coordinates,
+    point.coordinates,
+    "rickshaw",
+  );
+
+  if (!driveMetrics || driveMetrics.distanceMeters <= 0) {
+    return fallbackLeg;
+  }
+
+  const distanceKm = roundDistanceKm(driveMetrics.distanceMeters / 1000);
+  const fare = estimateRickshawFareRangeBdt(distanceKm);
+
+  if (distanceKm <= ACCESS_RICKSHAW_MAX_KM) {
+    return {
+      connectorType: "rickshaw",
+      mode: "rickshaw",
+      distanceKm,
+      durationMinutes: driveMetrics.durationMinutes,
+      costBdt: fare.estimate,
+      costLowBdt: fare.low,
+      costHighBdt: fare.high,
+      startLocation: role === "origin" ? resolution.displayName : point.name,
+      endLocation: role === "origin" ? point.name : resolution.displayName,
+      pricingConfidence: "estimated",
+      distanceSource: "google_road",
+      note:
+        role === "origin"
+          ? `Rickshaw connector to ${point.name}.`
+          : `Rickshaw connector from ${point.name}.`,
+    };
+  }
+
+  if (distanceKm <= LONG_RICKSHAW_MAX_KM) {
+    return {
+      connectorType: "long_rickshaw",
+      mode: "rickshaw",
+      distanceKm,
+      durationMinutes: driveMetrics.durationMinutes,
+      costBdt: fare.estimate,
+      costLowBdt: fare.low,
+      costHighBdt: fare.high,
+      startLocation: role === "origin" ? resolution.displayName : point.name,
+      endLocation: role === "origin" ? point.name : resolution.displayName,
+      pricingConfidence: "estimated",
+      distanceSource: "google_road",
+      note:
+        role === "origin"
+          ? `Long rickshaw connector to ${point.name}.`
+          : `Long rickshaw connector from ${point.name}.`,
+    };
+  }
+
+  return {
+    connectorType: "advisory",
+    mode: "ride_share",
+    distanceKm,
+    durationMinutes: driveMetrics.durationMinutes,
+    startLocation: role === "origin" ? resolution.displayName : point.name,
+    endLocation: role === "origin" ? point.name : resolution.displayName,
+    distanceSource: "google_road",
     note:
       role === "origin"
         ? `${point.name} is farther from ${resolution.displayName}; plan a longer rickshaw or ride-share connector.`
@@ -317,21 +623,35 @@ function createConnectorLegBetween(
       connectorType: "walk",
       mode: "walk",
       distanceKm,
-      durationMinutes: Math.max(4, Math.round((distanceKm / WALK_SPEED_KMPH) * 60)),
+      durationMinutes: Math.max(
+        4,
+        Math.round((distanceKm / WALK_SPEED_KMPH) * 60),
+      ),
       startLocation,
       endLocation,
+      distanceSource: "local_estimate",
       note: `Short walking connector from ${startLocation} to ${endLocation}.`,
     };
   }
 
+  const fare = estimateRickshawFareRangeBdt(distanceKm);
+
   return {
-    connectorType: "rickshaw",
+    connectorType:
+      distanceKm <= ACCESS_RICKSHAW_MAX_KM ? "rickshaw" : "long_rickshaw",
     mode: "rickshaw",
     distanceKm,
-    durationMinutes: Math.max(6, Math.round((distanceKm / RICKSHAW_SPEED_KMPH) * 60)),
+    durationMinutes: Math.max(
+      6,
+      Math.round((distanceKm / RICKSHAW_SPEED_KMPH) * 60),
+    ),
     costBdt: estimateExtendedRickshawFareBdt(distanceKm),
+    costLowBdt: fare.low,
+    costHighBdt: fare.high,
     startLocation,
     endLocation,
+    pricingConfidence: "estimated",
+    distanceSource: "local_estimate",
     note:
       distanceKm <= ACCESS_RICKSHAW_MAX_KM
         ? `Rickshaw connector from ${startLocation} to ${endLocation}.`
@@ -348,13 +668,17 @@ function accessLegMetrics(leg?: AccessLeg | null): RouteMetrics {
     distanceKm: leg.distanceKm,
     durationMinutes: leg.durationMinutes,
     costBdt: leg.costBdt,
+    costLowBdt: leg.costLowBdt,
+    costHighBdt: leg.costHighBdt,
   };
 }
 
 function buildAccessSegment(leg: AccessLeg): RouteSegment {
   const fareText =
-    leg.connectorType === "rickshaw" && leg.costBdt !== undefined
-      ? formatApproxFare(leg.costBdt)
+    leg.mode === "rickshaw" && leg.costBdt !== undefined
+      ? leg.costLowBdt !== undefined && leg.costHighBdt !== undefined
+        ? formatApproxFareRange(leg.costLowBdt, leg.costHighBdt)
+        : formatApproxFare(leg.costBdt)
       : undefined;
 
   const instruction =
@@ -362,6 +686,8 @@ function buildAccessSegment(leg: AccessLeg): RouteSegment {
       ? "Walk connector"
       : leg.connectorType === "rickshaw"
         ? "Rickshaw connector"
+        : leg.connectorType === "long_rickshaw"
+          ? "Long rickshaw connector"
         : "Long connector";
 
   return {
@@ -376,6 +702,10 @@ function buildAccessSegment(leg: AccessLeg): RouteSegment {
     connectorType: leg.connectorType,
     connectorDistanceKm: roundDistanceKm(leg.distanceKm),
     connectorFare: leg.costBdt,
+    distanceSource: leg.distanceSource,
+    pricingConfidence: leg.pricingConfidence,
+    costLowBdt: leg.costLowBdt,
+    costHighBdt: leg.costHighBdt,
   };
 }
 
@@ -393,8 +723,48 @@ function estimateBusOperationalDistanceKm(leg: BusLeg) {
   return Math.max(1.5, leg.stopCount * BUS_STOP_SPACING_KM);
 }
 
+function isReasonableBusAnchorEstimate(
+  estimatedDistanceKm: number,
+  anchorDistancesKm: number[],
+  directDistanceKm: number | undefined,
+  stopCount: number,
+) {
+  if (!Number.isFinite(estimatedDistanceKm) || estimatedDistanceKm <= 0) {
+    return false;
+  }
+
+  const maxAnchorGapKm = anchorDistancesKm.length
+    ? Math.max(...anchorDistancesKm)
+    : 0;
+  const maxReasonableGapKm =
+    directDistanceKm !== undefined
+      ? Math.max(6, directDistanceKm * 0.75)
+      : 8;
+
+  if (maxAnchorGapKm > maxReasonableGapKm) {
+    return false;
+  }
+
+  const maxReasonableDistanceKm =
+    directDistanceKm !== undefined
+      ? Math.max(
+          directDistanceKm * 2.4,
+          stopCount * 1.8,
+          directDistanceKm + 6,
+        )
+      : Math.max(stopCount * 1.8, 10);
+
+  return estimatedDistanceKm <= maxReasonableDistanceKm;
+}
+
 export function estimateBusLegDistanceKm(leg: BusLeg) {
   const legIndices = findBusLegStopIndices(leg);
+  const boardingCoordinates = findBusStopCoordinates(leg.boardingLabel);
+  const alightingCoordinates = findBusStopCoordinates(leg.alightingLabel);
+  const directDistanceKm =
+    boardingCoordinates && alightingCoordinates
+      ? haversineDistanceKm(boardingCoordinates, alightingCoordinates)
+      : undefined;
 
   if (legIndices) {
     const knownAnchors = leg.route.stopLabels
@@ -409,9 +779,20 @@ export function estimateBusLegDistanceKm(leg: BusLeg) {
             }
           : null;
       })
-      .filter((anchor): anchor is { index: number; coordinates: [number, number] } => anchor !== null);
+      .filter(
+        (anchor): anchor is { index: number; coordinates: [number, number] } =>
+          anchor !== null,
+      );
 
     if (knownAnchors.length >= 2) {
+      const anchorStepDistancesKm = knownAnchors
+        .slice(1)
+        .map((anchor, index) =>
+          haversineDistanceKm(
+            knownAnchors[index]!.coordinates,
+            anchor.coordinates,
+          ),
+        );
       const anchorDistanceKm = sumCoordinateDistanceKm(
         knownAnchors.map((anchor) => anchor.coordinates),
       );
@@ -422,8 +803,21 @@ export function estimateBusLegDistanceKm(leg: BusLeg) {
         const corridorAdjustment = knownAnchors.length > 2 ? 1.08 : 1.2;
         const averageIntervalDistanceKm =
           (anchorDistanceKm * corridorAdjustment) / coveredIntervals;
+        const estimatedDistanceKm = Math.max(
+          1.5,
+          averageIntervalDistanceKm * leg.stopCount,
+        );
 
-        return Math.max(1.5, averageIntervalDistanceKm * leg.stopCount);
+        if (
+          isReasonableBusAnchorEstimate(
+            estimatedDistanceKm,
+            anchorStepDistancesKm,
+            directDistanceKm,
+            leg.stopCount,
+          )
+        ) {
+          return estimatedDistanceKm;
+        }
       }
     }
   }
@@ -461,48 +855,35 @@ export function estimateMetroDistanceKm(
     const startSequence = Math.min(origin.sequence, destination.sequence);
     const endSequence = Math.max(origin.sequence, destination.sequence);
     const stationPath = DHAKA_METRO_STATIONS.filter(
-      (station) => station.sequence >= startSequence && station.sequence <= endSequence,
+      (station) =>
+        station.sequence >= startSequence && station.sequence <= endSequence,
     )
       .sort((a, b) => a.sequence - b.sequence)
       .map((station) => station.coordinates)
-      .filter((coordinates): coordinates is [number, number] => coordinates !== undefined);
+      .filter(
+        (coordinates): coordinates is [number, number] =>
+          coordinates !== undefined,
+      );
 
     if (stationPath.length >= 2) {
       return Math.max(1.2, sumCoordinateDistanceKm(stationPath));
     }
   }
 
-  return estimateMetroOperationalDistanceKm(originStationId, destinationStationId, stationCount);
+  return estimateMetroOperationalDistanceKm(
+    originStationId,
+    destinationStationId,
+    stationCount,
+  );
 }
 
 function estimateBusFareBdt(distanceKm: number, stopCount: number) {
-  const effectiveDistanceKm = Math.max(distanceKm, stopCount * BUS_STOP_SPACING_KM);
+  const effectiveDistanceKm = Math.max(
+    distanceKm,
+    stopCount * BUS_STOP_SPACING_KM,
+  );
 
-  if (effectiveDistanceKm <= 4) {
-    return 10;
-  }
-
-  if (effectiveDistanceKm <= 8) {
-    return 15;
-  }
-
-  if (effectiveDistanceKm <= 12) {
-    return 20;
-  }
-
-  if (effectiveDistanceKm <= 16) {
-    return 25;
-  }
-
-  if (effectiveDistanceKm <= 20) {
-    return 30;
-  }
-
-  if (effectiveDistanceKm <= 24) {
-    return 35;
-  }
-
-  return 40;
+  return Math.max(10, Math.ceil(effectiveDistanceKm * BUS_FARE_PER_KM_BDT));
 }
 
 function estimateBusDurationMinutes(distanceKm: number, stopCount: number) {
@@ -512,7 +893,10 @@ function estimateBusDurationMinutes(distanceKm: number, stopCount: number) {
   return Math.max(10, Math.round(runningMinutes + dwellMinutes + 5));
 }
 
-function estimateMetroDurationMinutes(distanceKm: number, stationCount: number) {
+function estimateMetroDurationMinutes(
+  distanceKm: number,
+  stationCount: number,
+) {
   const runningMinutes = (distanceKm / METRO_SPEED_KMPH) * 60;
   const dwellMinutes = stationCount * METRO_STATION_DELAY_MINUTES;
 
@@ -527,7 +911,11 @@ function buildServiceWindowText(route: DhakaBusSeedRoute) {
     return `${route.openingTime24h} - ${route.closingTime24h}`;
   }
 
-  return [route.openingTimeText, route.closingTimeText].filter(Boolean).join(" - ") || undefined;
+  return (
+    [route.openingTimeText, route.closingTimeText]
+      .filter(Boolean)
+      .join(" - ") || undefined
+  );
 }
 
 function joinServiceWindows(windows: Array<string | undefined>) {
@@ -596,8 +984,12 @@ function makeStopReference(
   if (busStop) {
     return {
       id: busStop.id,
-      label,
+      label: busStop.name,
       type: "bus_stop",
+      variantId: busStop.variantId,
+      canonicalId: busStop.canonicalBusStopId ?? busStop.id,
+      canonicalLabel: busStop.canonicalBusStopLabel ?? label,
+      coordinates: busStop.coordinates,
     };
   }
 
@@ -614,13 +1006,195 @@ function makeMetroReference(stationId: string): RouteStopReference {
     id: station?.id ?? stationId,
     label: station?.name ?? stationId,
     type: "metro_station",
+    canonicalId: station?.id ?? stationId,
+    canonicalLabel: station?.name ?? stationId,
+    coordinates: station?.coordinates,
   };
 }
 
-export function createPathSignature(route: Pick<
-  RouteOption,
-  "kind" | "boarding" | "alighting" | "transferStops" | "segments" | "mapPreview"
->) {
+function makePointReference(point: TransitPoint): RouteStopReference {
+  if (point.type === "metro_station" && point.metroStationId) {
+    return {
+      id: point.id,
+      label: point.name,
+      type: point.type,
+      canonicalId: point.metroStationId,
+      canonicalLabel: point.name,
+      coordinates: point.coordinates,
+    };
+  }
+
+  return {
+    id: point.id,
+    label: point.name,
+    type: point.type,
+    variantId: point.variantId,
+    canonicalId: point.canonicalBusStopId ?? point.id,
+    canonicalLabel: point.canonicalBusStopLabel ?? point.name,
+    coordinates: point.coordinates,
+  };
+}
+
+function pointSupportsBusLabel(point: TransitPoint, label: string) {
+  return point.busStopLabels.some(
+    (stopLabel) =>
+      normalizeTransitText(stopLabel) === normalizeTransitText(label),
+  );
+}
+
+function makeBusReferenceForPoint(point: TransitPoint, label: string) {
+  return pointSupportsBusLabel(point, label)
+    ? makePointReference(point)
+    : makeStopReference(label);
+}
+
+function compareConnectorCandidates(
+  left: ConnectorCandidate,
+  right: ConnectorCandidate,
+) {
+  if (left.score !== right.score) {
+    return left.score - right.score;
+  }
+
+  const leftDistance = left.accessLeg?.distanceKm ?? 0;
+  const rightDistance = right.accessLeg?.distanceKm ?? 0;
+
+  if (leftDistance !== rightDistance) {
+    return leftDistance - rightDistance;
+  }
+
+  return left.point.name.localeCompare(right.point.name);
+}
+
+function connectorCandidateScore(accessLeg: AccessLeg | null) {
+  if (!accessLeg) {
+    return 0;
+  }
+
+  const distancePenalty = accessLeg.distanceKm;
+
+  switch (accessLeg.connectorType) {
+    case "walk":
+      return distancePenalty * 2 + accessLeg.durationMinutes / 3;
+    case "rickshaw":
+      return 8 + distancePenalty * 3 + accessLeg.durationMinutes / 2;
+    case "long_rickshaw":
+      return 26 + distancePenalty * 5 + accessLeg.durationMinutes;
+    default:
+      return 60 + distancePenalty * 8 + accessLeg.durationMinutes;
+  }
+}
+
+function addUniqueConnectorCandidate(
+  target: ConnectorCandidate[],
+  seen: Set<string>,
+  candidate?: ConnectorCandidate,
+) {
+  if (!candidate || seen.has(candidate.point.id)) {
+    return;
+  }
+
+  seen.add(candidate.point.id);
+  target.push(candidate);
+}
+
+function selectDiverseConnectorCandidates(
+  candidates: ConnectorCandidate[],
+  limit: number,
+) {
+  const sorted = [...candidates].sort(compareConnectorCandidates);
+  const selected: ConnectorCandidate[] = [];
+  const seen = new Set<string>();
+
+  addUniqueConnectorCandidate(selected, seen, sorted.find((candidate) => candidate.point.type === "metro_station"));
+  addUniqueConnectorCandidate(selected, seen, sorted.find((candidate) => candidate.point.type === "bus_stop"));
+  addUniqueConnectorCandidate(selected, seen, sorted.find((candidate) => candidate.point.type === "hub"));
+
+  for (const candidate of sorted) {
+    addUniqueConnectorCandidate(selected, seen, candidate);
+
+    if (selected.length >= limit) {
+      break;
+    }
+  }
+
+  return selected;
+}
+
+async function buildConnectorCandidates(
+  resolution: ResolvedTransitInput,
+  role: "origin" | "destination",
+  roadContext: PlannerRoadContext,
+) {
+  const matchedCandidates = resolution.candidates.filter((point) =>
+    isMatchedTransitPoint(resolution, point),
+  );
+  if (
+    matchedCandidates.length > 0 &&
+    matchedCandidates.every((point) => point.type === "metro_station")
+  ) {
+    return matchedCandidates.slice(0, 1).map((point) => ({
+      point,
+      accessLeg: null,
+      score: 0,
+    }));
+  }
+
+  const prefilteredCandidates =
+    matchedCandidates.length > 0
+      ? [
+          ...matchedCandidates,
+          ...resolution.candidates
+            .filter((point) => !isMatchedTransitPoint(resolution, point))
+            .slice(0, Math.max(2, Math.min(4, CANDIDATE_POOL_LIMIT - matchedCandidates.length))),
+        ]
+      : resolution.candidates.slice(0, CANDIDATE_POOL_LIMIT);
+  const evaluated: ConnectorCandidate[] = [];
+
+  for (const point of prefilteredCandidates) {
+    const accessLeg = await createAccessLegWithRoadMetrics(
+      resolution,
+      point,
+      role,
+      roadContext,
+    );
+
+    evaluated.push({
+      point,
+      accessLeg,
+      score: connectorCandidateScore(accessLeg),
+    });
+  }
+
+  const normalCandidates = evaluated
+    .filter(
+      (candidate) =>
+        candidate.accessLeg?.connectorType !== "advisory" ||
+        candidate.accessLeg.distanceKm <= LONG_RICKSHAW_MAX_KM,
+    )
+    .sort(compareConnectorCandidates);
+
+  if (normalCandidates.length > 0) {
+    return selectDiverseConnectorCandidates(
+      normalCandidates,
+      SURFACED_CANDIDATE_LIMIT,
+    );
+  }
+
+  return selectDiverseConnectorCandidates(evaluated, SURFACED_CANDIDATE_LIMIT);
+}
+
+export function createPathSignature(
+  route: Pick<
+    RouteOption,
+    | "kind"
+    | "boarding"
+    | "alighting"
+    | "transferStops"
+    | "segments"
+    | "mapPreview"
+  >,
+) {
   const segmentSignature = route.segments
     .map((segment) =>
       [
@@ -636,7 +1210,9 @@ export function createPathSignature(route: Pick<
     route.kind,
     normalizeTransitText(route.boarding.label),
     normalizeTransitText(route.alighting.label),
-    route.transferStops.map((stop) => normalizeTransitText(stop.label)).join(">"),
+    route.transferStops
+      .map((stop) => normalizeTransitText(stop.label))
+      .join(">"),
     normalizeTransitText(route.mapPreview.originLabel),
     normalizeTransitText(route.mapPreview.destinationLabel),
     segmentSignature,
@@ -681,7 +1257,9 @@ function createHighlights(route: RouteOption) {
   if (route.transferCount === 0) {
     highlights.push("No transfers");
   } else {
-    highlights.push(`${route.transferCount} transfer${route.transferCount > 1 ? "s" : ""}`);
+    highlights.push(
+      `${route.transferCount} transfer${route.transferCount > 1 ? "s" : ""}`,
+    );
   }
 
   if (route.stationCount) {
@@ -711,7 +1289,9 @@ function createTradeoffs(route: RouteOption) {
   }
 
   if (route.serviceLabels.length > 1) {
-    tradeoffs.push(`Also available via ${route.serviceLabels.slice(1).join(", ")}`);
+    tradeoffs.push(
+      `Also available via ${route.serviceLabels.slice(1).join(", ")}`,
+    );
   }
 
   return dedupeStrings(tradeoffs).slice(0, 3);
@@ -727,11 +1307,15 @@ function createRouteAdvisories(
     ...originPoint.advisories,
     ...destinationPoint.advisories,
     ...(originAccess?.connectorType === "advisory" ? [originAccess.note] : []),
-    ...(destinationAccess?.connectorType === "advisory" ? [destinationAccess.note] : []),
+    ...(destinationAccess?.connectorType === "advisory"
+      ? [destinationAccess.note]
+      : []),
   ]);
 }
 
-function finalizeRoute(route: Omit<RouteOption, "pathSignature" | "highlights" | "tradeoffs">) {
+function finalizeRoute(
+  route: Omit<RouteOption, "pathSignature" | "highlights" | "tradeoffs">,
+) {
   const withDefaults: RouteOption = {
     ...route,
     pathSignature: "",
@@ -765,7 +1349,10 @@ function finalizeRoute(route: Omit<RouteOption, "pathSignature" | "highlights" |
   });
 }
 
-function applyTripMapPreview(routes: RouteOption[], mapPreview: RouteMapPreview) {
+function applyTripMapPreview(
+  routes: RouteOption[],
+  mapPreview: RouteMapPreview,
+) {
   return routes.map((route) => {
     const nextRoute: RouteOption = {
       ...route,
@@ -785,8 +1372,10 @@ function applyTripMapPreview(routes: RouteOption[], mapPreview: RouteMapPreview)
 }
 
 function pickBestRouteCandidate(current: RouteOption, incoming: RouteOption) {
-  const currentDuration = current.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
-  const incomingDuration = incoming.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
+  const currentDuration =
+    current.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
+  const incomingDuration =
+    incoming.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
 
   if (incomingDuration !== currentDuration) {
     return incomingDuration < currentDuration ? incoming : current;
@@ -799,8 +1388,12 @@ function pickBestRouteCandidate(current: RouteOption, incoming: RouteOption) {
     return incomingCost < currentCost ? incoming : current;
   }
 
-  if (confidencePriority[incoming.confidence] !== confidencePriority[current.confidence]) {
-    return confidencePriority[incoming.confidence] > confidencePriority[current.confidence]
+  if (
+    confidencePriority[incoming.confidence] !==
+    confidencePriority[current.confidence]
+  ) {
+    return confidencePriority[incoming.confidence] >
+      confidencePriority[current.confidence]
       ? incoming
       : current;
   }
@@ -820,10 +1413,18 @@ function groupRoutesByPath(routes: RouteOption[]) {
     }
 
     const base = pickBestRouteCandidate(existing, route);
-    const serviceLabels = dedupeStrings([...existing.serviceLabels, ...route.serviceLabels]);
-    const advisories = dedupeStrings([...existing.advisories, ...route.advisories]);
+    const serviceLabels = dedupeStrings([
+      ...existing.serviceLabels,
+      ...route.serviceLabels,
+    ]);
+    const advisories = dedupeStrings([
+      ...existing.advisories,
+      ...route.advisories,
+    ]);
     const serviceWindowText = dedupeStrings(
-      [existing.serviceWindowText, route.serviceWindowText].filter(Boolean) as string[],
+      [existing.serviceWindowText, route.serviceWindowText].filter(
+        Boolean,
+      ) as string[],
     ).join(" | ");
 
     grouped.set(
@@ -849,7 +1450,9 @@ function createPresentationSignature(route: RouteOption) {
     normalizeTransitText(route.summary),
     normalizeTransitText(route.boarding.label),
     normalizeTransitText(route.alighting.label),
-    route.transferStops.map((stop) => normalizeTransitText(stop.label)).join(">"),
+    route.transferStops
+      .map((stop) => normalizeTransitText(stop.label))
+      .join(">"),
     [...route.serviceLabels]
       .map((label) => normalizeTransitText(label))
       .sort()
@@ -870,10 +1473,18 @@ function groupRoutesByPresentation(routes: RouteOption[]) {
     }
 
     const base = pickBestRouteCandidate(existing, route);
-    const serviceLabels = dedupeStrings([...existing.serviceLabels, ...route.serviceLabels]);
-    const advisories = dedupeStrings([...existing.advisories, ...route.advisories]);
+    const serviceLabels = dedupeStrings([
+      ...existing.serviceLabels,
+      ...route.serviceLabels,
+    ]);
+    const advisories = dedupeStrings([
+      ...existing.advisories,
+      ...route.advisories,
+    ]);
     const serviceWindowText = dedupeStrings(
-      [existing.serviceWindowText, route.serviceWindowText].filter(Boolean) as string[],
+      [existing.serviceWindowText, route.serviceWindowText].filter(
+        Boolean,
+      ) as string[],
     ).join(" | ");
 
     grouped.set(
@@ -893,51 +1504,188 @@ function groupRoutesByPresentation(routes: RouteOption[]) {
   return [...grouped.values()];
 }
 
-function routeScore(route: RouteOption, optimization: RouteOptimization) {
-  const duration = route.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
-  const cost = route.totalCost ?? FALLBACK_SORT_VALUE;
-  const distance = route.estimatedDistanceKm ?? FALLBACK_SORT_VALUE;
-
-  if (optimization === "fastest") {
-    return -(duration * 12 + route.transferCount * 40 + cost * 2 + distance);
-  }
-
-  if (optimization === "cheapest") {
-    return -(cost * 12 + duration * 3 + route.transferCount * 30 + distance);
-  }
-
-  return (
-    kindPriority[route.kind] * 36 +
-    confidencePriority[route.confidence] * 24 -
-    route.transferCount * 20 -
-    duration / 4 -
-    cost / 5 -
-    distance / 3
-  );
-}
-
 function routeUsesMetro(route: RouteOption) {
   return route.segments.some((segment) => segment.mode === "metro");
 }
 
-function pickAlternativeReason(route: RouteOption, fastest: RouteOption) {
-  if (route.transferCount < fastest.transferCount) {
+function countConnectorSegments(
+  route: RouteOption,
+  connectorType: ConnectorType,
+) {
+  return route.segments.filter(
+    (segment) => segment.connectorType === connectorType,
+  ).length;
+}
+
+function totalConnectorDistanceOverTwoKm(route: RouteOption) {
+  return route.segments.reduce((sum, segment) => {
+    const distanceKm = segment.connectorDistanceKm ?? 0;
+    return distanceKm > 2 ? sum + (distanceKm - 2) : sum;
+  }, 0);
+}
+
+function getConfidenceBonus(route: RouteOption) {
+  if (
+    route.segments.some(
+      (segment) =>
+        segment.pricingConfidence === "exact" ||
+        segment.pricingConfidence === "regulated_estimate" ||
+        segment.distanceSource === "metro_exact",
+    )
+  ) {
+    return 8;
+  }
+
+  if (
+    route.confidence !== "advisory" ||
+    route.segments.some(
+      (segment) =>
+        segment.distanceSource === "google_road" ||
+        segment.distanceSource === "local_estimate",
+    )
+  ) {
+    return 5;
+  }
+
+  return 0;
+}
+
+function getRecommendedScore(route: RouteOption) {
+  const duration = route.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
+  const cost = route.totalCost ?? FALLBACK_SORT_VALUE;
+  const walkConnectorCount = countConnectorSegments(route, "walk");
+  const rickshawConnectorCount =
+    countConnectorSegments(route, "rickshaw") +
+    countConnectorSegments(route, "long_rickshaw");
+  const anyLongRickshaw = countConnectorSegments(route, "long_rickshaw") > 0;
+
+  return (
+    duration +
+    cost / 4 +
+    route.transferCount * 10 +
+    walkConnectorCount * 3 +
+    rickshawConnectorCount * 6 +
+    (anyLongRickshaw ? 18 : 0) +
+    totalConnectorDistanceOverTwoKm(route) * 4 -
+    getConfidenceBonus(route)
+  );
+}
+
+function getConnectorBurden(route: RouteOption): ConnectorBurden {
+  const connectorCount = route.segments.filter(
+    (segment) => segment.connectorType,
+  ).length;
+  const longConnectorCount = countConnectorSegments(route, "long_rickshaw");
+  const advisoryCount = countConnectorSegments(route, "advisory");
+  const longDistance = totalConnectorDistanceOverTwoKm(route);
+
+  if (advisoryCount > 0 || longConnectorCount > 0 || longDistance > 2.5) {
+    return "high";
+  }
+
+  if (connectorCount >= 2 || longDistance > 0.8) {
+    return "medium";
+  }
+
+  return "low";
+}
+
+function connectorBurdenRank(burden: ConnectorBurden) {
+  switch (burden) {
+    case "low":
+      return 0;
+    case "medium":
+      return 1;
+    default:
+      return 2;
+  }
+}
+
+function getRouteRankingValues(route: RouteOption, optimization: RouteOptimization) {
+  const duration = route.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
+  const cost = route.totalCost ?? FALLBACK_SORT_VALUE;
+  const recommended = getRecommendedScore(route);
+  const longConnectorPenalty =
+    countConnectorSegments(route, "long_rickshaw") > 0 ||
+    countConnectorSegments(route, "advisory") > 0
+      ? 1
+      : 0;
+
+  if (optimization === "fastest") {
+    return [duration, longConnectorPenalty, route.transferCount, cost];
+  }
+
+  if (optimization === "cheapest") {
+    return [cost, longConnectorPenalty, duration, route.transferCount];
+  }
+
+  return [recommended, longConnectorPenalty, route.transferCount, duration, cost];
+}
+
+function compareByOptimization(
+  left: RouteOption,
+  right: RouteOption,
+  optimization: RouteOptimization,
+) {
+  const leftValues = getRouteRankingValues(left, optimization);
+  const rightValues = getRouteRankingValues(right, optimization);
+
+  for (let index = 0; index < leftValues.length; index += 1) {
+    if (leftValues[index] !== rightValues[index]) {
+      return leftValues[index]! - rightValues[index]!;
+    }
+  }
+
+  const leftConfidence = confidencePriority[left.confidence];
+  const rightConfidence = confidencePriority[right.confidence];
+
+  if (leftConfidence !== rightConfidence) {
+    return rightConfidence - leftConfidence;
+  }
+
+  return left.id.localeCompare(right.id);
+}
+
+function describePrimaryReason(optimization: RouteOptimization) {
+  if (optimization === "fastest") {
+    return "Fastest total travel time";
+  }
+
+  if (optimization === "cheapest") {
+    return "Lowest total fare";
+  }
+
+  return "Best overall balance";
+}
+
+function pickAlternativeReason(route: RouteOption, primary: RouteOption) {
+  if (route.transferCount < primary.transferCount) {
     return "Fewer transfers";
   }
 
   if (
     route.totalCost !== undefined &&
-    fastest.totalCost !== undefined &&
-    route.totalCost < fastest.totalCost
+    primary.totalCost !== undefined &&
+    route.totalCost < primary.totalCost
   ) {
     return "Lower total fare";
   }
 
-  if (confidencePriority[route.confidence] > confidencePriority[fastest.confidence]) {
+  if (
+    confidencePriority[route.confidence] >
+    confidencePriority[primary.confidence]
+  ) {
     return "Higher confidence";
   }
 
-  if (route.kind !== fastest.kind) {
+  if (
+    connectorBurdenRank(getConnectorBurden(route)) <
+    connectorBurdenRank(getConnectorBurden(primary))
+  ) {
+    return "Lighter connector burden";
+  }
+
+  if (route.kind !== primary.kind) {
     return "Different mode mix";
   }
 
@@ -946,81 +1694,92 @@ function pickAlternativeReason(route: RouteOption, fastest: RouteOption) {
 
 function scoreAlternativeCandidate(
   route: RouteOption,
-  fastest: RouteOption,
+  primary: RouteOption,
   optimization: RouteOptimization,
 ) {
   const reasonBoost =
-    (route.transferCount < fastest.transferCount ? 18 : 0) +
-    (route.kind !== fastest.kind ? 14 : 0) +
+    (route.transferCount < primary.transferCount ? 18 : 0) +
+    (route.kind !== primary.kind ? 14 : 0) +
     (route.totalCost !== undefined &&
-    fastest.totalCost !== undefined &&
-    route.totalCost < fastest.totalCost
+    primary.totalCost !== undefined &&
+    route.totalCost < primary.totalCost
       ? 16
       : 0) +
-    (confidencePriority[route.confidence] > confidencePriority[fastest.confidence] ? 10 : 0);
+    (confidencePriority[route.confidence] >
+    confidencePriority[primary.confidence]
+      ? 10
+      : 0);
 
-  return routeScore(route, optimization) + reasonBoost;
+  return -getRouteRankingValues(route, optimization)[0]! + reasonBoost;
 }
 
-export function surfaceRoutes(routes: RouteOption[], optimization: RouteOptimization) {
+function decorateRouteScoring(
+  route: RouteOption,
+  optimization: RouteOptimization,
+  primaryReason?: string,
+) {
+  const scoringReason =
+    optimization === "fastest"
+      ? `Fastest score based on ${route.estimatedDurationMinutes ?? "N/A"} min total time.`
+      : optimization === "cheapest"
+        ? `Cheapest score based on BDT ${Math.round(route.totalCost ?? 0)} estimated fare.`
+        : `Recommended score ${getRecommendedScore(route).toFixed(1)} from total time, fare, transfers, and connector burden.`;
+
+  return finalizeRoute({
+    ...route,
+    id: route.id,
+    primaryReason,
+    totalCostLowBdt: route.totalCostLowBdt ?? route.totalCost,
+    totalCostHighBdt: route.totalCostHighBdt ?? route.totalCost,
+    scoringReason,
+    connectorBurden: getConnectorBurden(route),
+  });
+}
+
+export function surfaceRoutes(
+  routes: RouteOption[],
+  optimization: RouteOptimization,
+) {
   if (!routes.length) {
     return [];
   }
 
-  const grouped = groupRoutesByPresentation(groupRoutesByPath(routes));
-  const fastest = [...grouped].sort((a, b) => {
-    const aDuration = a.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
-    const bDuration = b.estimatedDurationMinutes ?? FALLBACK_SORT_VALUE;
-
-    if (aDuration !== bDuration) {
-      return aDuration - bDuration;
-    }
-
-    const aCost = a.totalCost ?? FALLBACK_SORT_VALUE;
-    const bCost = b.totalCost ?? FALLBACK_SORT_VALUE;
-
-    if (aCost !== bCost) {
-      return aCost - bCost;
-    }
-
-    if (a.transferCount !== b.transferCount) {
-      return a.transferCount - b.transferCount;
-    }
-
-    return confidencePriority[b.confidence] - confidencePriority[a.confidence];
-  })[0];
+  const grouped = groupRoutesByPresentation(groupRoutesByPath(routes)).map((route) =>
+    decorateRouteScoring(route, optimization),
+  );
+  const primary = [...grouped].sort((a, b) =>
+    compareByOptimization(a, b, optimization),
+  )[0];
 
   let alternativeCandidates = grouped.filter(
-    (route) => route.pathSignature !== fastest.pathSignature,
+    (route) => route.pathSignature !== primary.pathSignature,
   );
 
-  if (routeUsesMetro(fastest)) {
-    alternativeCandidates = alternativeCandidates.filter((route) => !routeUsesMetro(route));
+  if (routeUsesMetro(primary)) {
+    alternativeCandidates = alternativeCandidates.filter(
+      (route) => !routeUsesMetro(route),
+    );
   }
 
   const alternatives = alternativeCandidates
     .sort((a, b) => {
-      const aScore = scoreAlternativeCandidate(a, fastest, optimization);
-      const bScore = scoreAlternativeCandidate(b, fastest, optimization);
+      const aScore = scoreAlternativeCandidate(a, primary, optimization);
+      const bScore = scoreAlternativeCandidate(b, primary, optimization);
       return bScore - aScore;
     })
     .slice(0, 2);
 
   const surfaced = [
-    finalizeRoute({
-      ...fastest,
-      primaryReason: "Fastest total travel time",
-      id: fastest.id,
-    }),
+    decorateRouteScoring(primary, optimization, describePrimaryReason(optimization)),
   ];
 
   for (const alternative of alternatives) {
     surfaced.push(
-      finalizeRoute({
-        ...alternative,
-        primaryReason: pickAlternativeReason(alternative, fastest),
-        id: alternative.id,
-      }),
+      decorateRouteScoring(
+        alternative,
+        optimization,
+        pickAlternativeReason(alternative, primary),
+      ),
     );
   }
 
@@ -1032,7 +1791,8 @@ function findIndexOnRoute(route: DhakaBusSeedRoute, labels: string[]) {
 
   for (const label of labels) {
     const index = route.stopLabels.findIndex(
-      (stopLabel) => normalizeTransitText(stopLabel) === normalizeTransitText(label),
+      (stopLabel) =>
+        normalizeTransitText(stopLabel) === normalizeTransitText(label),
     );
 
     if (index >= 0 && (!best || index < best.index)) {
@@ -1043,7 +1803,27 @@ function findIndexOnRoute(route: DhakaBusSeedRoute, labels: string[]) {
   return best;
 }
 
-function findDirectBusLegs(originLabels: string[], destinationLabels: string[]) {
+function createLabelPairCacheKey(originLabels: string[], destinationLabels: string[]) {
+  const originKey = originLabels.map((label) => normalizeTransitText(label)).sort().join("|");
+  const destinationKey = destinationLabels
+    .map((label) => normalizeTransitText(label))
+    .sort()
+    .join("|");
+
+  return `${originKey}=>${destinationKey}`;
+}
+
+function findDirectBusLegs(
+  originLabels: string[],
+  destinationLabels: string[],
+) {
+  const cacheKey = createLabelPairCacheKey(originLabels, destinationLabels);
+  const cached = directBusLegCache.get(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
   const legs: BusLeg[] = [];
 
   for (const route of dhakaBusSeedRoutes) {
@@ -1063,6 +1843,8 @@ function findDirectBusLegs(originLabels: string[], destinationLabels: string[]) 
     });
   }
 
+  directBusLegCache.set(cacheKey, legs);
+
   return legs;
 }
 
@@ -1080,10 +1862,17 @@ function buildFallbackDirectionMetrics(
     };
   }
 
-  const baselineDistanceKm = haversineDistanceKm(originCoordinates, destinationCoordinates);
+  const baselineDistanceKm = haversineDistanceKm(
+    originCoordinates,
+    destinationCoordinates,
+  );
   const progressDistanceKm = baselineDistanceKm - remainingDistanceKm;
-  const progressShare = baselineDistanceKm > 0 ? progressDistanceKm / baselineDistanceKm : 0;
-  const detourPenaltyKm = Math.max(0, busDistanceKm - Math.max(progressDistanceKm, 0));
+  const progressShare =
+    baselineDistanceKm > 0 ? progressDistanceKm / baselineDistanceKm : 0;
+  const detourPenaltyKm = Math.max(
+    0,
+    busDistanceKm - Math.max(progressDistanceKm, 0),
+  );
 
   return {
     progressDistanceKm,
@@ -1115,18 +1904,36 @@ function shouldKeepFallbackCandidate(
     return false;
   }
 
-  if (remainingDistanceKm > 5 && progressDistanceKm < 2 && progressShare < 0.2) {
+  if (
+    remainingDistanceKm > 5 &&
+    progressDistanceKm < 2 &&
+    progressShare < 0.2
+  ) {
     return false;
   }
 
-  if (remainingDistanceKm > 5 && busDistanceKm > 0 && progressDistanceKm / busDistanceKm < 0.55) {
+  if (
+    remainingDistanceKm > 5 &&
+    busDistanceKm > 0 &&
+    progressDistanceKm / busDistanceKm < 0.55
+  ) {
     return false;
   }
 
   return true;
 }
 
-function findTransferBusLegs(originLabels: string[], destinationLabels: string[]) {
+function findTransferBusLegs(
+  originLabels: string[],
+  destinationLabels: string[],
+) {
+  const cacheKey = createLabelPairCacheKey(originLabels, destinationLabels);
+  const cached = transferBusLegCache.get(cacheKey);
+
+  if (cached) {
+    return cached;
+  }
+
   const legs: Array<{
     firstLeg: BusLeg;
     secondLeg: BusLeg;
@@ -1139,7 +1946,11 @@ function findTransferBusLegs(originLabels: string[], destinationLabels: string[]
       continue;
     }
 
-    for (let transferIndex = firstBoarding.index + 1; transferIndex < firstRoute.stopLabels.length; transferIndex++) {
+    for (
+      let transferIndex = firstBoarding.index + 1;
+      transferIndex < firstRoute.stopLabels.length;
+      transferIndex++
+    ) {
       const transferLabel = firstRoute.stopLabels[transferIndex];
 
       if (!preferredTransferLabels.has(normalizeTransitText(transferLabel))) {
@@ -1152,11 +1963,20 @@ function findTransferBusLegs(originLabels: string[], destinationLabels: string[]
         }
 
         const secondTransfer = secondRoute.stopLabels.findIndex(
-          (stopLabel) => normalizeTransitText(stopLabel) === normalizeTransitText(transferLabel),
+          (stopLabel) =>
+            normalizeTransitText(stopLabel) ===
+            normalizeTransitText(transferLabel),
         );
-        const secondAlighting = findIndexOnRoute(secondRoute, destinationLabels);
+        const secondAlighting = findIndexOnRoute(
+          secondRoute,
+          destinationLabels,
+        );
 
-        if (secondTransfer < 0 || !secondAlighting || secondTransfer >= secondAlighting.index) {
+        if (
+          secondTransfer < 0 ||
+          !secondAlighting ||
+          secondTransfer >= secondAlighting.index
+        ) {
           continue;
         }
 
@@ -1181,6 +2001,8 @@ function findTransferBusLegs(originLabels: string[], destinationLabels: string[]
     }
   }
 
+  transferBusLegCache.set(cacheKey, legs);
+
   return legs;
 }
 
@@ -1198,7 +2020,11 @@ function findClosestDirectBusCandidates(
       continue;
     }
 
-    for (let alightingIndex = boarding.index + 1; alightingIndex < route.stopLabels.length; alightingIndex++) {
+    for (
+      let alightingIndex = boarding.index + 1;
+      alightingIndex < route.stopLabels.length;
+      alightingIndex++
+    ) {
       const alightingLabel = route.stopLabels[alightingIndex];
       const alightingCoordinates = findBusStopCoordinates(alightingLabel);
 
@@ -1213,7 +2039,10 @@ function findClosestDirectBusCandidates(
         stopCount: alightingIndex - boarding.index,
         serviceWindowText: buildServiceWindowText(route),
       };
-      const remainingDistanceKm = haversineDistanceKm(alightingCoordinates, destinationCoordinates);
+      const remainingDistanceKm = haversineDistanceKm(
+        alightingCoordinates,
+        destinationCoordinates,
+      );
       const busDistanceKm = estimateBusLegDistanceKm(leg);
       const directionMetrics = buildFallbackDirectionMetrics(
         originCoordinates,
@@ -1274,7 +2103,11 @@ function findClosestTransferBusCandidates(
       continue;
     }
 
-    for (let transferIndex = firstBoarding.index + 1; transferIndex < firstRoute.stopLabels.length; transferIndex++) {
+    for (
+      let transferIndex = firstBoarding.index + 1;
+      transferIndex < firstRoute.stopLabels.length;
+      transferIndex++
+    ) {
       const transferLabel = firstRoute.stopLabels[transferIndex];
 
       if (!preferredTransferLabels.has(normalizeTransitText(transferLabel))) {
@@ -1287,14 +2120,20 @@ function findClosestTransferBusCandidates(
         }
 
         const secondTransfer = secondRoute.stopLabels.findIndex(
-          (stopLabel) => normalizeTransitText(stopLabel) === normalizeTransitText(transferLabel),
+          (stopLabel) =>
+            normalizeTransitText(stopLabel) ===
+            normalizeTransitText(transferLabel),
         );
 
         if (secondTransfer < 0) {
           continue;
         }
 
-        for (let secondAlightingIndex = secondTransfer + 1; secondAlightingIndex < secondRoute.stopLabels.length; secondAlightingIndex++) {
+        for (
+          let secondAlightingIndex = secondTransfer + 1;
+          secondAlightingIndex < secondRoute.stopLabels.length;
+          secondAlightingIndex++
+        ) {
           const alightingLabel = secondRoute.stopLabels[secondAlightingIndex];
           const alightingCoordinates = findBusStopCoordinates(alightingLabel);
 
@@ -1316,9 +2155,13 @@ function findClosestTransferBusCandidates(
             stopCount: secondAlightingIndex - secondTransfer,
             serviceWindowText: buildServiceWindowText(secondRoute),
           };
-          const remainingDistanceKm = haversineDistanceKm(alightingCoordinates, destinationCoordinates);
+          const remainingDistanceKm = haversineDistanceKm(
+            alightingCoordinates,
+            destinationCoordinates,
+          );
           const busDistanceKm =
-            estimateBusLegDistanceKm(firstLeg) + estimateBusLegDistanceKm(secondLeg);
+            estimateBusLegDistanceKm(firstLeg) +
+            estimateBusLegDistanceKm(secondLeg);
           const directionMetrics = buildFallbackDirectionMetrics(
             originCoordinates,
             destinationCoordinates,
@@ -1346,7 +2189,8 @@ function findClosestTransferBusCandidates(
             busDistanceKm,
             progressDistanceKm: directionMetrics.progressDistanceKm,
             progressShare: directionMetrics.progressShare,
-            directionScore: directionMetrics.directionScore + TRANSFER_BUFFER_MINUTES,
+            directionScore:
+              directionMetrics.directionScore + TRANSFER_BUFFER_MINUTES,
           });
         }
       }
@@ -1385,24 +2229,29 @@ function getMetroFare(originStationId: string, destinationStationId: string) {
 
 function createDirectBusRoute(
   leg: BusLeg,
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
-  destinationResolution: ResolvedTransitInput,
-  destinationPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
+  destinationCandidate: ConnectorCandidate,
 ) {
+  const originPoint = originCandidate.point;
+  const destinationPoint = destinationCandidate.point;
   const busName = getBusDisplayName(leg.route);
   const busDistanceKm = estimateBusLegDistanceKm(leg);
   const busOperationalDistanceKm = estimateBusOperationalDistanceKm(leg);
-  const busDurationMinutes = estimateBusDurationMinutes(busOperationalDistanceKm, leg.stopCount);
+  const busDurationMinutes = estimateBusDurationMinutes(
+    busOperationalDistanceKm,
+    leg.stopCount,
+  );
   const busFare = estimateBusFareBdt(busOperationalDistanceKm, leg.stopCount);
-  const originAccess = createAccessLeg(originResolution, originPoint, "origin");
-  const destinationAccess = createAccessLeg(destinationResolution, destinationPoint, "destination");
+  const originAccess = originCandidate.accessLeg;
+  const destinationAccess = destinationCandidate.accessLeg;
   const metrics = combineRouteMetrics([
     accessLegMetrics(originAccess),
     {
       distanceKm: busDistanceKm,
       durationMinutes: busDurationMinutes,
       costBdt: busFare,
+      costLowBdt: busFare,
+      costHighBdt: busFare,
     },
     accessLegMetrics(destinationAccess),
   ]);
@@ -1413,16 +2262,23 @@ function createDirectBusRoute(
     confidence: "verified",
     summary: `${busName} direct`,
     fareType: "advisory",
-    fareText: formatRouteTotal(metrics.totalCost),
+    fareText: formatRouteTotal(
+      metrics.totalCost,
+      "advisory",
+      metrics.costLowBdt,
+      metrics.costHighBdt,
+    ),
     totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.costLowBdt,
+    totalCostHighBdt: metrics.costHighBdt,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText: leg.serviceWindowText,
     stopCount: leg.stopCount,
     stationCount: undefined,
     transferCount: 0,
-    boarding: makeStopReference(leg.boardingLabel),
-    alighting: makeStopReference(leg.alightingLabel),
+    boarding: makeBusReferenceForPoint(originPoint, leg.boardingLabel),
+    alighting: makeBusReferenceForPoint(destinationPoint, leg.alightingLabel),
     transferStops: [],
     serviceLabels: [busName],
     primaryServiceLabel: busName,
@@ -1440,6 +2296,10 @@ function createDirectBusRoute(
         estimatedDistanceKm: roundDistanceKm(busDistanceKm),
         estimatedDurationMinutes: busDurationMinutes,
         stopCount: leg.stopCount,
+        distanceSource: "local_estimate",
+        pricingConfidence: "regulated_estimate",
+        costLowBdt: busFare,
+        costHighBdt: busFare,
       },
       ...(destinationAccess ? [buildAccessSegment(destinationAccess)] : []),
     ],
@@ -1459,19 +2319,29 @@ function createTransferBusRoute(
     secondLeg: BusLeg;
     transferLabel: string;
   },
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
-  destinationResolution: ResolvedTransitInput,
-  destinationPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
+  destinationCandidate: ConnectorCandidate,
 ) {
+  const originPoint = originCandidate.point;
+  const destinationPoint = destinationCandidate.point;
   const firstBusName = getBusDisplayName(transfer.firstLeg.route);
   const secondBusName = getBusDisplayName(transfer.secondLeg.route);
   const firstDistanceKm = estimateBusLegDistanceKm(transfer.firstLeg);
   const secondDistanceKm = estimateBusLegDistanceKm(transfer.secondLeg);
-  const firstOperationalDistanceKm = estimateBusOperationalDistanceKm(transfer.firstLeg);
-  const secondOperationalDistanceKm = estimateBusOperationalDistanceKm(transfer.secondLeg);
-  const firstFare = estimateBusFareBdt(firstOperationalDistanceKm, transfer.firstLeg.stopCount);
-  const secondFare = estimateBusFareBdt(secondOperationalDistanceKm, transfer.secondLeg.stopCount);
+  const firstOperationalDistanceKm = estimateBusOperationalDistanceKm(
+    transfer.firstLeg,
+  );
+  const secondOperationalDistanceKm = estimateBusOperationalDistanceKm(
+    transfer.secondLeg,
+  );
+  const firstFare = estimateBusFareBdt(
+    firstOperationalDistanceKm,
+    transfer.firstLeg.stopCount,
+  );
+  const secondFare = estimateBusFareBdt(
+    secondOperationalDistanceKm,
+    transfer.secondLeg.stopCount,
+  );
   const firstDurationMinutes = estimateBusDurationMinutes(
     firstOperationalDistanceKm,
     transfer.firstLeg.stopCount,
@@ -1480,19 +2350,23 @@ function createTransferBusRoute(
     secondOperationalDistanceKm,
     transfer.secondLeg.stopCount,
   );
-  const originAccess = createAccessLeg(originResolution, originPoint, "origin");
-  const destinationAccess = createAccessLeg(destinationResolution, destinationPoint, "destination");
+  const originAccess = originCandidate.accessLeg;
+  const destinationAccess = destinationCandidate.accessLeg;
   const metrics = combineRouteMetrics([
     accessLegMetrics(originAccess),
     {
       distanceKm: firstDistanceKm,
       durationMinutes: firstDurationMinutes,
       costBdt: firstFare,
+      costLowBdt: firstFare,
+      costHighBdt: firstFare,
     },
     {
       distanceKm: secondDistanceKm,
       durationMinutes: secondDurationMinutes,
       costBdt: secondFare,
+      costLowBdt: secondFare,
+      costHighBdt: secondFare,
     },
     { durationMinutes: TRANSFER_BUFFER_MINUTES },
     accessLegMetrics(destinationAccess),
@@ -1504,8 +2378,15 @@ function createTransferBusRoute(
     confidence: "verified",
     summary: `${firstBusName} -> ${secondBusName}`,
     fareType: "advisory",
-    fareText: formatRouteTotal(metrics.totalCost),
+    fareText: formatRouteTotal(
+      metrics.totalCost,
+      "advisory",
+      metrics.costLowBdt,
+      metrics.costHighBdt,
+    ),
     totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.costLowBdt,
+    totalCostHighBdt: metrics.costHighBdt,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText:
@@ -1514,8 +2395,11 @@ function createTransferBusRoute(
     stopCount: transfer.firstLeg.stopCount + transfer.secondLeg.stopCount,
     stationCount: undefined,
     transferCount: 1,
-    boarding: makeStopReference(transfer.firstLeg.boardingLabel),
-    alighting: makeStopReference(transfer.secondLeg.alightingLabel),
+    boarding: makeBusReferenceForPoint(originPoint, transfer.firstLeg.boardingLabel),
+    alighting: makeBusReferenceForPoint(
+      destinationPoint,
+      transfer.secondLeg.alightingLabel,
+    ),
     transferStops: [makeStopReference(transfer.transferLabel, "hub")],
     serviceLabels: [firstBusName, secondBusName],
     primaryServiceLabel: firstBusName,
@@ -1533,6 +2417,10 @@ function createTransferBusRoute(
         estimatedDistanceKm: roundDistanceKm(firstDistanceKm),
         estimatedDurationMinutes: firstDurationMinutes,
         stopCount: transfer.firstLeg.stopCount,
+        distanceSource: "local_estimate",
+        pricingConfidence: "regulated_estimate",
+        costLowBdt: firstFare,
+        costHighBdt: firstFare,
       },
       {
         mode: "walk",
@@ -1541,6 +2429,7 @@ function createTransferBusRoute(
         endLocation: transfer.transferLabel,
         note: "Transfer at a shared bus stop or hub.",
         estimatedDurationMinutes: TRANSFER_BUFFER_MINUTES,
+        distanceSource: "local_estimate",
       },
       {
         mode: "bus",
@@ -1553,6 +2442,10 @@ function createTransferBusRoute(
         estimatedDistanceKm: roundDistanceKm(secondDistanceKm),
         estimatedDurationMinutes: secondDurationMinutes,
         stopCount: transfer.secondLeg.stopCount,
+        distanceSource: "local_estimate",
+        pricingConfidence: "regulated_estimate",
+        costLowBdt: secondFare,
+        costHighBdt: secondFare,
       },
       ...(destinationAccess ? [buildAccessSegment(destinationAccess)] : []),
     ],
@@ -1571,19 +2464,24 @@ function createTransferBusRoute(
 
 function createFallbackDirectBusRoute(
   candidate: FallbackDirectBusCandidate,
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
   destinationResolution: ResolvedTransitInput,
 ) {
+  const originPoint = originCandidate.point;
   const busName = getBusDisplayName(candidate.leg.route);
   const busDistanceKm = estimateBusLegDistanceKm(candidate.leg);
-  const busOperationalDistanceKm = estimateBusOperationalDistanceKm(candidate.leg);
-  const busFare = estimateBusFareBdt(busOperationalDistanceKm, candidate.leg.stopCount);
+  const busOperationalDistanceKm = estimateBusOperationalDistanceKm(
+    candidate.leg,
+  );
+  const busFare = estimateBusFareBdt(
+    busOperationalDistanceKm,
+    candidate.leg.stopCount,
+  );
   const busDurationMinutes = estimateBusDurationMinutes(
     busOperationalDistanceKm,
     candidate.leg.stopCount,
   );
-  const originAccess = createAccessLeg(originResolution, originPoint, "origin");
+  const originAccess = originCandidate.accessLeg;
   const destinationAccess = createConnectorLegBetween(
     candidate.leg.alightingLabel,
     candidate.alightingCoordinates,
@@ -1597,6 +2495,8 @@ function createFallbackDirectBusRoute(
       distanceKm: busDistanceKm,
       durationMinutes: busDurationMinutes,
       costBdt: busFare,
+      costLowBdt: busFare,
+      costHighBdt: busFare,
     },
     accessLegMetrics(destinationAccess),
   ]);
@@ -1607,15 +2507,22 @@ function createFallbackDirectBusRoute(
     confidence: "advisory",
     summary: `${busName} close match`,
     fareType: "advisory",
-    fareText: formatRouteTotal(metrics.totalCost),
+    fareText: formatRouteTotal(
+      metrics.totalCost,
+      "advisory",
+      metrics.costLowBdt,
+      metrics.costHighBdt,
+    ),
     totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.costLowBdt,
+    totalCostHighBdt: metrics.costHighBdt,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText: candidate.leg.serviceWindowText,
     stopCount: candidate.leg.stopCount,
     stationCount: undefined,
     transferCount: 0,
-    boarding: makeStopReference(candidate.leg.boardingLabel),
+    boarding: makeBusReferenceForPoint(originPoint, candidate.leg.boardingLabel),
     alighting: makeStopReference(candidate.leg.alightingLabel),
     transferStops: [],
     serviceLabels: [busName],
@@ -1634,10 +2541,17 @@ function createFallbackDirectBusRoute(
         estimatedDistanceKm: roundDistanceKm(busDistanceKm),
         estimatedDurationMinutes: busDurationMinutes,
         stopCount: candidate.leg.stopCount,
+        distanceSource: "local_estimate",
+        pricingConfidence: "regulated_estimate",
+        costLowBdt: busFare,
+        costHighBdt: busFare,
       },
       ...(destinationAccess ? [buildAccessSegment(destinationAccess)] : []),
     ],
-    mapPreview: buildMapPreview(candidate.leg.boardingLabel, candidate.leg.alightingLabel),
+    mapPreview: buildMapPreview(
+      candidate.leg.boardingLabel,
+      candidate.leg.alightingLabel,
+    ),
     advisories: dedupeStrings([
       ...originPoint.advisories,
       originAccess?.connectorType === "advisory" ? originAccess.note : "",
@@ -1649,18 +2563,28 @@ function createFallbackDirectBusRoute(
 
 function createFallbackTransferBusRoute(
   candidate: FallbackTransferBusCandidate,
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
   destinationResolution: ResolvedTransitInput,
 ) {
+  const originPoint = originCandidate.point;
   const firstBusName = getBusDisplayName(candidate.firstLeg.route);
   const secondBusName = getBusDisplayName(candidate.secondLeg.route);
   const firstDistanceKm = estimateBusLegDistanceKm(candidate.firstLeg);
   const secondDistanceKm = estimateBusLegDistanceKm(candidate.secondLeg);
-  const firstOperationalDistanceKm = estimateBusOperationalDistanceKm(candidate.firstLeg);
-  const secondOperationalDistanceKm = estimateBusOperationalDistanceKm(candidate.secondLeg);
-  const firstFare = estimateBusFareBdt(firstOperationalDistanceKm, candidate.firstLeg.stopCount);
-  const secondFare = estimateBusFareBdt(secondOperationalDistanceKm, candidate.secondLeg.stopCount);
+  const firstOperationalDistanceKm = estimateBusOperationalDistanceKm(
+    candidate.firstLeg,
+  );
+  const secondOperationalDistanceKm = estimateBusOperationalDistanceKm(
+    candidate.secondLeg,
+  );
+  const firstFare = estimateBusFareBdt(
+    firstOperationalDistanceKm,
+    candidate.firstLeg.stopCount,
+  );
+  const secondFare = estimateBusFareBdt(
+    secondOperationalDistanceKm,
+    candidate.secondLeg.stopCount,
+  );
   const firstDurationMinutes = estimateBusDurationMinutes(
     firstOperationalDistanceKm,
     candidate.firstLeg.stopCount,
@@ -1669,7 +2593,7 @@ function createFallbackTransferBusRoute(
     secondOperationalDistanceKm,
     candidate.secondLeg.stopCount,
   );
-  const originAccess = createAccessLeg(originResolution, originPoint, "origin");
+  const originAccess = originCandidate.accessLeg;
   const destinationAccess = createConnectorLegBetween(
     candidate.secondLeg.alightingLabel,
     candidate.alightingCoordinates,
@@ -1683,11 +2607,15 @@ function createFallbackTransferBusRoute(
       distanceKm: firstDistanceKm,
       durationMinutes: firstDurationMinutes,
       costBdt: firstFare,
+      costLowBdt: firstFare,
+      costHighBdt: firstFare,
     },
     {
       distanceKm: secondDistanceKm,
       durationMinutes: secondDurationMinutes,
       costBdt: secondFare,
+      costLowBdt: secondFare,
+      costHighBdt: secondFare,
     },
     { durationMinutes: TRANSFER_BUFFER_MINUTES },
     accessLegMetrics(destinationAccess),
@@ -1699,8 +2627,15 @@ function createFallbackTransferBusRoute(
     confidence: "advisory",
     summary: `${firstBusName} -> ${secondBusName}`,
     fareType: "advisory",
-    fareText: formatRouteTotal(metrics.totalCost),
+    fareText: formatRouteTotal(
+      metrics.totalCost,
+      "advisory",
+      metrics.costLowBdt,
+      metrics.costHighBdt,
+    ),
     totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.costLowBdt,
+    totalCostHighBdt: metrics.costHighBdt,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText:
@@ -1709,7 +2644,7 @@ function createFallbackTransferBusRoute(
     stopCount: candidate.firstLeg.stopCount + candidate.secondLeg.stopCount,
     stationCount: undefined,
     transferCount: 1,
-    boarding: makeStopReference(candidate.firstLeg.boardingLabel),
+    boarding: makeBusReferenceForPoint(originPoint, candidate.firstLeg.boardingLabel),
     alighting: makeStopReference(candidate.secondLeg.alightingLabel),
     transferStops: [makeStopReference(candidate.transferLabel, "hub")],
     serviceLabels: [firstBusName, secondBusName],
@@ -1728,6 +2663,10 @@ function createFallbackTransferBusRoute(
         estimatedDistanceKm: roundDistanceKm(firstDistanceKm),
         estimatedDurationMinutes: firstDurationMinutes,
         stopCount: candidate.firstLeg.stopCount,
+        distanceSource: "local_estimate",
+        pricingConfidence: "regulated_estimate",
+        costLowBdt: firstFare,
+        costHighBdt: firstFare,
       },
       {
         mode: "walk",
@@ -1736,6 +2675,7 @@ function createFallbackTransferBusRoute(
         endLocation: candidate.transferLabel,
         note: "Short transfer between bus services.",
         estimatedDurationMinutes: TRANSFER_BUFFER_MINUTES,
+        distanceSource: "local_estimate",
       },
       {
         mode: "bus",
@@ -1748,10 +2688,17 @@ function createFallbackTransferBusRoute(
         estimatedDistanceKm: roundDistanceKm(secondDistanceKm),
         estimatedDurationMinutes: secondDurationMinutes,
         stopCount: candidate.secondLeg.stopCount,
+        distanceSource: "local_estimate",
+        pricingConfidence: "regulated_estimate",
+        costLowBdt: secondFare,
+        costHighBdt: secondFare,
       },
       ...(destinationAccess ? [buildAccessSegment(destinationAccess)] : []),
     ],
-    mapPreview: buildMapPreview(candidate.firstLeg.boardingLabel, candidate.secondLeg.alightingLabel),
+    mapPreview: buildMapPreview(
+      candidate.firstLeg.boardingLabel,
+      candidate.secondLeg.alightingLabel,
+    ),
     advisories: dedupeStrings([
       ...originPoint.advisories,
       originAccess?.connectorType === "advisory" ? originAccess.note : "",
@@ -1764,21 +2711,31 @@ function createFallbackTransferBusRoute(
 function createMetroRoute(
   originStationId: string,
   destinationStationId: string,
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
-  destinationResolution: ResolvedTransitInput,
-  destinationPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
+  destinationCandidate: ConnectorCandidate,
 ) {
+  const originPoint = originCandidate.point;
+  const destinationPoint = destinationCandidate.point;
   const originStation = getMetroStationById(originStationId);
   const destinationStation = getMetroStationById(destinationStationId);
 
-  if (!originStation || !destinationStation || originStation.id === destinationStation.id) {
+  if (
+    !originStation ||
+    !destinationStation ||
+    originStation.id === destinationStation.id
+  ) {
     return null;
   }
 
-  const stationCount = Math.abs(originStation.sequence - destinationStation.sequence);
+  const stationCount = Math.abs(
+    originStation.sequence - destinationStation.sequence,
+  );
   const fare = getMetroFare(originStation.id, destinationStation.id);
-  const metroDistanceKm = estimateMetroDistanceKm(originStation.id, destinationStation.id, stationCount);
+  const metroDistanceKm = estimateMetroDistanceKm(
+    originStation.id,
+    destinationStation.id,
+    stationCount,
+  );
   const metroOperationalDistanceKm = estimateMetroOperationalDistanceKm(
     originStation.id,
     destinationStation.id,
@@ -1788,14 +2745,16 @@ function createMetroRoute(
     metroOperationalDistanceKm,
     stationCount,
   );
-  const originAccess = createAccessLeg(originResolution, originPoint, "origin");
-  const destinationAccess = createAccessLeg(destinationResolution, destinationPoint, "destination");
+  const originAccess = originCandidate.accessLeg;
+  const destinationAccess = destinationCandidate.accessLeg;
   const metrics = combineRouteMetrics([
     accessLegMetrics(originAccess),
     {
       distanceKm: metroDistanceKm,
       durationMinutes: metroDurationMinutes,
       costBdt: fare ?? undefined,
+      costLowBdt: fare ?? undefined,
+      costHighBdt: fare ?? undefined,
     },
     accessLegMetrics(destinationAccess),
   ]);
@@ -1806,16 +2765,23 @@ function createMetroRoute(
     confidence: "exact",
     summary: "Metro direct",
     fareType: "exact",
-    fareText: formatRouteTotal(metrics.totalCost, "exact"),
+    fareText: formatRouteTotal(
+      metrics.totalCost,
+      "exact",
+      metrics.costLowBdt,
+      metrics.costHighBdt,
+    ),
     totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.costLowBdt,
+    totalCostHighBdt: metrics.costHighBdt,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText: METRO_SERVICE_WINDOW_TEXT,
     stopCount: undefined,
     stationCount,
     transferCount: 0,
-    boarding: makeMetroReference(originStation.id),
-    alighting: makeMetroReference(destinationStation.id),
+    boarding: makePointReference(originPoint),
+    alighting: makePointReference(destinationPoint),
     transferStops: [],
     serviceLabels: ["MRT Line 6"],
     primaryServiceLabel: "MRT Line 6",
@@ -1833,6 +2799,10 @@ function createMetroRoute(
         estimatedDistanceKm: roundDistanceKm(metroDistanceKm),
         estimatedDurationMinutes: metroDurationMinutes,
         stationCount,
+        distanceSource: "metro_exact",
+        pricingConfidence: "exact",
+        costLowBdt: fare ?? undefined,
+        costHighBdt: fare ?? undefined,
       },
       ...(destinationAccess ? [buildAccessSegment(destinationAccess)] : []),
     ],
@@ -1850,12 +2820,12 @@ function createHybridRoute(
   busLeg: BusLeg,
   interchangeStationId: string,
   destinationStationId: string,
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
-  destinationResolution: ResolvedTransitInput,
-  destinationPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
+  destinationCandidate: ConnectorCandidate,
   direction: "bus_then_metro" | "metro_then_bus",
 ) {
+  const originPoint = originCandidate.point;
+  const destinationPoint = destinationCandidate.point;
   const interchangeStation = getMetroStationById(interchangeStationId);
   const destinationStation = getMetroStationById(destinationStationId);
 
@@ -1863,7 +2833,9 @@ function createHybridRoute(
     return null;
   }
 
-  const stationCount = Math.abs(interchangeStation.sequence - destinationStation.sequence);
+  const stationCount = Math.abs(
+    interchangeStation.sequence - destinationStation.sequence,
+  );
 
   if (stationCount <= 0) {
     return null;
@@ -1873,12 +2845,19 @@ function createHybridRoute(
   const fare = getMetroFare(interchangeStationId, destinationStationId);
   const busDistanceKm = estimateBusLegDistanceKm(busLeg);
   const busOperationalDistanceKm = estimateBusOperationalDistanceKm(busLeg);
-  const busFare = estimateBusFareBdt(busOperationalDistanceKm, busLeg.stopCount);
+  const busFare = estimateBusFareBdt(
+    busOperationalDistanceKm,
+    busLeg.stopCount,
+  );
   const busDurationMinutes = estimateBusDurationMinutes(
     busOperationalDistanceKm,
     busLeg.stopCount,
   );
-  const metroDistanceKm = estimateMetroDistanceKm(interchangeStationId, destinationStationId, stationCount);
+  const metroDistanceKm = estimateMetroDistanceKm(
+    interchangeStationId,
+    destinationStationId,
+    stationCount,
+  );
   const metroOperationalDistanceKm = estimateMetroOperationalDistanceKm(
     interchangeStationId,
     destinationStationId,
@@ -1888,19 +2867,23 @@ function createHybridRoute(
     metroOperationalDistanceKm,
     stationCount,
   );
-  const originAccess = createAccessLeg(originResolution, originPoint, "origin");
-  const destinationAccess = createAccessLeg(destinationResolution, destinationPoint, "destination");
+  const originAccess = originCandidate.accessLeg;
+  const destinationAccess = destinationCandidate.accessLeg;
   const metrics = combineRouteMetrics([
     accessLegMetrics(originAccess),
     {
       distanceKm: busDistanceKm,
       durationMinutes: busDurationMinutes,
       costBdt: busFare,
+      costLowBdt: busFare,
+      costHighBdt: busFare,
     },
     {
       distanceKm: metroDistanceKm,
       durationMinutes: metroDurationMinutes,
       costBdt: fare ?? undefined,
+      costLowBdt: fare ?? undefined,
+      costHighBdt: fare ?? undefined,
     },
     { durationMinutes: TRANSFER_BUFFER_MINUTES },
     accessLegMetrics(destinationAccess),
@@ -1920,6 +2903,10 @@ function createHybridRoute(
             estimatedDistanceKm: roundDistanceKm(busDistanceKm),
             estimatedDurationMinutes: busDurationMinutes,
             stopCount: busLeg.stopCount,
+            distanceSource: "local_estimate",
+            pricingConfidence: "regulated_estimate",
+            costLowBdt: busFare,
+            costHighBdt: busFare,
           },
           {
             mode: "walk",
@@ -1928,6 +2915,7 @@ function createHybridRoute(
             endLocation: interchangeStation.name,
             note: "Buffer time for station entry and platform transfer.",
             estimatedDurationMinutes: TRANSFER_BUFFER_MINUTES,
+            distanceSource: "local_estimate",
           },
           {
             mode: "metro",
@@ -1940,6 +2928,10 @@ function createHybridRoute(
             estimatedDistanceKm: roundDistanceKm(metroDistanceKm),
             estimatedDurationMinutes: metroDurationMinutes,
             stationCount,
+            distanceSource: "metro_exact",
+            pricingConfidence: "exact",
+            costLowBdt: fare ?? undefined,
+            costHighBdt: fare ?? undefined,
           },
         ]
       : [
@@ -1954,6 +2946,10 @@ function createHybridRoute(
             estimatedDistanceKm: roundDistanceKm(metroDistanceKm),
             estimatedDurationMinutes: metroDurationMinutes,
             stationCount,
+            distanceSource: "metro_exact",
+            pricingConfidence: "exact",
+            costLowBdt: fare ?? undefined,
+            costHighBdt: fare ?? undefined,
           },
           {
             mode: "walk",
@@ -1962,6 +2958,7 @@ function createHybridRoute(
             endLocation: busLeg.boardingLabel,
             note: "Buffer time between the station exit and bus boarding area.",
             estimatedDurationMinutes: TRANSFER_BUFFER_MINUTES,
+            distanceSource: "local_estimate",
           },
           {
             mode: "bus",
@@ -1974,6 +2971,10 @@ function createHybridRoute(
             estimatedDistanceKm: roundDistanceKm(busDistanceKm),
             estimatedDurationMinutes: busDurationMinutes,
             stopCount: busLeg.stopCount,
+            distanceSource: "local_estimate",
+            pricingConfidence: "regulated_estimate",
+            costLowBdt: busFare,
+            costHighBdt: busFare,
           },
         ];
 
@@ -1983,12 +2984,21 @@ function createHybridRoute(
     confidence: "verified",
     summary: `${busName} + Metro`,
     fareType: "advisory",
-    fareText: formatRouteTotal(metrics.totalCost),
+    fareText: formatRouteTotal(
+      metrics.totalCost,
+      "advisory",
+      metrics.costLowBdt,
+      metrics.costHighBdt,
+    ),
     totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.costLowBdt,
+    totalCostHighBdt: metrics.costHighBdt,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText: joinServiceWindows([
-      busLeg.serviceWindowText ? `${busName}: ${busLeg.serviceWindowText}` : undefined,
+      busLeg.serviceWindowText
+        ? `${busName}: ${busLeg.serviceWindowText}`
+        : undefined,
       `MRT Line 6: ${METRO_SERVICE_WINDOW_TEXT}`,
     ]),
     stopCount: busLeg.stopCount,
@@ -1996,12 +3006,12 @@ function createHybridRoute(
     transferCount: 1,
     boarding:
       direction === "bus_then_metro"
-        ? makeStopReference(busLeg.boardingLabel)
-        : makeMetroReference(interchangeStationId),
+        ? makeBusReferenceForPoint(originPoint, busLeg.boardingLabel)
+        : makePointReference(originPoint),
     alighting:
       direction === "bus_then_metro"
-        ? makeMetroReference(destinationStationId)
-        : makeStopReference(busLeg.alightingLabel),
+        ? makePointReference(destinationPoint)
+        : makeBusReferenceForPoint(destinationPoint, busLeg.alightingLabel),
     transferStops: [
       direction === "bus_then_metro"
         ? makeMetroReference(interchangeStationId)
@@ -2016,8 +3026,12 @@ function createHybridRoute(
       ...(destinationAccess ? [buildAccessSegment(destinationAccess)] : []),
     ],
     mapPreview: buildMapPreview(
-      direction === "bus_then_metro" ? busLeg.boardingLabel : interchangeStation.name,
-      direction === "bus_then_metro" ? destinationStation.name : busLeg.alightingLabel,
+      direction === "bus_then_metro"
+        ? busLeg.boardingLabel
+        : interchangeStation.name,
+      direction === "bus_then_metro"
+        ? destinationStation.name
+        : busLeg.alightingLabel,
     ),
     advisories: createRouteAdvisories(
       originPoint,
@@ -2029,13 +3043,13 @@ function createHybridRoute(
 }
 
 function createAdvisoryRoute(
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
-  destinationResolution: ResolvedTransitInput,
-  destinationPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
+  destinationCandidate: ConnectorCandidate,
 ) {
-  const originAccess = createAccessLeg(originResolution, originPoint, "origin");
-  const destinationAccess = createAccessLeg(destinationResolution, destinationPoint, "destination");
+  const originPoint = originCandidate.point;
+  const destinationPoint = destinationCandidate.point;
+  const originAccess = originCandidate.accessLeg;
+  const destinationAccess = destinationCandidate.accessLeg;
   const metrics = combineRouteMetrics([
     accessLegMetrics(originAccess),
     accessLegMetrics(destinationAccess),
@@ -2047,8 +3061,18 @@ function createAdvisoryRoute(
     confidence: "advisory",
     summary: "Reach a major transit hub first",
     fareType: "advisory",
-    fareText: metrics.totalCost !== undefined ? formatRouteTotal(metrics.totalCost) : "Fare varies",
+    fareText:
+      metrics.totalCost !== undefined
+        ? formatRouteTotal(
+            metrics.totalCost,
+            "advisory",
+            metrics.costLowBdt,
+            metrics.costHighBdt,
+          )
+        : "Fare varies",
     totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.costLowBdt,
+    totalCostHighBdt: metrics.costHighBdt,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText: undefined,
@@ -2056,14 +3080,10 @@ function createAdvisoryRoute(
     stationCount: undefined,
     transferCount: 0,
     boarding: {
-      label: originPoint.name,
-      type: originPoint.type,
-      id: originPoint.id,
+      ...makePointReference(originPoint),
     },
     alighting: {
-      label: destinationPoint.name,
-      type: destinationPoint.type,
-      id: destinationPoint.id,
+      ...makePointReference(destinationPoint),
     },
     transferStops: [],
     serviceLabels: [],
@@ -2074,7 +3094,7 @@ function createAdvisoryRoute(
       {
         mode: "rickshaw",
         instruction: `Reach ${originPoint.name} first`,
-        startLocation: originResolution.displayName,
+        startLocation: originAccess?.startLocation ?? originPoint.name,
         endLocation: originPoint.name,
         note: "No verified direct bus or metro route was found for this pair yet.",
         fareText: "Negotiated locally",
@@ -2094,63 +3114,61 @@ function createAdvisoryRoute(
 }
 
 function collectDirectBusRoutes(
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
-  destinationResolution: ResolvedTransitInput,
-  destinationPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
+  destinationCandidate: ConnectorCandidate,
 ) {
-  return findDirectBusLegs(originPoint.busStopLabels, destinationPoint.busStopLabels).map((leg) =>
+  return findDirectBusLegs(
+    originCandidate.point.busStopLabels,
+    destinationCandidate.point.busStopLabels,
+  ).map((leg) =>
     createDirectBusRoute(
       leg,
-      originResolution,
-      originPoint,
-      destinationResolution,
-      destinationPoint,
+      originCandidate,
+      destinationCandidate,
     ),
   );
 }
 
 function collectTransferBusRoutes(
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
-  destinationResolution: ResolvedTransitInput,
-  destinationPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
+  destinationCandidate: ConnectorCandidate,
 ) {
-  return findTransferBusLegs(originPoint.busStopLabels, destinationPoint.busStopLabels).map(
-    (transfer) =>
-      createTransferBusRoute(
-        transfer,
-        originResolution,
-        originPoint,
-        destinationResolution,
-        destinationPoint,
-      ),
+  return findTransferBusLegs(
+    originCandidate.point.busStopLabels,
+    destinationCandidate.point.busStopLabels,
+  ).map((transfer) =>
+    createTransferBusRoute(
+      transfer,
+      originCandidate,
+      destinationCandidate,
+    ),
   );
 }
 
 function collectHybridRoutes(
-  originResolution: ResolvedTransitInput,
-  originPoint: TransitPoint,
-  destinationResolution: ResolvedTransitInput,
-  destinationPoint: TransitPoint,
+  originCandidate: ConnectorCandidate,
+  destinationCandidate: ConnectorCandidate,
 ) {
   const routes: RouteOption[] = [];
   const interchangePoints = DHAKA_ACCESS_POINTS.filter(
     (point) => point.metroStationId && point.busStopLabels.length,
   );
+  const originPoint = originCandidate.point;
+  const destinationPoint = destinationCandidate.point;
 
   if (originPoint.busStopLabels.length && destinationPoint.metroStationId) {
     for (const interchange of interchangePoints) {
-      const legs = findDirectBusLegs(originPoint.busStopLabels, interchange.busStopLabels);
+      const legs = findDirectBusLegs(
+        originPoint.busStopLabels,
+        interchange.busStopLabels,
+      );
       for (const leg of legs) {
         const route = createHybridRoute(
           leg,
           interchange.metroStationId!,
           destinationPoint.metroStationId,
-          originResolution,
-          originPoint,
-          destinationResolution,
-          destinationPoint,
+          originCandidate,
+          destinationCandidate,
           "bus_then_metro",
         );
 
@@ -2163,16 +3181,17 @@ function collectHybridRoutes(
 
   if (originPoint.metroStationId && destinationPoint.busStopLabels.length) {
     for (const interchange of interchangePoints) {
-      const legs = findDirectBusLegs(interchange.busStopLabels, destinationPoint.busStopLabels);
+      const legs = findDirectBusLegs(
+        interchange.busStopLabels,
+        destinationPoint.busStopLabels,
+      );
       for (const leg of legs) {
         const route = createHybridRoute(
           leg,
           originPoint.metroStationId,
           interchange.metroStationId!,
-          originResolution,
-          originPoint,
-          destinationResolution,
-          destinationPoint,
+          originCandidate,
+          destinationCandidate,
           "metro_then_bus",
         );
 
@@ -2187,11 +3206,12 @@ function collectHybridRoutes(
 }
 
 function collectFallbackBusRoutes(
-  originResolution: ResolvedTransitInput,
+  originCandidates: ConnectorCandidate[],
   destinationResolution: ResolvedTransitInput,
 ) {
   const destinationCoordinates =
-    destinationResolution.place?.coordinates ?? destinationResolution.candidates[0]?.coordinates;
+    destinationResolution.place?.coordinates ??
+    destinationResolution.candidates[0]?.coordinates;
 
   if (!destinationCoordinates) {
     return [];
@@ -2199,7 +3219,9 @@ function collectFallbackBusRoutes(
 
   const routes: RouteOption[] = [];
 
-  for (const originPoint of originResolution.candidates) {
+  for (const originCandidate of originCandidates.slice(0, 2)) {
+    const originPoint = originCandidate.point;
+
     if (!originPoint.busStopLabels.length) {
       continue;
     }
@@ -2214,8 +3236,7 @@ function collectFallbackBusRoutes(
       routes.push(
         createFallbackDirectBusRoute(
           candidate,
-          originResolution,
-          originPoint,
+          originCandidate,
           destinationResolution,
         ),
       );
@@ -2233,8 +3254,7 @@ function collectFallbackBusRoutes(
       routes.push(
         createFallbackTransferBusRoute(
           candidate,
-          originResolution,
-          originPoint,
+          originCandidate,
           destinationResolution,
         ),
       );
@@ -2242,6 +3262,503 @@ function collectFallbackBusRoutes(
   }
 
   return routes;
+}
+
+function estimateSegmentCost(segment: RouteSegment) {
+  if (segment.costLowBdt !== undefined || segment.costHighBdt !== undefined) {
+    const low = segment.costLowBdt ?? segment.costHighBdt ?? 0;
+    const high = segment.costHighBdt ?? segment.costLowBdt ?? 0;
+
+    return {
+      costBdt:
+        segment.connectorFare ?? Math.round((low + high) / 2),
+      costLowBdt: low,
+      costHighBdt: high,
+    };
+  }
+
+  if (segment.connectorFare !== undefined) {
+    return {
+      costBdt: segment.connectorFare,
+      costLowBdt: segment.connectorFare,
+      costHighBdt: segment.connectorFare,
+    };
+  }
+
+  return {
+    costBdt: undefined,
+    costLowBdt: undefined,
+    costHighBdt: undefined,
+  };
+}
+
+function segmentToMetrics(segment: RouteSegment): RouteMetrics {
+  const estimatedCost = estimateSegmentCost(segment);
+
+  return {
+    distanceKm: segment.estimatedDistanceKm,
+    durationMinutes: segment.estimatedDurationMinutes,
+    costBdt: estimatedCost.costBdt,
+    costLowBdt: estimatedCost.costLowBdt,
+    costHighBdt: estimatedCost.costHighBdt,
+  };
+}
+
+function estimateDisplayedBusDistanceKm(
+  localDistanceKm: number | undefined,
+  roadDistanceKm: number,
+) {
+  if (localDistanceKm === undefined) {
+    return roadDistanceKm;
+  }
+
+  // Bus corridor geometry from the local stop-order dataset is usually a better
+  // representation of the actual transit distance than a generic driving route.
+  // Keep the display anchored to the corridor estimate and only allow a modest
+  // adjustment downward when the road metric is clearly shorter.
+  return roundDistanceKm(
+    roadDistanceKm < localDistanceKm
+      ? Math.max(roadDistanceKm, localDistanceKm * 0.9)
+      : localDistanceKm,
+  );
+}
+
+function resolveSegmentLocationCoordinates(
+  route: RouteOption,
+  locationLabel: string,
+) {
+  if (
+    route.mapPreview.originCoordinates &&
+    locationLabel === route.mapPreview.originLabel
+  ) {
+    return route.mapPreview.originCoordinates;
+  }
+
+  if (
+    route.mapPreview.destinationCoordinates &&
+    locationLabel === route.mapPreview.destinationLabel
+  ) {
+    return route.mapPreview.destinationCoordinates;
+  }
+
+  if (locationLabel === route.boarding.label && route.boarding.coordinates) {
+    return route.boarding.coordinates;
+  }
+
+  if (locationLabel === route.alighting.label && route.alighting.coordinates) {
+    return route.alighting.coordinates;
+  }
+
+  const transferStop = route.transferStops.find(
+    (stop) => stop.label === locationLabel && stop.coordinates,
+  );
+
+  if (transferStop?.coordinates) {
+    return transferStop.coordinates;
+  }
+
+  const busCoordinates = findBusStopCoordinates(locationLabel);
+
+  if (busCoordinates) {
+    return busCoordinates;
+  }
+
+  const metroStation = DHAKA_METRO_STATIONS.find(
+    (station) => normalizeTransitText(station.name) === normalizeTransitText(locationLabel),
+  );
+
+  return metroStation?.coordinates;
+}
+
+async function enrichSegmentWithRoadMetrics(
+  route: RouteOption,
+  segment: RouteSegment,
+  roadContext: PlannerRoadContext,
+): Promise<RouteSegment> {
+  if (
+    !segment.startLocation ||
+    !segment.endLocation ||
+    segment.distanceSource === "metro_exact"
+  ) {
+    return segment;
+  }
+
+  const startCoordinates = resolveSegmentLocationCoordinates(
+    route,
+    segment.startLocation,
+  );
+  const endCoordinates = resolveSegmentLocationCoordinates(
+    route,
+    segment.endLocation,
+  );
+
+  if (!startCoordinates || !endCoordinates) {
+    return segment;
+  }
+
+  if (
+    segment.mode === "walk" &&
+    !segment.connectorType &&
+    haversineDistanceKm(startCoordinates, endCoordinates) > 1
+  ) {
+    return segment;
+  }
+
+  const mode: TransportMode =
+    segment.mode === "bus"
+      ? "bus"
+      : segment.mode === "walk"
+        ? "walk"
+        : segment.mode === "rickshaw"
+          ? "rickshaw"
+          : segment.mode === "ride_share"
+            ? "ride_share"
+            : segment.mode;
+  const roadMetrics = await consumeRoadMetrics(
+    roadContext,
+    startCoordinates,
+    endCoordinates,
+    mode,
+  );
+
+  if (!roadMetrics || roadMetrics.distanceMeters <= 0) {
+    return segment;
+  }
+
+  const distanceKm = roundDistanceKm(roadMetrics.distanceMeters / 1000);
+
+  if (segment.mode === "bus") {
+    const stopCount = segment.stopCount ?? 1;
+    const displayedDistanceKm = estimateDisplayedBusDistanceKm(
+      segment.estimatedDistanceKm,
+      distanceKm,
+    );
+    const busFare = estimateBusFareBdt(displayedDistanceKm, stopCount);
+
+    return {
+      ...segment,
+      estimatedDistanceKm: displayedDistanceKm,
+      estimatedDurationMinutes: roadMetrics.durationMinutes,
+      fareText: formatApproxFare(busFare),
+      distanceSource: "local_estimate",
+      pricingConfidence: "regulated_estimate",
+      costLowBdt: busFare,
+      costHighBdt: busFare,
+    };
+  }
+
+  if (segment.mode === "metro") {
+    return segment;
+  }
+
+  if (segment.mode === "rickshaw") {
+    const fare = estimateRickshawFareRangeBdt(distanceKm);
+
+    return {
+      ...segment,
+      estimatedDistanceKm: distanceKm,
+      connectorDistanceKm: distanceKm,
+      estimatedDurationMinutes: roadMetrics.durationMinutes,
+      connectorFare: fare.estimate,
+      fareText:
+        fare.low !== undefined && fare.high !== undefined
+          ? formatApproxFareRange(fare.low, fare.high)
+          : segment.fareText,
+      distanceSource: "google_road",
+      pricingConfidence: "estimated",
+      costLowBdt: fare.low,
+      costHighBdt: fare.high,
+    };
+  }
+
+  return {
+    ...segment,
+    estimatedDistanceKm: distanceKm,
+    connectorDistanceKm: segment.connectorType ? distanceKm : segment.connectorDistanceKm,
+    estimatedDurationMinutes: roadMetrics.durationMinutes,
+    distanceSource: "google_road",
+  };
+}
+
+function rebuildRouteWithSegments(route: RouteOption, segments: RouteSegment[]) {
+  const metrics = combineRouteMetrics(segments.map(segmentToMetrics));
+
+  return finalizeRoute({
+    ...route,
+    id: route.id,
+    segments,
+    totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.costLowBdt,
+    totalCostHighBdt: metrics.costHighBdt,
+    fareText:
+      metrics.totalCost !== undefined
+        ? formatRouteTotal(
+            metrics.totalCost,
+            route.fareType === "exact" ? "exact" : "advisory",
+            metrics.costLowBdt,
+            metrics.costHighBdt,
+          )
+        : route.fareText,
+    estimatedDistanceKm: metrics.estimatedDistanceKm,
+    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
+    transferCount: route.transferStops.length,
+  });
+}
+
+async function enrichRouteWithRoadMetrics(
+  route: RouteOption,
+  roadContext: PlannerRoadContext,
+): Promise<{ route: RouteOption; enriched: boolean }> {
+  let changed = false;
+  const enrichedSegments: RouteSegment[] = [];
+
+  for (const segment of route.segments) {
+    const nextSegment = await enrichSegmentWithRoadMetrics(
+      route,
+      segment,
+      roadContext,
+    );
+    changed = changed || nextSegment !== segment;
+    enrichedSegments.push(nextSegment);
+  }
+
+  return {
+    route: changed ? rebuildRouteWithSegments(route, enrichedSegments) : route,
+    enriched: changed,
+  };
+}
+
+async function enrichRouteSetWithRoadMetrics(
+  routes: RouteOption[],
+  optimization: RouteOptimization,
+  roadContext: PlannerRoadContext,
+) {
+  const prioritized = [...routes]
+    .map((route) => ({
+      route,
+      roughScore: getRouteRankingValues(route, optimization)[0] ?? FALLBACK_SORT_VALUE,
+    }))
+    .sort((left, right) => left.roughScore - right.roughScore);
+  const prioritizedIds = new Set(
+    prioritized.slice(0, ENRICHED_ROUTES_LIMIT).map((item) => item.route.id),
+  );
+  const enrichedRoutes = new Array<EnrichedRouteSkeleton>(prioritized.length);
+  const candidateIndexes = prioritized
+    .map((item, index) => (prioritizedIds.has(item.route.id) ? index : -1))
+    .filter((index) => index >= 0);
+  let nextIndex = 0;
+
+  async function worker() {
+    while (nextIndex < candidateIndexes.length) {
+      const current = candidateIndexes[nextIndex]!;
+      nextIndex += 1;
+      const item = prioritized[current]!;
+      const enriched = await enrichRouteWithRoadMetrics(item.route, roadContext);
+
+      enrichedRoutes[current] = {
+        route: enriched.route,
+        roughScore: item.roughScore,
+        enriched: enriched.enriched,
+      };
+    }
+  }
+
+  await Promise.all(
+    Array.from({
+      length: Math.min(GOOGLE_ROUTE_CONCURRENCY_LIMIT, candidateIndexes.length),
+    }).map(() => worker()),
+  );
+
+  prioritized.forEach((item, index) => {
+    if (!enrichedRoutes[index]) {
+      enrichedRoutes[index] = {
+        route: item.route,
+        roughScore: item.roughScore,
+        enriched: false,
+      };
+    }
+  });
+
+  return enrichedRoutes;
+}
+
+function pickPlanningCandidates(
+  candidates: ConnectorCandidate[],
+  directMatch: boolean,
+) {
+  return selectDiverseConnectorCandidates(candidates, directMatch ? 2 : 3);
+}
+
+async function runPlanner(
+  payload: CalculateRouteRequest,
+  originResolution: ResolvedTransitInput,
+  destinationResolution: ResolvedTransitInput,
+  roadContext: PlannerRoadContext,
+) {
+  const [originCandidates, destinationCandidates] = await Promise.all([
+    buildConnectorCandidates(
+      originResolution,
+      "origin",
+      roadContext,
+    ),
+    buildConnectorCandidates(
+      destinationResolution,
+      "destination",
+      roadContext,
+    ),
+  ]);
+  const planningOriginCandidates = pickPlanningCandidates(
+    originCandidates,
+    originResolution.directMatch,
+  );
+  const planningDestinationCandidates = pickPlanningCandidates(
+    destinationCandidates,
+    destinationResolution.directMatch,
+  );
+  const primaryOriginCandidate = planningOriginCandidates[0];
+  const primaryDestinationCandidate = planningDestinationCandidates[0];
+
+  if (
+    primaryOriginCandidate?.point.metroStationId &&
+    primaryDestinationCandidate?.point.metroStationId &&
+    isMatchedTransitPoint(originResolution, primaryOriginCandidate.point) &&
+    isMatchedTransitPoint(
+      destinationResolution,
+      primaryDestinationCandidate.point,
+    )
+  ) {
+    const metroRoute = createMetroRoute(
+      primaryOriginCandidate.point.metroStationId,
+      primaryDestinationCandidate.point.metroStationId,
+      primaryOriginCandidate,
+      primaryDestinationCandidate,
+    );
+
+    if (metroRoute) {
+      const decoratedMetroRoute = decorateRouteScoring(
+        metroRoute,
+        payload.optimization,
+        describePrimaryReason(payload.optimization),
+      );
+
+      return {
+        routes: [decoratedMetroRoute],
+        debugRoutes: [decoratedMetroRoute],
+      };
+    }
+  }
+
+  const routes: RouteOption[] = [];
+
+  for (const [originIndex, originCandidate] of planningOriginCandidates.entries()) {
+    for (const [destinationIndex, destinationCandidate] of planningDestinationCandidates.entries()) {
+      const originPoint = originCandidate.point;
+      const destinationPoint = destinationCandidate.point;
+      const shouldExploreComplexRoutes =
+        originIndex < 2 && destinationIndex < 2;
+
+      if (originPoint.id === destinationPoint.id) {
+        continue;
+      }
+
+      if (originPoint.metroStationId && destinationPoint.metroStationId) {
+        const metroRoute = createMetroRoute(
+          originPoint.metroStationId,
+          destinationPoint.metroStationId,
+          originCandidate,
+          destinationCandidate,
+        );
+
+        if (metroRoute) {
+          routes.push(metroRoute);
+        }
+      }
+
+      if (
+        originPoint.busStopLabels.length &&
+        destinationPoint.busStopLabels.length
+      ) {
+        const directBusRoutes = collectDirectBusRoutes(
+          originCandidate,
+          destinationCandidate,
+        );
+
+        routes.push(...directBusRoutes);
+
+        if (!directBusRoutes.length && shouldExploreComplexRoutes) {
+          routes.push(
+            ...collectTransferBusRoutes(
+              originCandidate,
+              destinationCandidate,
+            ),
+          );
+        }
+      }
+
+      if (shouldExploreComplexRoutes) {
+        routes.push(
+          ...collectHybridRoutes(
+            originCandidate,
+            destinationCandidate,
+          ),
+        );
+      }
+    }
+  }
+
+  const groupedRoutes = groupRoutesByPresentation(groupRoutesByPath(routes));
+  const routedCandidates = (
+    await enrichRouteSetWithRoadMetrics(
+      groupedRoutes,
+      payload.optimization,
+      roadContext,
+    )
+  ).map((item) => decorateRouteScoring(item.route, payload.optimization));
+  const surfacedRoutes = surfaceRoutes(routedCandidates, payload.optimization);
+  const fallbackCandidates =
+    surfacedRoutes.length > 0
+      ? []
+      : collectFallbackBusRoutes(
+          originCandidates,
+          destinationResolution,
+        );
+  const fallbackGrouped = groupRoutesByPresentation(groupRoutesByPath(fallbackCandidates));
+  const enrichedFallbackRoutes =
+    surfacedRoutes.length > 0
+      ? []
+      : (
+          await enrichRouteSetWithRoadMetrics(
+            fallbackGrouped,
+            payload.optimization,
+            roadContext,
+          )
+        ).map((item) => decorateRouteScoring(item.route, payload.optimization));
+  const fallbackRoutes =
+    surfacedRoutes.length > 0
+      ? []
+      : surfaceRoutes(enrichedFallbackRoutes, payload.optimization);
+
+  return {
+    routes:
+      surfacedRoutes.length > 0
+        ? surfacedRoutes
+        : fallbackRoutes.length > 0
+          ? fallbackRoutes
+          : originCandidates[0] && destinationCandidates[0]
+            ? [
+                createAdvisoryRoute(
+                  originCandidates[0],
+                  destinationCandidates[0],
+                ),
+              ]
+            : [],
+    debugRoutes:
+      surfacedRoutes.length > 0
+        ? routedCandidates
+        : fallbackRoutes.length > 0
+          ? enrichedFallbackRoutes
+          : [],
+  };
 }
 
 export async function calculateRoutes(payload: CalculateRouteRequest) {
@@ -2255,98 +3772,20 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
     originResolution,
     destinationResolution,
   );
-
-  const routes: RouteOption[] = [];
-
-  for (const originPoint of originResolution.candidates) {
-    for (const destinationPoint of destinationResolution.candidates) {
-      if (originPoint.id === destinationPoint.id) {
-        continue;
-      }
-
-      if (originPoint.metroStationId && destinationPoint.metroStationId) {
-        const metroRoute = createMetroRoute(
-          originPoint.metroStationId,
-          destinationPoint.metroStationId,
-          originResolution,
-          originPoint,
-          destinationResolution,
-          destinationPoint,
-        );
-
-        if (metroRoute) {
-          routes.push(metroRoute);
-        }
-      }
-
-      if (originPoint.busStopLabels.length && destinationPoint.busStopLabels.length) {
-        routes.push(
-          ...collectDirectBusRoutes(
-            originResolution,
-            originPoint,
-            destinationResolution,
-            destinationPoint,
-          ),
-        );
-        routes.push(
-          ...collectTransferBusRoutes(
-            originResolution,
-            originPoint,
-            destinationResolution,
-            destinationPoint,
-          ),
-        );
-      }
-
-      routes.push(
-        ...collectHybridRoutes(
-          originResolution,
-          originPoint,
-          destinationResolution,
-          destinationPoint,
-        ),
-      );
-    }
-  }
-
-  const allFoundRoutes = groupRoutesByPresentation(groupRoutesByPath(routes));
-  const surfacedRoutes = surfaceRoutes(routes, payload.optimization);
-  const fallbackCandidates =
-    surfacedRoutes.length > 0
-      ? []
-      : collectFallbackBusRoutes(originResolution, destinationResolution);
-  const allFoundFallbackRoutes =
-    surfacedRoutes.length > 0
-      ? []
-      : groupRoutesByPresentation(groupRoutesByPath(fallbackCandidates));
-  const fallbackRoutes =
-    surfacedRoutes.length > 0 ? [] : surfaceRoutes(fallbackCandidates, payload.optimization);
-
-  const finalRoutes =
-    surfacedRoutes.length > 0
-      ? surfacedRoutes
-      : fallbackRoutes.length > 0
-        ? fallbackRoutes
-        : originResolution.candidates[0] && destinationResolution.candidates[0]
-        ? [
-            createAdvisoryRoute(
-              originResolution,
-              originResolution.candidates[0],
-              destinationResolution,
-              destinationResolution.candidates[0],
-            ),
-          ]
-        : [];
-  const debugRoutes =
-    surfacedRoutes.length > 0
-      ? allFoundRoutes
-      : fallbackRoutes.length > 0
-        ? allFoundFallbackRoutes
-        : [];
+  const primaryRoadContext: PlannerRoadContext = {
+    lookups: 0,
+    maxLookups: GOOGLE_ROUTE_LOOKUP_LIMIT,
+  };
+  const primaryResult = await runPlanner(
+    payload,
+    originResolution,
+    destinationResolution,
+    primaryRoadContext,
+  );
 
   return calculateRouteResponseSchema.parse({
-    routes: applyTripMapPreview(finalRoutes, tripMapPreview),
-    debugRoutes: applyTripMapPreview(debugRoutes, tripMapPreview),
+    routes: applyTripMapPreview(primaryResult.routes, tripMapPreview),
+    debugRoutes: applyTripMapPreview(primaryResult.debugRoutes, tripMapPreview),
     source: "deterministic",
   });
 }

@@ -69,6 +69,11 @@ export function PlannerDebugRoutes({ routes }: PlannerDebugRoutesProps) {
                 <Coins className="h-3.5 w-3.5 text-[rgb(15,138,107)]" />
                 <span>{formatBdt(route.totalCost)}</span>
               </span>
+              {route.connectorBurden ? (
+                <span className="compare-metric">
+                  <span>{route.connectorBurden} connector burden</span>
+                </span>
+              ) : null}
             </div>
 
             {route.serviceLabels.length ? (
@@ -87,6 +92,9 @@ export function PlannerDebugRoutes({ routes }: PlannerDebugRoutesProps) {
             <p className="mt-2 break-all font-mono text-[10px] text-slate-500">
               {route.pathSignature}
             </p>
+            {route.scoringReason ? (
+              <p className="mt-2 text-[11px] text-slate-500">{route.scoringReason}</p>
+            ) : null}
           </div>
         ))}
       </div>

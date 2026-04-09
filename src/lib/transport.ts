@@ -1,4 +1,5 @@
 import type {
+  PricingConfidence,
   RouteConfidence,
   RouteKind,
   TransportMode,
@@ -62,4 +63,17 @@ export function formatBdt(amount?: number) {
   }
 
   return `BDT ${Math.round(amount)}`;
+}
+
+export function getPricingConfidenceLabel(confidence?: PricingConfidence) {
+  switch (confidence) {
+    case "exact":
+      return "Exact";
+    case "regulated_estimate":
+      return "Regulated estimate";
+    case "estimated":
+      return "Estimated";
+    default:
+      return undefined;
+  }
 }

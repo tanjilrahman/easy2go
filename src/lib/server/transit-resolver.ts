@@ -18,11 +18,17 @@ export interface TransitPoint {
   name: string;
   address?: string;
   type: "hub" | "bus_stop" | "metro_station";
+  nodeType: "hub" | "bus_stop" | "metro_station";
   coordinates?: [number, number];
   aliases: string[];
   busStopLabels: string[];
   metroStationId?: string;
   advisories: string[];
+  variantId?: string;
+  variantName?: string;
+  variantCoordinates?: [number, number];
+  canonicalBusStopId?: string;
+  canonicalBusStopLabel?: string;
 }
 
 export interface ResolvedTransitInput {
@@ -30,6 +36,7 @@ export interface ResolvedTransitInput {
   place?: ResolvedLocation;
   candidates: TransitPoint[];
   directMatch: boolean;
+  matchedPointIds: string[];
 }
 
 const busStopPoints: TransitPoint[] = dhakaBusSeedStops.flatMap((stop) => {
@@ -39,6 +46,7 @@ const busStopPoints: TransitPoint[] = dhakaBusSeedStops.flatMap((stop) => {
       name: variant.placeName ?? variant.name,
       address: variant.address ?? stop.address ?? "Bus stop, Dhaka",
       type: "bus_stop" as const,
+      nodeType: "bus_stop" as const,
       coordinates: variant.coordinates,
       aliases: [
         stop.labelEn,
@@ -50,6 +58,11 @@ const busStopPoints: TransitPoint[] = dhakaBusSeedStops.flatMap((stop) => {
       ],
       busStopLabels: [stop.label],
       advisories: [],
+      variantId: `${stop.id}::variant-${index + 1}`,
+      variantName: variant.placeName ?? variant.name,
+      variantCoordinates: variant.coordinates,
+      canonicalBusStopId: stop.id,
+      canonicalBusStopLabel: stop.label,
     }));
   }
 
@@ -59,10 +72,13 @@ const busStopPoints: TransitPoint[] = dhakaBusSeedStops.flatMap((stop) => {
       name: stop.placeName ?? stop.label,
       address: stop.address ?? "Bus stop, Dhaka",
       type: "bus_stop" as const,
+      nodeType: "bus_stop" as const,
       coordinates: stop.coordinates,
       aliases: [stop.labelEn, stop.labelBn ?? "", stop.label, stop.placeName ?? ""],
       busStopLabels: [stop.label],
       advisories: [],
+      canonicalBusStopId: stop.id,
+      canonicalBusStopLabel: stop.label,
     },
   ];
 });
@@ -72,6 +88,7 @@ const metroPoints: TransitPoint[] = DHAKA_METRO_STATIONS.map((station) => ({
   name: station.name,
   address: "Metro station, Dhaka",
   type: "metro_station",
+  nodeType: "metro_station",
   coordinates: station.coordinates,
   aliases: [station.name, ...station.aliases],
   busStopLabels: [],
@@ -84,6 +101,7 @@ const hubPoints: TransitPoint[] = DHAKA_ACCESS_POINTS.map((point) => ({
   name: point.name,
   address: point.address,
   type: "hub",
+  nodeType: "hub",
   coordinates: point.coordinates,
   aliases: [point.name, ...point.aliases],
   busStopLabels: point.busStopLabels,
@@ -171,16 +189,34 @@ function findStrongTextMatches(name: string) {
     .slice(0, 3);
 }
 
-function findNearestPoints(coordinates: [number, number]) {
-  return coordinateCandidates
+function findNearestPoints(
+  coordinates: [number, number],
+  limitWithinRadius = 20,
+  minKeep = 5,
+  radiusKm = 5,
+) {
+  const sorted = coordinateCandidates
     .map((point) => ({
       point,
       distanceKm: haversineDistanceKm(coordinates, point.coordinates!),
     }))
-    .filter((item) => item.distanceKm <= 5)
+    .sort((a, b) => a.distanceKm - b.distanceKm)
+    .map((item) => item.point);
+
+  const withinRadius = coordinateCandidates
+    .map((point) => ({
+      point,
+      distanceKm: haversineDistanceKm(coordinates, point.coordinates!),
+    }))
+    .filter((item) => item.distanceKm <= radiusKm)
     .sort((a, b) => a.distanceKm - b.distanceKm)
     .map((item) => item.point)
-    .slice(0, 3);
+    .slice(0, limitWithinRadius);
+
+  return dedupePoints([
+    ...withinRadius,
+    ...sorted.slice(0, Math.max(minKeep, withinRadius.length)),
+  ]);
 }
 
 function dedupePoints(points: TransitPoint[]) {
@@ -235,31 +271,44 @@ export async function searchMixedLocationSuggestions(query: string) {
 
 export async function resolveTransitInput(input: LocationInput): Promise<ResolvedTransitInput> {
   const directPoint = findPointById(input.canonicalId);
-  if (directPoint) {
-    return {
-      displayName: input.name,
-      candidates: [directPoint],
-      directMatch: true,
-    };
-  }
-
   const textMatches = findStrongTextMatches(input.name);
-  if (textMatches.length) {
-    return {
-      displayName: input.name,
-      candidates: textMatches,
-      directMatch: true,
-    };
-  }
-
-  const place = await resolveLocation(input);
-  const nearbyPoints = findNearestPoints(place.coordinates);
+  const place =
+    input.coordinates
+      ? {
+          name: input.name,
+          address: input.address,
+          coordinates: input.coordinates,
+          placeId: input.placeId,
+        }
+      : directPoint?.coordinates
+        ? {
+            name: input.name,
+            address: input.address ?? directPoint.address,
+            coordinates: directPoint.coordinates,
+            placeId: input.placeId,
+          }
+        : await resolveLocation(input);
+  const nearbyPoints = place?.coordinates
+    ? findNearestPoints(
+        place.coordinates,
+      )
+    : [];
+  const candidates = dedupePoints([
+    ...(directPoint ? [directPoint] : []),
+    ...textMatches,
+    ...nearbyPoints,
+  ]);
+  const matchedPointIds = dedupePoints([
+    ...(directPoint ? [directPoint] : []),
+    ...textMatches,
+  ]).map((point) => point.id);
 
   return {
     displayName: input.name,
     place,
-    candidates: dedupePoints(nearbyPoints),
-    directMatch: false,
+    candidates,
+    directMatch: Boolean(directPoint || textMatches.length),
+    matchedPointIds,
   };
 }
 
