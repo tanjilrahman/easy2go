@@ -11,7 +11,6 @@ export const transportModeMeta: Record<
   walk: { label: "Walk", color: "#7a719f" },
   bus: { label: "Bus", color: "#5a43d7" },
   rickshaw: { label: "Rickshaw", color: "#0f8a6b" },
-  leguna: { label: "Leguna", color: "#b7791f" },
   metro: { label: "Metro", color: "#765ef1" },
   ride_share: { label: "Ride Share", color: "#c34b77" },
 };

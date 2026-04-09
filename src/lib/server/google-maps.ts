@@ -73,7 +73,7 @@ type GoogleDirectionsStep = {
 };
 
 function getServerKey() {
-  return process.env.GOOGLE_MAPS_SERVER_API_KEY ?? "";
+  return process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY ?? "";
 }
 
 function normalize(text: string) {
@@ -396,7 +396,6 @@ function transportModeToGoogle(mode: TransportMode) {
       return "transit";
     case "ride_share":
     case "rickshaw":
-    case "leguna":
       return "driving";
     default:
       return "driving";

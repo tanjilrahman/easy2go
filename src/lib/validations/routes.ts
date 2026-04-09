@@ -6,7 +6,6 @@ export const transportModeSchema = z.enum([
   "walk",
   "bus",
   "rickshaw",
-  "leguna",
   "metro",
   "ride_share",
 ]);

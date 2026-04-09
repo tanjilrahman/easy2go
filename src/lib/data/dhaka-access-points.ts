@@ -24,7 +24,7 @@ export const DHAKA_ACCESS_POINTS: DhakaAccessPoint[] = [
       "Tejgaon College (Farmgate) (তেজগাঁও কলেজ - ফার্মগেট)",
     ],
     metroStationId: "metro-farmgate",
-    supportedModes: ["bus", "metro", "rickshaw", "leguna"],
+    supportedModes: ["bus", "metro", "rickshaw"],
     advisories: ["Rickshaw is common for first-mile access around Farmgate."],
   },
   {
@@ -84,8 +84,7 @@ export const DHAKA_ACCESS_POINTS: DhakaAccessPoint[] = [
     aliases: ["mohakhali", "mohakhali bus terminal"],
     coordinates: [23.7775, 90.3972],
     busStopLabels: ["Mohakhali (মহাখালী)"],
-    supportedModes: ["bus", "rickshaw", "leguna"],
-    advisories: ["Leguna service is often easier to find around the Mohakhali-Banani corridor."],
+    supportedModes: ["bus", "rickshaw"],
   },
   {
     id: "hub-banani",
@@ -94,7 +93,7 @@ export const DHAKA_ACCESS_POINTS: DhakaAccessPoint[] = [
     aliases: ["banani", "kakoli", "kakali"],
     coordinates: [23.7936, 90.4066],
     busStopLabels: ["Banani (বনানী)"],
-    supportedModes: ["bus", "rickshaw", "leguna"],
+    supportedModes: ["bus", "rickshaw"],
   },
   {
     id: "hub-gulshan-1",
@@ -103,7 +102,7 @@ export const DHAKA_ACCESS_POINTS: DhakaAccessPoint[] = [
     aliases: ["gulshan 1", "gulshan one"],
     coordinates: [23.7808, 90.4161],
     busStopLabels: ["Gulshan 1 (গুলশান ১)"],
-    supportedModes: ["bus", "rickshaw", "leguna"],
+    supportedModes: ["bus", "rickshaw"],
   },
   {
     id: "hub-gulshan-2",
@@ -112,7 +111,7 @@ export const DHAKA_ACCESS_POINTS: DhakaAccessPoint[] = [
     aliases: ["gulshan 2", "gulshan two"],
     coordinates: [23.7926, 90.4143],
     busStopLabels: ["Gulshan 2 (গুলশান ২)"],
-    supportedModes: ["bus", "rickshaw", "leguna"],
+    supportedModes: ["bus", "rickshaw"],
   },
   {
     id: "hub-badda",
@@ -127,8 +126,7 @@ export const DHAKA_ACCESS_POINTS: DhakaAccessPoint[] = [
       "Merul Badda (মেরুল বাড্ডা)",
       "Badda Link Road (বাড্ডা লিংক রোড)",
     ],
-    supportedModes: ["bus", "rickshaw", "leguna"],
-    advisories: ["Leguna may be available on the Badda-Notun Bazar corridor during busy hours."],
+    supportedModes: ["bus", "rickshaw"],
   },
   {
     id: "hub-rampura",
@@ -140,7 +138,7 @@ export const DHAKA_ACCESS_POINTS: DhakaAccessPoint[] = [
       "Rampura Bridge (রামপুরা ব্রিজ)",
       "Rampura Bazar (রামপুরা বাজার)",
     ],
-    supportedModes: ["bus", "rickshaw", "leguna"],
+    supportedModes: ["bus", "rickshaw"],
   },
   {
     id: "hub-malibagh",
@@ -177,8 +175,7 @@ export const DHAKA_ACCESS_POINTS: DhakaAccessPoint[] = [
     aliases: ["jatrabari", "sayapabad"],
     coordinates: [23.711, 90.4342],
     busStopLabels: ["Jatrabari (যাত্রাবাড়ি)", "Sayapabad (সায়াপাবাদ)"],
-    supportedModes: ["bus", "rickshaw", "leguna"],
-    advisories: ["Leguna may be available along the Jatrabari corridor."],
+    supportedModes: ["bus", "rickshaw"],
   },
   {
     id: "hub-dhanmondi-27",
@@ -229,7 +226,6 @@ export const DHAKA_ACCESS_POINTS: DhakaAccessPoint[] = [
       "Jamuna Future Park (যমুনা ফিউচার পার্ক)",
       "Bashundhara (বসুন্ধরা)",
     ],
-    supportedModes: ["bus", "rickshaw", "leguna"],
-    advisories: ["Leguna may be available on the Kuril-Bashundhara corridor."],
+    supportedModes: ["bus", "rickshaw"],
   },
 ];

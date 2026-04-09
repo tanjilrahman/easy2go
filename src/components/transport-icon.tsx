@@ -5,7 +5,6 @@ import {
   Footprints,
   LucideIcon,
   TrainFront,
-  Van,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -15,7 +14,6 @@ const icons: Record<TransportMode, LucideIcon> = {
   walk: Footprints,
   bus: BusFront,
   rickshaw: Bike,
-  leguna: Van,
   metro: TrainFront,
   ride_share: CarTaxiFront,
 };
@@ -24,7 +22,6 @@ const tones: Record<TransportMode, string> = {
   walk: "bg-[rgba(101,93,137,0.1)] text-[rgb(95,86,135)]",
   bus: "bg-[rgba(90,67,215,0.12)] text-[rgb(72,53,173)]",
   rickshaw: "bg-[rgba(15,138,107,0.12)] text-[rgb(13,104,81)]",
-  leguna: "bg-[rgba(183,121,31,0.14)] text-[rgb(126,78,20)]",
   metro: "bg-[rgba(118,94,241,0.12)] text-[rgb(79,61,180)]",
   ride_share: "bg-[rgba(195,75,119,0.12)] text-[rgb(156,53,93)]",
 };

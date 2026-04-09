@@ -10,7 +10,6 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "build:bus-dataset": "node scripts/build-dhaka-bus-seed.mjs",
-    "build:leguna-dataset": "node scripts/build-dhaka-leguna-seed.mjs",
     "geocode:bus-stops": "node scripts/geocode-dhaka-bus-stops.mjs",
     "merge:bus-stop-coordinates": "node scripts/geocode-dhaka-bus-stops.mjs --merge-approved"
   },
@@ -24,12 +23,10 @@
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.7.0",
     "next": "16.2.2",
-    "openai": "^6.33.0",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "tailwind-merge": "^3.5.0",
-    "zod": "^4.3.6",
-    "zod-to-json-schema": "^3.25.2"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

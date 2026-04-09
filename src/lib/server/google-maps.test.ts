@@ -6,7 +6,7 @@ describe("resolveLocation", () => {
   const originalFetch = global.fetch;
 
   beforeEach(() => {
-    vi.stubEnv("GOOGLE_MAPS_SERVER_API_KEY", "test-key");
+    vi.stubEnv("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", "test-key");
   });
 
   afterEach(() => {
