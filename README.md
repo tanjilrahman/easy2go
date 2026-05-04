@@ -29,11 +29,13 @@ Copy `.env.example` to `.env.local` and configure:
 - `NEXT_PUBLIC_MAP_ATTRIBUTION`
   Visible attribution text for the configured map style/tile provider.
 - `GEOAPIFY_API_KEY`
-  Optional fallback autocomplete key for unknown places after local Dhaka suggestions.
+  Optional fallback autocomplete key for unknown places after local Dhaka suggestions. Also enables server-side road-snapped route geometry.
 - `GEOAPIFY_AUTOCOMPLETE_ENABLED`
   Set to `false` to disable Geoapify autocomplete entirely.
+- `GEOAPIFY_ROUTING_MAX_WAYPOINTS`
+  Optional server-side cap for road-snapped route requests. Defaults to `24` to control free-tier credit usage.
 
-No map key is required for the default map style. The app still works without `GEOAPIFY_API_KEY`; typed suggestions will be limited to the curated local Dhaka catalog.
+No map key is required for the default map style. The app still works without `GEOAPIFY_API_KEY`; typed suggestions will be limited to the curated local Dhaka catalog and route lines will fall back to estimated local corridors.
 
 ## Local development
 

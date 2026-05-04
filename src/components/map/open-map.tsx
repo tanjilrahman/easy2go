@@ -295,7 +295,13 @@ function addMapLayers(map: MapLibreMap) {
         type: "circle",
         source: config.source,
         paint: {
-          "circle-radius": config.radius,
+          "circle-radius": [
+            "match",
+            ["get", "role"],
+            "stop",
+            Math.max(4, config.radius - 3),
+            config.radius,
+          ],
           "circle-color": [
             "match",
             ["get", "role"],
@@ -309,6 +315,8 @@ function addMapLayers(map: MapLibreMap) {
             MAP_COLORS.destination,
             "transfer",
             MAP_COLORS.transfer,
+            "stop",
+            "#64748b",
             "user",
             MAP_COLORS.origin,
             MAP_COLORS.transfer,

@@ -115,7 +115,7 @@ export type RouteStopReference = z.infer<typeof routeStopReferenceSchema>;
 export const routeMapPointSchema = z.object({
   label: z.string(),
   coordinates: latLngSchema,
-  role: z.enum(["origin", "destination", "boarding", "alighting", "transfer"]),
+  role: z.enum(["origin", "destination", "boarding", "alighting", "transfer", "stop"]),
 });
 
 export type RouteMapPoint = z.infer<typeof routeMapPointSchema>;

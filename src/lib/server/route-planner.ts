@@ -18,6 +18,7 @@ import {
   type ResolvedTransitInput,
   type TransitPoint,
 } from "@/lib/server/transit-resolver";
+import { getRoadSnappedRouteGeometry } from "@/lib/server/geoapify-routing";
 import {
   haversineDistanceKm,
   normalizeTransitText,
@@ -822,6 +823,10 @@ function dedupeAdjacentCoordinates(coordinates: [number, number][]) {
 }
 
 function findBusSegmentCoordinates(startLabel: string, endLabel: string) {
+  return findBusSegmentStops(startLabel, endLabel)?.map((stop) => stop.coordinates);
+}
+
+function findBusSegmentStops(startLabel: string, endLabel: string) {
   const normalizedStart = normalizeTransitText(startLabel);
   const normalizedEnd = normalizeTransitText(endLabel);
   const candidates = dhakaBusSeedRoutes.flatMap((route) => {
@@ -842,18 +847,19 @@ function findBusSegmentCoordinates(startLabel: string, endLabel: string) {
     }
 
     const stopLabels = route.stopLabels.slice(startIndex, startIndex + endOffset + 2);
-    const coordinates = stopLabels
-      .map((label) => findBusStopCoordinates(label))
-      .filter(
-        (coordinates): coordinates is [number, number] => coordinates !== undefined,
-      );
+    const stops = stopLabels.flatMap((label) => {
+      const coordinates = findBusStopCoordinates(label);
+
+      return coordinates ? [{ label, coordinates }] : [];
+    });
+    const coordinates = dedupeAdjacentCoordinates(stops.map((stop) => stop.coordinates));
 
     return coordinates.length >= 2
-      ? [{ coordinates: dedupeAdjacentCoordinates(coordinates), stopCount: stopLabels.length }]
+      ? [{ stops, coordinates, stopCount: stopLabels.length }]
       : [];
   });
 
-  return candidates.sort((a, b) => a.stopCount - b.stopCount)[0]?.coordinates;
+  return candidates.sort((a, b) => a.stopCount - b.stopCount)[0]?.stops;
 }
 
 function findMetroSegmentCoordinates(startLabel: string, endLabel: string) {
@@ -906,15 +912,16 @@ function findRouteLabelCoordinates(
   )?.coordinates;
 }
 
-function createRouteMapLine(
+async function createRouteMapLine(
   route: RouteOption,
   preview: RouteMapPreview,
   segment: RouteSegment,
-) {
+  snapRoads: boolean,
+): Promise<RouteMapLine | null> {
   const start = findRouteLabelCoordinates(segment.startLocation, route, preview);
   const end = findRouteLabelCoordinates(segment.endLocation, route, preview);
   const fallbackCoordinates = start && end ? dedupeAdjacentCoordinates([start, end]) : [];
-  const coordinates =
+  const localCoordinates =
     segment.mode === "bus"
       ? findBusSegmentCoordinates(segment.startLocation, segment.endLocation) ??
         fallbackCoordinates
@@ -922,6 +929,11 @@ function createRouteMapLine(
         ? findMetroSegmentCoordinates(segment.startLocation, segment.endLocation) ??
           fallbackCoordinates
         : fallbackCoordinates;
+  const snappedCoordinates =
+    !snapRoads || segment.mode === "metro"
+      ? null
+      : await getRoadSnappedRouteGeometry(segment.mode, localCoordinates);
+  const coordinates = snappedCoordinates ?? localCoordinates;
 
   if (coordinates.length < 2) {
     return null;
@@ -931,11 +943,30 @@ function createRouteMapLine(
     mode: segment.mode,
     label: segment.instruction,
     coordinates,
-    confidence: segment.mode === "metro" ? "exact" : "estimated",
+    confidence: segment.mode === "metro" || snappedCoordinates ? "exact" : "estimated",
   } satisfies RouteMapLine;
 }
 
-function buildRouteMapGeometry(route: RouteOption, preview: RouteMapPreview) {
+async function buildRouteMapGeometry(
+  route: RouteOption,
+  preview: RouteMapPreview,
+  snapRoads: boolean,
+): Promise<{ points: RouteMapPoint[]; lines: RouteMapLine[] }> {
+  const intermediateBusStops = route.segments.flatMap((segment) => {
+    if (segment.mode !== "bus") {
+      return [];
+    }
+
+    return (
+      findBusSegmentStops(segment.startLocation, segment.endLocation)
+        ?.slice(1, -1)
+        .map((stop) => ({
+          label: stop.label,
+          coordinates: stop.coordinates,
+          role: "stop" as const,
+        })) ?? []
+    );
+  });
   const pointCandidates: Array<RouteMapPoint | null> = [
     preview.originCoordinates
       ? {
@@ -974,6 +1005,7 @@ function buildRouteMapGeometry(route: RouteOption, preview: RouteMapPreview) {
           }
         : null,
     ),
+    ...intermediateBusStops,
   ];
   const seenPoints = new Set<string>();
   const points = pointCandidates.filter((point): point is RouteMapPoint => {
@@ -989,11 +1021,13 @@ function buildRouteMapGeometry(route: RouteOption, preview: RouteMapPreview) {
     seenPoints.add(key);
     return true;
   });
-  const lines = route.segments.reduce<RouteMapLine[]>((result, segment) => {
-    const line = createRouteMapLine(route, preview, segment);
-
-    return line ? [...result, line] : result;
-  }, []);
+  const lines = (
+    await Promise.all(
+      route.segments.map((segment) =>
+        createRouteMapLine(route, preview, segment, snapRoads),
+      ),
+    )
+  ).filter((line): line is RouteMapLine => line !== null);
 
   return {
     points,
@@ -1402,12 +1436,13 @@ function finalizeRoute(
   });
 }
 
-function applyTripMapPreview(
+async function applyTripMapPreview(
   routes: RouteOption[],
   mapPreview: RouteMapPreview,
+  options: { snapRoads: boolean },
 ) {
-  return routes.map((route) => {
-    const geometry = buildRouteMapGeometry(route, mapPreview);
+  return Promise.all(routes.map(async (route) => {
+    const geometry = await buildRouteMapGeometry(route, mapPreview, options.snapRoads);
     const nextMapPreview = {
       ...mapPreview,
       ...geometry,
@@ -1426,7 +1461,7 @@ function applyTripMapPreview(
     };
 
     return routeOptionSchema.parse(nextRoute);
-  });
+  }));
 }
 
 function pickBestRouteCandidate(current: RouteOption, incoming: RouteOption) {
@@ -3501,8 +3536,12 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
   const primaryResult = await runPlanner(payload, originResolution, destinationResolution);
 
   return calculateRouteResponseSchema.parse({
-    routes: applyTripMapPreview(primaryResult.routes, tripMapPreview),
-    debugRoutes: applyTripMapPreview(primaryResult.debugRoutes, tripMapPreview),
+    routes: await applyTripMapPreview(primaryResult.routes, tripMapPreview, {
+      snapRoads: true,
+    }),
+    debugRoutes: await applyTripMapPreview(primaryResult.debugRoutes, tripMapPreview, {
+      snapRoads: false,
+    }),
     source: "deterministic",
   });
 }

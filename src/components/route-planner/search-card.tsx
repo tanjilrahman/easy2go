@@ -287,13 +287,13 @@ export function SearchCard({
                       <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-2xl bg-primary/10 text-primary">
                         <MapPin className="h-4 w-4" />
                       </div>
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold text-foreground">{item.name}</p>
-                        <p className="truncate text-xs text-muted-foreground">
+                      <div className="min-w-0 flex-1 space-y-0.5">
+                        <p className="break-words text-sm font-semibold leading-snug text-foreground">{item.name}</p>
+                        <p className="break-words text-xs leading-snug text-muted-foreground">
                           {item.address ?? "Dhaka, Bangladesh"}
                         </p>
                       </div>
-                      <Badge className="ml-auto border border-border bg-white px-2 py-1 text-[10px] text-muted-foreground">
+                      <Badge className="ml-auto shrink-0 border border-border bg-white px-2 py-1 text-[10px] text-muted-foreground">
                         {suggestionTypeLabel(item.type)}
                       </Badge>
                     </button>

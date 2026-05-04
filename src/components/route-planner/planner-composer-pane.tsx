@@ -407,13 +407,13 @@ export function PlannerComposerPane({
                       <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-2xl bg-[rgba(90,67,215,0.09)] text-[rgb(90,67,215)]">
                         <MapPin className="h-4 w-4" />
                       </div>
-                      <div className="min-w-0 flex-1">
-                        <p className="truncate text-sm font-semibold text-slate-900">{item.name}</p>
-                        <p className="truncate text-xs text-slate-500">
+                      <div className="min-w-0 flex-1 space-y-0.5">
+                        <p className="break-words text-sm font-semibold leading-snug text-slate-900">{item.name}</p>
+                        <p className="break-words text-xs leading-snug text-slate-500">
                           {item.address ?? "Dhaka, Bangladesh"}
                         </p>
                       </div>
-                      <span className="rounded-full bg-[rgba(118,94,241,0.1)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[rgb(84,67,174)]">
+                      <span className="shrink-0 rounded-full bg-[rgba(118,94,241,0.1)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[rgb(84,67,174)]">
                         {suggestionTypeLabel(item.type)}
                       </span>
                     </button>
