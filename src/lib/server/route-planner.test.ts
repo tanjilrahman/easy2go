@@ -53,6 +53,8 @@ function makeRoute(overrides: Partial<RouteOption> = {}) {
       destinationLabel: "Motijheel",
       originQuery: "Farmgate, Dhaka, Bangladesh",
       destinationQuery: "Motijheel, Dhaka, Bangladesh",
+      points: [],
+      lines: [],
     },
     advisories: [],
   };
@@ -78,7 +80,7 @@ function makeRoute(overrides: Partial<RouteOption> = {}) {
 const originalFetch = global.fetch;
 
 beforeEach(() => {
-  vi.stubEnv("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", "");
+  vi.stubEnv("GEOAPIFY_API_KEY", "");
 });
 
 afterEach(() => {
@@ -214,6 +216,8 @@ describe("surfaceRoutes", () => {
         destinationLabel: "Motijheel Metro",
         originQuery: "Farmgate Metro, Dhaka, Bangladesh",
         destinationQuery: "Motijheel Metro, Dhaka, Bangladesh",
+        points: [],
+        lines: [],
       },
       transferStops: [],
     });
@@ -260,6 +264,8 @@ describe("surfaceRoutes", () => {
         destinationLabel: "Motijheel",
         originQuery: "Farmgate, Dhaka, Bangladesh",
         destinationQuery: "Motijheel, Dhaka, Bangladesh",
+        points: [],
+        lines: [],
       },
     });
 
@@ -319,6 +325,8 @@ describe("surfaceRoutes", () => {
         destinationLabel: "Motijheel Metro",
         originQuery: "Home, Dhaka, Bangladesh",
         destinationQuery: "Motijheel Metro, Dhaka, Bangladesh",
+        points: [],
+        lines: [],
       },
       transferStops: [],
     });
@@ -395,6 +403,8 @@ describe("surfaceRoutes", () => {
         destinationLabel: "Motijheel",
         originQuery: "Farmgate Overbridge, Dhaka, Bangladesh",
         destinationQuery: "Motijheel, Dhaka, Bangladesh",
+        points: [],
+        lines: [],
       },
     });
     const metroAlternative = makeRoute({
@@ -429,6 +439,8 @@ describe("surfaceRoutes", () => {
         destinationLabel: "Motijheel Metro",
         originQuery: "Farmgate Metro, Dhaka, Bangladesh",
         destinationQuery: "Motijheel Metro, Dhaka, Bangladesh",
+        points: [],
+        lines: [],
       },
       transferStops: [],
     });
@@ -476,6 +488,8 @@ describe("surfaceRoutes", () => {
         destinationLabel: "Motijheel Metro",
         originQuery: "Farmgate Metro, Dhaka, Bangladesh",
         destinationQuery: "Motijheel Metro, Dhaka, Bangladesh",
+        points: [],
+        lines: [],
       },
       transferStops: [],
     });
@@ -521,6 +535,8 @@ describe("surfaceRoutes", () => {
         destinationLabel: "Motijheel Metro",
         originQuery: "Farmgate, Dhaka, Bangladesh",
         destinationQuery: "Motijheel Metro, Dhaka, Bangladesh",
+        points: [],
+        lines: [],
       },
     });
     const busAlternative = makeRoute({
@@ -564,6 +580,9 @@ describe("calculateRoutes", () => {
     expect(response.routes[0]?.mapPreview.originLabel).toBe("Custom start");
     expect(response.routes[0]?.mapPreview.originCoordinates).toEqual([23.7579, 90.3891]);
     expect(response.routes[0]?.mapPreview.destinationLabel).toBe("Motijheel");
+    expect(response.routes[0]?.mapPreview.points.some((point) => point.role === "origin")).toBe(true);
+    expect(response.routes[0]?.mapPreview.points.some((point) => point.role === "destination")).toBe(true);
+    expect(response.routes[0]?.mapPreview.lines.length).toBeGreaterThan(0);
   }, 30000);
 
   it("uses the official metro fare chart and service window for direct metro trips", async () => {
@@ -588,6 +607,11 @@ describe("calculateRoutes", () => {
     expect(response.routes[0]?.estimatedDistanceKm).toBe(5.6);
     expect(response.routes[0]?.estimatedDurationMinutes).toBe(14);
     expect(response.routes[0]?.serviceWindowText).toContain("Uttara North 06:30-21:30");
+    expect(
+      response.routes[0]?.mapPreview.lines.some(
+        (line) => line.mode === "metro" && line.confidence === "exact",
+      ),
+    ).toBe(true);
     expect(response.routes[0]?.serviceWindowText).toContain("Friday: Uttara North 15:00-21:00");
     expect(response.routes[0]?.segments[0]?.serviceWindowText).toBe(
       response.routes[0]?.serviceWindowText,
@@ -707,7 +731,7 @@ describe("calculateRoutes", () => {
     expect(hasSuspiciousFallback).toBe(false);
   }, 60000);
 
-  it("keeps route calculation local and does not hit Google services", async () => {
+  it("keeps route calculation local and does not hit external map services", async () => {
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as typeof fetch;
 

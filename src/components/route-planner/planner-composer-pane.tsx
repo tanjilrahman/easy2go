@@ -104,6 +104,7 @@ export function PlannerComposerPane({
 
   const suggestionsQuery = useLocationSuggestions(activeQuery, activeQuery.length >= 2);
   const suggestions = suggestionsQuery.data?.suggestions ?? [];
+  const hasGeoapifySuggestions = suggestions.some((item) => item.provider === "geoapify");
 
   const originValue = useMemo(
     () =>
@@ -417,6 +418,11 @@ export function PlannerComposerPane({
                       </span>
                     </button>
                   ))}
+                  {hasGeoapifySuggestions ? (
+                    <p className="border-t border-slate-100 px-4 py-2 text-[11px] font-medium text-slate-500">
+                      Powered by Geoapify
+                    </p>
+                  ) : null}
                 </div>
               ) : (
                 <div className="px-4 py-3 text-sm text-slate-500">

@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useEffect, useMemo, useState } from "react";
-import { LocateFixed, MapPin, Navigation2, X } from "lucide-react";
+import { LocateFixed, Navigation2, X } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { MapFrame, type MapPickMode } from "@/components/map/dhaka-map";
@@ -317,8 +317,8 @@ export function RoutePlannerApp() {
         viewportPaddingRatio={paneViewportPaddingRatio(pane)}
         viewportBottomInsetPx={paneHeightPx}
         pickMode={mapPickMode}
-        pickedOriginCoordinates={originSelection?.coordinates ?? null}
-        pickedDestinationCoordinates={destinationSelection?.coordinates ?? null}
+        originSelection={originSelection}
+        destinationSelection={destinationSelection}
         onPickLocation={applyMapLocation}
       />
 
@@ -366,13 +366,6 @@ export function RoutePlannerApp() {
           </button>
         ) : null}
       </div>
-
-      {mapPickMode ? (
-        <div className="pointer-events-none absolute left-1/2 top-16 z-40 flex -translate-x-1/2 items-center gap-2 rounded-full border border-white/80 bg-white/94 px-3 py-2 text-xs font-bold text-[rgb(55,42,123)] shadow-[0_18px_48px_-28px_rgba(29,21,63,0.34)] backdrop-blur sm:top-16">
-          <MapPin className="h-4 w-4" />
-          Click the map to set {mapPickMode === "origin" ? "current location" : "destination"}
-        </div>
-      ) : null}
 
       <PlannerPane
         paneKey={pane}

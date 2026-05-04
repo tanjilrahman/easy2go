@@ -19,6 +19,8 @@
   --radius: 30px;
   --shadow-soft: 0 28px 70px -38px rgba(49, 37, 111, 0.22);
   --shadow-glass: 0 24px 72px -36px rgba(38, 31, 84, 0.28);
+  --font-dm-sans: "Segoe UI", system-ui, sans-serif;
+  --font-outfit: "Trebuchet MS", "Segoe UI", system-ui, sans-serif;
 }
 
 @theme inline {

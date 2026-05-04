@@ -31,6 +31,8 @@ import {
   type DistanceSource,
   type PricingConfidence,
   type RouteConfidence,
+  type RouteMapLine,
+  type RouteMapPoint,
   type RouteMapPreview,
   type RouteOption,
   type RouteOptimization,
@@ -796,6 +798,206 @@ function buildMapPreview(labelA: string, labelB: string) {
     destinationLabel: labelB,
     originQuery: `${labelA}, Dhaka, Bangladesh`,
     destinationQuery: `${labelB}, Dhaka, Bangladesh`,
+    points: [],
+    lines: [],
+  };
+}
+
+function findMetroStationByLabel(label: string) {
+  const normalizedLabel = normalizeTransitText(label);
+
+  return DHAKA_METRO_STATIONS.find((station) =>
+    [station.name, ...station.aliases].some(
+      (value) => normalizeTransitText(value) === normalizedLabel,
+    ),
+  );
+}
+
+function dedupeAdjacentCoordinates(coordinates: [number, number][]) {
+  return coordinates.filter((coordinate, index) => {
+    const previous = coordinates[index - 1];
+
+    return !previous || previous[0] !== coordinate[0] || previous[1] !== coordinate[1];
+  });
+}
+
+function findBusSegmentCoordinates(startLabel: string, endLabel: string) {
+  const normalizedStart = normalizeTransitText(startLabel);
+  const normalizedEnd = normalizeTransitText(endLabel);
+  const candidates = dhakaBusSeedRoutes.flatMap((route) => {
+    const startIndex = route.stopLabels.findIndex(
+      (label) => normalizeTransitText(label) === normalizedStart,
+    );
+
+    if (startIndex < 0) {
+      return [];
+    }
+
+    const endOffset = route.stopLabels
+      .slice(startIndex + 1)
+      .findIndex((label) => normalizeTransitText(label) === normalizedEnd);
+
+    if (endOffset < 0) {
+      return [];
+    }
+
+    const stopLabels = route.stopLabels.slice(startIndex, startIndex + endOffset + 2);
+    const coordinates = stopLabels
+      .map((label) => findBusStopCoordinates(label))
+      .filter(
+        (coordinates): coordinates is [number, number] => coordinates !== undefined,
+      );
+
+    return coordinates.length >= 2
+      ? [{ coordinates: dedupeAdjacentCoordinates(coordinates), stopCount: stopLabels.length }]
+      : [];
+  });
+
+  return candidates.sort((a, b) => a.stopCount - b.stopCount)[0]?.coordinates;
+}
+
+function findMetroSegmentCoordinates(startLabel: string, endLabel: string) {
+  const startStation = findMetroStationByLabel(startLabel);
+  const endStation = findMetroStationByLabel(endLabel);
+
+  if (!startStation || !endStation) {
+    return undefined;
+  }
+
+  const startSequence = Math.min(startStation.sequence, endStation.sequence);
+  const endSequence = Math.max(startStation.sequence, endStation.sequence);
+  const coordinates = DHAKA_METRO_STATIONS.filter(
+    (station) => station.sequence >= startSequence && station.sequence <= endSequence,
+  )
+    .sort((a, b) =>
+      startStation.sequence <= endStation.sequence
+        ? a.sequence - b.sequence
+        : b.sequence - a.sequence,
+    )
+    .map((station) => station.coordinates)
+    .filter(
+      (coordinates): coordinates is [number, number] => coordinates !== undefined,
+    );
+
+  return coordinates.length >= 2 ? dedupeAdjacentCoordinates(coordinates) : undefined;
+}
+
+function findRouteLabelCoordinates(
+  label: string,
+  route: RouteOption,
+  preview: RouteMapPreview,
+) {
+  const normalizedLabel = normalizeTransitText(label);
+  const knownPoints: Array<{ label: string; coordinates?: [number, number] }> = [
+    { label: preview.originLabel, coordinates: preview.originCoordinates },
+    { label: preview.destinationLabel, coordinates: preview.destinationCoordinates },
+    { label: route.boarding.label, coordinates: route.boarding.coordinates },
+    { label: route.boarding.canonicalLabel ?? "", coordinates: route.boarding.coordinates },
+    { label: route.alighting.label, coordinates: route.alighting.coordinates },
+    { label: route.alighting.canonicalLabel ?? "", coordinates: route.alighting.coordinates },
+    ...route.transferStops.flatMap((stop) => [
+      { label: stop.label, coordinates: stop.coordinates },
+      { label: stop.canonicalLabel ?? "", coordinates: stop.coordinates },
+    ]),
+  ];
+
+  return knownPoints.find(
+    (point) => point.coordinates && normalizeTransitText(point.label) === normalizedLabel,
+  )?.coordinates;
+}
+
+function createRouteMapLine(
+  route: RouteOption,
+  preview: RouteMapPreview,
+  segment: RouteSegment,
+) {
+  const start = findRouteLabelCoordinates(segment.startLocation, route, preview);
+  const end = findRouteLabelCoordinates(segment.endLocation, route, preview);
+  const fallbackCoordinates = start && end ? dedupeAdjacentCoordinates([start, end]) : [];
+  const coordinates =
+    segment.mode === "bus"
+      ? findBusSegmentCoordinates(segment.startLocation, segment.endLocation) ??
+        fallbackCoordinates
+      : segment.mode === "metro"
+        ? findMetroSegmentCoordinates(segment.startLocation, segment.endLocation) ??
+          fallbackCoordinates
+        : fallbackCoordinates;
+
+  if (coordinates.length < 2) {
+    return null;
+  }
+
+  return {
+    mode: segment.mode,
+    label: segment.instruction,
+    coordinates,
+    confidence: segment.mode === "metro" ? "exact" : "estimated",
+  } satisfies RouteMapLine;
+}
+
+function buildRouteMapGeometry(route: RouteOption, preview: RouteMapPreview) {
+  const pointCandidates: Array<RouteMapPoint | null> = [
+    preview.originCoordinates
+      ? {
+          label: preview.originLabel,
+          coordinates: preview.originCoordinates,
+          role: "origin",
+        }
+      : null,
+    preview.destinationCoordinates
+      ? {
+          label: preview.destinationLabel,
+          coordinates: preview.destinationCoordinates,
+          role: "destination",
+        }
+      : null,
+    route.boarding.coordinates
+      ? {
+          label: route.boarding.label,
+          coordinates: route.boarding.coordinates,
+          role: "boarding",
+        }
+      : null,
+    route.alighting.coordinates
+      ? {
+          label: route.alighting.label,
+          coordinates: route.alighting.coordinates,
+          role: "alighting",
+        }
+      : null,
+    ...route.transferStops.map((stop) =>
+      stop.coordinates
+        ? {
+            label: stop.label,
+            coordinates: stop.coordinates,
+            role: "transfer" as const,
+          }
+        : null,
+    ),
+  ];
+  const seenPoints = new Set<string>();
+  const points = pointCandidates.filter((point): point is RouteMapPoint => {
+    if (!point) {
+      return false;
+    }
+
+    const key = `${point.role}:${point.coordinates[0]}:${point.coordinates[1]}`;
+    if (seenPoints.has(key)) {
+      return false;
+    }
+
+    seenPoints.add(key);
+    return true;
+  });
+  const lines = route.segments.reduce<RouteMapLine[]>((result, segment) => {
+    const line = createRouteMapLine(route, preview, segment);
+
+    return line ? [...result, line] : result;
+  }, []);
+
+  return {
+    points,
+    lines,
   };
 }
 
@@ -827,6 +1029,8 @@ function buildTripMapPreview(
       destinationResolution.place?.coordinates ??
       destinationInput.coordinates ??
       destinationResolution.candidates[0]?.coordinates,
+    points: [],
+    lines: [],
   };
 }
 
@@ -1203,16 +1407,21 @@ function applyTripMapPreview(
   mapPreview: RouteMapPreview,
 ) {
   return routes.map((route) => {
+    const geometry = buildRouteMapGeometry(route, mapPreview);
+    const nextMapPreview = {
+      ...mapPreview,
+      ...geometry,
+    };
     const nextRoute: RouteOption = {
       ...route,
-      mapPreview,
+      mapPreview: nextMapPreview,
       pathSignature: createPathSignature({
         kind: route.kind,
         boarding: route.boarding,
         alighting: route.alighting,
         transferStops: route.transferStops,
         segments: route.segments,
-        mapPreview,
+        mapPreview: nextMapPreview,
       }),
     };
 

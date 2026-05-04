@@ -1,6 +1,6 @@
 # Easy2Go Next.js
 
-Easy2Go is a mobile-first Dhaka route planner rebuilt as a production-ready Next.js App Router app with a serverless backend, shared Zod validation, Google autocomplete, and deterministic local route generation.
+Easy2Go is a mobile-first Dhaka route planner rebuilt as a production-ready Next.js App Router app with a serverless backend, shared Zod validation, open maps, local-first autocomplete, and deterministic local route generation.
 
 ## Stack
 
@@ -9,7 +9,8 @@ Easy2Go is a mobile-first Dhaka route planner rebuilt as a production-ready Next
 - shadcn-style reusable UI primitives
 - Framer Motion for bottom-sheet and transition polish
 - React Query for client data fetching
-- Google Maps Embed API for the public Google Maps route background
+- MapLibre GL with OpenStreetMap-derived vector tiles for the interactive map
+- Geoapify autocomplete as an optional fallback after curated local Dhaka suggestions
 - Next.js Route Handlers for serverless APIs
 - Zod for request and response validation
 
@@ -23,15 +24,16 @@ Easy2Go is a mobile-first Dhaka route planner rebuilt as a production-ready Next
 
 Copy `.env.example` to `.env.local` and configure:
 
-- `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
-  Used by the Maps Embed iframe and the optional Google autocomplete provider.
-- `GOOGLE_AUTOCOMPLETE_ENABLED`
-  Set to `false` to disable Google autocomplete entirely.
+- `NEXT_PUBLIC_MAP_STYLE_URL`
+  Optional MapLibre style URL. Leave blank to use the built-in no-key CARTO Positron raster style.
+- `NEXT_PUBLIC_MAP_ATTRIBUTION`
+  Visible attribution text for the configured map style/tile provider.
+- `GEOAPIFY_API_KEY`
+  Optional fallback autocomplete key for unknown places after local Dhaka suggestions.
+- `GEOAPIFY_AUTOCOMPLETE_ENABLED`
+  Set to `false` to disable Geoapify autocomplete entirely.
 
-Enable these Google Maps Platform APIs for the key:
-
-- Maps Embed API
-- Places API / Places API (New), only if Google autocomplete is enabled
+No map key is required for the default map style. The app still works without `GEOAPIFY_API_KEY`; typed suggestions will be limited to the curated local Dhaka catalog.
 
 ## Local development
 
@@ -55,13 +57,13 @@ Enable these Google Maps Platform APIs for the key:
 
 1. Import the project into Vercel.
 2. Add the same environment variables from `.env.example`.
-3. Restrict the Google Maps key as tightly as your deployment allows.
+3. Add a Geoapify key only if external fallback autocomplete is needed.
 4. Deploy normally. The route handlers are compatible with Vercel serverless functions.
 
 ## Notes
 
-- When Google calls fail, the app falls back to curated Dhaka suggestions and deterministic local route logic so the UX remains usable.
-- Route computation is local and deterministic; Google is not used for geocoding or route planning. The route background is a plain Maps Embed directions iframe, which keeps the implementation close to the public Google Maps view and avoids Routes/Directions API calls.
+- When Geoapify calls fail, the app falls back to curated Dhaka suggestions and deterministic local route logic so the UX remains usable.
+- Route computation is local and deterministic; no external routing API is used for bus or metro planning. The map preview is rendered locally with MapLibre using route geometry from known Dhaka stops, stations, and selected endpoints.
 - Search history is stored in memory per server runtime. For fully durable shared history, swap the `src/db/search-store.ts` module with Vercel KV, Postgres, or another persistent store.
 
 ## Bus stop coordinate workflow

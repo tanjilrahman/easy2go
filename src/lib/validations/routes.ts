@@ -83,6 +83,8 @@ export const locationSuggestionSchema = z.object({
   placeId: z.string().optional(),
   coordinates: latLngSchema.optional(),
   canonicalId: z.string().optional(),
+  provider: z.enum(["local", "geoapify"]).optional(),
+  confidence: z.enum(["exact", "candidate", "external"]).optional(),
 });
 
 export type LocationSuggestion = z.infer<typeof locationSuggestionSchema>;
@@ -110,6 +112,23 @@ export const routeStopReferenceSchema = z.object({
 
 export type RouteStopReference = z.infer<typeof routeStopReferenceSchema>;
 
+export const routeMapPointSchema = z.object({
+  label: z.string(),
+  coordinates: latLngSchema,
+  role: z.enum(["origin", "destination", "boarding", "alighting", "transfer"]),
+});
+
+export type RouteMapPoint = z.infer<typeof routeMapPointSchema>;
+
+export const routeMapLineSchema = z.object({
+  mode: transportModeSchema,
+  label: z.string().optional(),
+  coordinates: z.array(latLngSchema).min(2),
+  confidence: z.enum(["exact", "estimated"]).default("estimated"),
+});
+
+export type RouteMapLine = z.infer<typeof routeMapLineSchema>;
+
 export const routeMapPreviewSchema = z.object({
   originLabel: z.string(),
   destinationLabel: z.string(),
@@ -117,6 +136,8 @@ export const routeMapPreviewSchema = z.object({
   destinationQuery: z.string(),
   originCoordinates: latLngSchema.optional(),
   destinationCoordinates: latLngSchema.optional(),
+  points: z.array(routeMapPointSchema).default([]),
+  lines: z.array(routeMapLineSchema).default([]),
 });
 
 export type RouteMapPreview = z.infer<typeof routeMapPreviewSchema>;

@@ -2,7 +2,7 @@ import { DHAKA_ACCESS_POINTS, type DhakaAccessPoint } from "@/lib/data/dhaka-acc
 import { dhakaBusSeedStops } from "@/lib/data/dhaka-bus-seed";
 import { DHAKA_METRO_STATIONS, type DhakaMetroStation } from "@/lib/data/dhaka-metro";
 import { resolveLocation, type ResolvedLocation } from "@/lib/server/location-resolution";
-import { isGoogleAutocompleteEnabled, searchGooglePlaces } from "@/lib/server/google-maps";
+import { isGeoapifyAutocompleteEnabled, searchGeoapifyPlaces } from "@/lib/server/geoapify";
 import {
   haversineDistanceKm,
   normalizeTransitText,
@@ -11,7 +11,6 @@ import {
 import type {
   LocationInput,
   LocationSuggestion,
-  LocationSuggestionType,
 } from "@/lib/validations/routes";
 
 export interface TransitPoint {
@@ -154,6 +153,8 @@ function toSuggestion(point: TransitPoint): LocationSuggestion {
     address: point.address,
     type: point.type,
     coordinates: point.coordinates,
+    provider: "local",
+    confidence: point.coordinates ? "exact" : "candidate",
   };
 }
 
@@ -256,20 +257,21 @@ export function searchLocalTransitSuggestions(query: string) {
 export async function searchMixedLocationSuggestions(query: string) {
   const localSuggestions = searchLocalTransitSuggestions(query);
 
-  if (!isGoogleAutocompleteEnabled() || localSuggestions.length >= 4 || query.trim().length < 3) {
+  if (!isGeoapifyAutocompleteEnabled() || localSuggestions.length >= 4 || query.trim().length < 3) {
     return dedupeSuggestions(localSuggestions).slice(0, 8);
   }
 
-  const googleSuggestions = await searchGooglePlaces(query);
+  let geoapifySuggestions: LocationSuggestion[] = [];
 
-  const normalizedGoogleSuggestions = googleSuggestions.map((suggestion) => ({
-    ...suggestion,
-    type: "place" as LocationSuggestionType,
-  }));
+  try {
+    geoapifySuggestions = await searchGeoapifyPlaces(query);
+  } catch {
+    geoapifySuggestions = [];
+  }
 
   return dedupeSuggestions([
     ...localSuggestions,
-    ...normalizedGoogleSuggestions,
+    ...geoapifySuggestions,
   ]).slice(0, 8);
 }
 

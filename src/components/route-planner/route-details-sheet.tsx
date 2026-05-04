@@ -2,7 +2,7 @@
 
 import { MapPin } from "lucide-react";
 
-import { GoogleRoutePreview } from "@/components/map/google-route-preview";
+import { OpenMap } from "@/components/map/open-map";
 import { BottomSheet } from "@/components/route-planner/bottom-sheet";
 import { Badge } from "@/components/ui/badge";
 import { TransportIcon } from "@/components/transport-icon";
@@ -132,10 +132,7 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
                 </p>
               </div>
             </div>
-            <GoogleRoutePreview
-              route={route}
-              className="h-64 w-full"
-            />
+            <OpenMap activeRoute={route} className="h-64 w-full" />
           </section>
 
           <section className="relative pl-4">

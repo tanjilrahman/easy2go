@@ -88,6 +88,7 @@ export function SearchCard({
   const suggestionsQuery = useLocationSuggestions(activeQuery, activeQuery.length >= 2);
 
   const suggestions = suggestionsQuery.data?.suggestions ?? [];
+  const hasGeoapifySuggestions = suggestions.some((item) => item.provider === "geoapify");
 
   const canSearch = originText.trim().length > 1 && destinationText.trim().length > 1;
 
@@ -297,6 +298,11 @@ export function SearchCard({
                       </Badge>
                     </button>
                   ))}
+                  {hasGeoapifySuggestions ? (
+                    <p className="border-t border-border/60 px-4 py-2 text-[11px] font-medium text-muted-foreground">
+                      Powered by Geoapify
+                    </p>
+                  ) : null}
                 </div>
               ) : (
                 <div className="px-4 py-4 text-sm text-muted-foreground">
