@@ -18,7 +18,6 @@ import {
   type ResolvedTransitInput,
   type TransitPoint,
 } from "@/lib/server/transit-resolver";
-import { fetchSegmentDirections } from "@/lib/server/google-maps";
 import {
   haversineDistanceKm,
   normalizeTransitText,
@@ -75,20 +74,6 @@ interface ConnectorCandidate {
   point: TransitPoint;
   accessLeg: AccessLeg | null;
   score: number;
-}
-
-interface PlannerRoadContext {
-  lookups: number;
-  maxLookups: number;
-}
-
-interface RouteSkeleton {
-  route: RouteOption;
-  roughScore: number;
-}
-
-interface EnrichedRouteSkeleton extends RouteSkeleton {
-  enriched: boolean;
 }
 
 interface FallbackDirectBusCandidate {
@@ -162,10 +147,6 @@ const FALLBACK_SORT_VALUE = 99_999;
 const BUS_FARE_PER_KM_BDT = 2.42;
 const CANDIDATE_POOL_LIMIT = 20;
 const SURFACED_CANDIDATE_LIMIT = 8;
-const ENRICHED_ROUTES_LIMIT = 25;
-const GOOGLE_ROUTE_LOOKUP_LIMIT = 60;
-const GOOGLE_ROUTE_CONCURRENCY_LIMIT = 6;
-
 const confidencePriority: Record<RouteConfidence, number> = {
   exact: 3,
   verified: 2,
@@ -368,20 +349,6 @@ function estimateExtendedRickshawFareBdt(distanceKm: number) {
   return estimateRickshawFareBdt(distanceKm);
 }
 
-async function consumeRoadMetrics(
-  roadContext: PlannerRoadContext,
-  start: [number, number],
-  end: [number, number],
-  mode: TransportMode,
-) {
-  if (roadContext.lookups >= roadContext.maxLookups) {
-    return null;
-  }
-
-  roadContext.lookups += 1;
-  return fetchSegmentDirections(start, end, mode);
-}
-
 function createAccessLeg(
   resolution: ResolvedTransitInput,
   point: TransitPoint,
@@ -482,118 +449,6 @@ function createAccessLeg(
     startLocation: role === "origin" ? resolution.displayName : point.name,
     endLocation: role === "origin" ? point.name : resolution.displayName,
     distanceSource: "local_estimate",
-    note:
-      role === "origin"
-        ? `${point.name} is farther from ${resolution.displayName}; plan a longer rickshaw or ride-share connector.`
-        : `${resolution.displayName} sits beyond short rickshaw range from ${point.name}; plan a longer connector after transit.`,
-  };
-}
-
-async function createAccessLegWithRoadMetrics(
-  resolution: ResolvedTransitInput,
-  point: TransitPoint,
-  role: "origin" | "destination",
-  roadContext: PlannerRoadContext,
-): Promise<AccessLeg | null> {
-  const fallbackLeg = createAccessLeg(resolution, point, role);
-
-  if (
-    isMatchedTransitPoint(resolution, point) ||
-    !resolution.place?.coordinates ||
-    !point.coordinates
-  ) {
-    return fallbackLeg;
-  }
-
-  const walkMetrics = await consumeRoadMetrics(
-    roadContext,
-    resolution.place.coordinates,
-    point.coordinates,
-    "walk",
-  );
-
-  if (
-    walkMetrics &&
-    walkMetrics.distanceMeters > 0 &&
-    walkMetrics.distanceMeters / 1000 <= ACCESS_WALK_MAX_KM
-  ) {
-    return {
-      connectorType: "walk",
-      mode: "walk",
-      distanceKm: roundDistanceKm(walkMetrics.distanceMeters / 1000),
-      durationMinutes: walkMetrics.durationMinutes,
-      startLocation: role === "origin" ? resolution.displayName : point.name,
-      endLocation: role === "origin" ? point.name : resolution.displayName,
-      distanceSource: "google_road",
-      note:
-        role === "origin"
-          ? `Short walking connector to ${point.name}.`
-          : `Short walking connector from ${point.name}.`,
-    };
-  }
-
-  const driveMetrics = await consumeRoadMetrics(
-    roadContext,
-    resolution.place.coordinates,
-    point.coordinates,
-    "rickshaw",
-  );
-
-  if (!driveMetrics || driveMetrics.distanceMeters <= 0) {
-    return fallbackLeg;
-  }
-
-  const distanceKm = roundDistanceKm(driveMetrics.distanceMeters / 1000);
-  const fare = estimateRickshawFareRangeBdt(distanceKm);
-
-  if (distanceKm <= ACCESS_RICKSHAW_MAX_KM) {
-    return {
-      connectorType: "rickshaw",
-      mode: "rickshaw",
-      distanceKm,
-      durationMinutes: driveMetrics.durationMinutes,
-      costBdt: fare.estimate,
-      costLowBdt: fare.low,
-      costHighBdt: fare.high,
-      startLocation: role === "origin" ? resolution.displayName : point.name,
-      endLocation: role === "origin" ? point.name : resolution.displayName,
-      pricingConfidence: "estimated",
-      distanceSource: "google_road",
-      note:
-        role === "origin"
-          ? `Rickshaw connector to ${point.name}.`
-          : `Rickshaw connector from ${point.name}.`,
-    };
-  }
-
-  if (distanceKm <= LONG_RICKSHAW_MAX_KM) {
-    return {
-      connectorType: "long_rickshaw",
-      mode: "rickshaw",
-      distanceKm,
-      durationMinutes: driveMetrics.durationMinutes,
-      costBdt: fare.estimate,
-      costLowBdt: fare.low,
-      costHighBdt: fare.high,
-      startLocation: role === "origin" ? resolution.displayName : point.name,
-      endLocation: role === "origin" ? point.name : resolution.displayName,
-      pricingConfidence: "estimated",
-      distanceSource: "google_road",
-      note:
-        role === "origin"
-          ? `Long rickshaw connector to ${point.name}.`
-          : `Long rickshaw connector from ${point.name}.`,
-    };
-  }
-
-  return {
-    connectorType: "advisory",
-    mode: "ride_share",
-    distanceKm,
-    durationMinutes: driveMetrics.durationMinutes,
-    startLocation: role === "origin" ? resolution.displayName : point.name,
-    endLocation: role === "origin" ? point.name : resolution.displayName,
-    distanceSource: "google_road",
     note:
       role === "origin"
         ? `${point.name} is farther from ${resolution.displayName}; plan a longer rickshaw or ride-share connector.`
@@ -1124,7 +979,6 @@ function selectDiverseConnectorCandidates(
 async function buildConnectorCandidates(
   resolution: ResolvedTransitInput,
   role: "origin" | "destination",
-  roadContext: PlannerRoadContext,
 ) {
   const matchedCandidates = resolution.candidates.filter((point) =>
     isMatchedTransitPoint(resolution, point),
@@ -1152,12 +1006,7 @@ async function buildConnectorCandidates(
   const evaluated: ConnectorCandidate[] = [];
 
   for (const point of prefilteredCandidates) {
-    const accessLeg = await createAccessLegWithRoadMetrics(
-      resolution,
-      point,
-      role,
-      roadContext,
-    );
+    const accessLeg = createAccessLeg(resolution, point, role);
 
     evaluated.push({
       point,
@@ -1540,7 +1389,6 @@ function getConfidenceBonus(route: RouteOption) {
     route.confidence !== "advisory" ||
     route.segments.some(
       (segment) =>
-        segment.distanceSource === "google_road" ||
         segment.distanceSource === "local_estimate",
     )
   ) {
@@ -3264,324 +3112,6 @@ function collectFallbackBusRoutes(
   return routes;
 }
 
-function estimateSegmentCost(segment: RouteSegment) {
-  if (segment.costLowBdt !== undefined || segment.costHighBdt !== undefined) {
-    const low = segment.costLowBdt ?? segment.costHighBdt ?? 0;
-    const high = segment.costHighBdt ?? segment.costLowBdt ?? 0;
-
-    return {
-      costBdt:
-        segment.connectorFare ?? Math.round((low + high) / 2),
-      costLowBdt: low,
-      costHighBdt: high,
-    };
-  }
-
-  if (segment.connectorFare !== undefined) {
-    return {
-      costBdt: segment.connectorFare,
-      costLowBdt: segment.connectorFare,
-      costHighBdt: segment.connectorFare,
-    };
-  }
-
-  return {
-    costBdt: undefined,
-    costLowBdt: undefined,
-    costHighBdt: undefined,
-  };
-}
-
-function segmentToMetrics(segment: RouteSegment): RouteMetrics {
-  const estimatedCost = estimateSegmentCost(segment);
-
-  return {
-    distanceKm: segment.estimatedDistanceKm,
-    durationMinutes: segment.estimatedDurationMinutes,
-    costBdt: estimatedCost.costBdt,
-    costLowBdt: estimatedCost.costLowBdt,
-    costHighBdt: estimatedCost.costHighBdt,
-  };
-}
-
-function estimateDisplayedBusDistanceKm(
-  localDistanceKm: number | undefined,
-  roadDistanceKm: number,
-) {
-  if (localDistanceKm === undefined) {
-    return roadDistanceKm;
-  }
-
-  // Bus corridor geometry from the local stop-order dataset is usually a better
-  // representation of the actual transit distance than a generic driving route.
-  // Keep the display anchored to the corridor estimate and only allow a modest
-  // adjustment downward when the road metric is clearly shorter.
-  return roundDistanceKm(
-    roadDistanceKm < localDistanceKm
-      ? Math.max(roadDistanceKm, localDistanceKm * 0.9)
-      : localDistanceKm,
-  );
-}
-
-function resolveSegmentLocationCoordinates(
-  route: RouteOption,
-  locationLabel: string,
-) {
-  if (
-    route.mapPreview.originCoordinates &&
-    locationLabel === route.mapPreview.originLabel
-  ) {
-    return route.mapPreview.originCoordinates;
-  }
-
-  if (
-    route.mapPreview.destinationCoordinates &&
-    locationLabel === route.mapPreview.destinationLabel
-  ) {
-    return route.mapPreview.destinationCoordinates;
-  }
-
-  if (locationLabel === route.boarding.label && route.boarding.coordinates) {
-    return route.boarding.coordinates;
-  }
-
-  if (locationLabel === route.alighting.label && route.alighting.coordinates) {
-    return route.alighting.coordinates;
-  }
-
-  const transferStop = route.transferStops.find(
-    (stop) => stop.label === locationLabel && stop.coordinates,
-  );
-
-  if (transferStop?.coordinates) {
-    return transferStop.coordinates;
-  }
-
-  const busCoordinates = findBusStopCoordinates(locationLabel);
-
-  if (busCoordinates) {
-    return busCoordinates;
-  }
-
-  const metroStation = DHAKA_METRO_STATIONS.find(
-    (station) => normalizeTransitText(station.name) === normalizeTransitText(locationLabel),
-  );
-
-  return metroStation?.coordinates;
-}
-
-async function enrichSegmentWithRoadMetrics(
-  route: RouteOption,
-  segment: RouteSegment,
-  roadContext: PlannerRoadContext,
-): Promise<RouteSegment> {
-  if (
-    !segment.startLocation ||
-    !segment.endLocation ||
-    segment.distanceSource === "metro_exact"
-  ) {
-    return segment;
-  }
-
-  const startCoordinates = resolveSegmentLocationCoordinates(
-    route,
-    segment.startLocation,
-  );
-  const endCoordinates = resolveSegmentLocationCoordinates(
-    route,
-    segment.endLocation,
-  );
-
-  if (!startCoordinates || !endCoordinates) {
-    return segment;
-  }
-
-  if (
-    segment.mode === "walk" &&
-    !segment.connectorType &&
-    haversineDistanceKm(startCoordinates, endCoordinates) > 1
-  ) {
-    return segment;
-  }
-
-  const mode: TransportMode =
-    segment.mode === "bus"
-      ? "bus"
-      : segment.mode === "walk"
-        ? "walk"
-        : segment.mode === "rickshaw"
-          ? "rickshaw"
-          : segment.mode === "ride_share"
-            ? "ride_share"
-            : segment.mode;
-  const roadMetrics = await consumeRoadMetrics(
-    roadContext,
-    startCoordinates,
-    endCoordinates,
-    mode,
-  );
-
-  if (!roadMetrics || roadMetrics.distanceMeters <= 0) {
-    return segment;
-  }
-
-  const distanceKm = roundDistanceKm(roadMetrics.distanceMeters / 1000);
-
-  if (segment.mode === "bus") {
-    const stopCount = segment.stopCount ?? 1;
-    const displayedDistanceKm = estimateDisplayedBusDistanceKm(
-      segment.estimatedDistanceKm,
-      distanceKm,
-    );
-    const busFare = estimateBusFareBdt(displayedDistanceKm, stopCount);
-
-    return {
-      ...segment,
-      estimatedDistanceKm: displayedDistanceKm,
-      estimatedDurationMinutes: roadMetrics.durationMinutes,
-      fareText: formatApproxFare(busFare),
-      distanceSource: "local_estimate",
-      pricingConfidence: "regulated_estimate",
-      costLowBdt: busFare,
-      costHighBdt: busFare,
-    };
-  }
-
-  if (segment.mode === "metro") {
-    return segment;
-  }
-
-  if (segment.mode === "rickshaw") {
-    const fare = estimateRickshawFareRangeBdt(distanceKm);
-
-    return {
-      ...segment,
-      estimatedDistanceKm: distanceKm,
-      connectorDistanceKm: distanceKm,
-      estimatedDurationMinutes: roadMetrics.durationMinutes,
-      connectorFare: fare.estimate,
-      fareText:
-        fare.low !== undefined && fare.high !== undefined
-          ? formatApproxFareRange(fare.low, fare.high)
-          : segment.fareText,
-      distanceSource: "google_road",
-      pricingConfidence: "estimated",
-      costLowBdt: fare.low,
-      costHighBdt: fare.high,
-    };
-  }
-
-  return {
-    ...segment,
-    estimatedDistanceKm: distanceKm,
-    connectorDistanceKm: segment.connectorType ? distanceKm : segment.connectorDistanceKm,
-    estimatedDurationMinutes: roadMetrics.durationMinutes,
-    distanceSource: "google_road",
-  };
-}
-
-function rebuildRouteWithSegments(route: RouteOption, segments: RouteSegment[]) {
-  const metrics = combineRouteMetrics(segments.map(segmentToMetrics));
-
-  return finalizeRoute({
-    ...route,
-    id: route.id,
-    segments,
-    totalCost: metrics.totalCost,
-    totalCostLowBdt: metrics.costLowBdt,
-    totalCostHighBdt: metrics.costHighBdt,
-    fareText:
-      metrics.totalCost !== undefined
-        ? formatRouteTotal(
-            metrics.totalCost,
-            route.fareType === "exact" ? "exact" : "advisory",
-            metrics.costLowBdt,
-            metrics.costHighBdt,
-          )
-        : route.fareText,
-    estimatedDistanceKm: metrics.estimatedDistanceKm,
-    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
-    transferCount: route.transferStops.length,
-  });
-}
-
-async function enrichRouteWithRoadMetrics(
-  route: RouteOption,
-  roadContext: PlannerRoadContext,
-): Promise<{ route: RouteOption; enriched: boolean }> {
-  let changed = false;
-  const enrichedSegments: RouteSegment[] = [];
-
-  for (const segment of route.segments) {
-    const nextSegment = await enrichSegmentWithRoadMetrics(
-      route,
-      segment,
-      roadContext,
-    );
-    changed = changed || nextSegment !== segment;
-    enrichedSegments.push(nextSegment);
-  }
-
-  return {
-    route: changed ? rebuildRouteWithSegments(route, enrichedSegments) : route,
-    enriched: changed,
-  };
-}
-
-async function enrichRouteSetWithRoadMetrics(
-  routes: RouteOption[],
-  optimization: RouteOptimization,
-  roadContext: PlannerRoadContext,
-) {
-  const prioritized = [...routes]
-    .map((route) => ({
-      route,
-      roughScore: getRouteRankingValues(route, optimization)[0] ?? FALLBACK_SORT_VALUE,
-    }))
-    .sort((left, right) => left.roughScore - right.roughScore);
-  const prioritizedIds = new Set(
-    prioritized.slice(0, ENRICHED_ROUTES_LIMIT).map((item) => item.route.id),
-  );
-  const enrichedRoutes = new Array<EnrichedRouteSkeleton>(prioritized.length);
-  const candidateIndexes = prioritized
-    .map((item, index) => (prioritizedIds.has(item.route.id) ? index : -1))
-    .filter((index) => index >= 0);
-  let nextIndex = 0;
-
-  async function worker() {
-    while (nextIndex < candidateIndexes.length) {
-      const current = candidateIndexes[nextIndex]!;
-      nextIndex += 1;
-      const item = prioritized[current]!;
-      const enriched = await enrichRouteWithRoadMetrics(item.route, roadContext);
-
-      enrichedRoutes[current] = {
-        route: enriched.route,
-        roughScore: item.roughScore,
-        enriched: enriched.enriched,
-      };
-    }
-  }
-
-  await Promise.all(
-    Array.from({
-      length: Math.min(GOOGLE_ROUTE_CONCURRENCY_LIMIT, candidateIndexes.length),
-    }).map(() => worker()),
-  );
-
-  prioritized.forEach((item, index) => {
-    if (!enrichedRoutes[index]) {
-      enrichedRoutes[index] = {
-        route: item.route,
-        roughScore: item.roughScore,
-        enriched: false,
-      };
-    }
-  });
-
-  return enrichedRoutes;
-}
-
 function pickPlanningCandidates(
   candidates: ConnectorCandidate[],
   directMatch: boolean,
@@ -3593,18 +3123,15 @@ async function runPlanner(
   payload: CalculateRouteRequest,
   originResolution: ResolvedTransitInput,
   destinationResolution: ResolvedTransitInput,
-  roadContext: PlannerRoadContext,
 ) {
   const [originCandidates, destinationCandidates] = await Promise.all([
     buildConnectorCandidates(
       originResolution,
       "origin",
-      roadContext,
     ),
     buildConnectorCandidates(
       destinationResolution,
       "destination",
-      roadContext,
     ),
   ]);
   const planningOriginCandidates = pickPlanningCandidates(
@@ -3707,13 +3234,9 @@ async function runPlanner(
   }
 
   const groupedRoutes = groupRoutesByPresentation(groupRoutesByPath(routes));
-  const routedCandidates = (
-    await enrichRouteSetWithRoadMetrics(
-      groupedRoutes,
-      payload.optimization,
-      roadContext,
-    )
-  ).map((item) => decorateRouteScoring(item.route, payload.optimization));
+  const routedCandidates = groupedRoutes.map((route) =>
+    decorateRouteScoring(route, payload.optimization),
+  );
   const surfacedRoutes = surfaceRoutes(routedCandidates, payload.optimization);
   const fallbackCandidates =
     surfacedRoutes.length > 0
@@ -3726,13 +3249,7 @@ async function runPlanner(
   const enrichedFallbackRoutes =
     surfacedRoutes.length > 0
       ? []
-      : (
-          await enrichRouteSetWithRoadMetrics(
-            fallbackGrouped,
-            payload.optimization,
-            roadContext,
-          )
-        ).map((item) => decorateRouteScoring(item.route, payload.optimization));
+      : fallbackGrouped.map((route) => decorateRouteScoring(route, payload.optimization));
   const fallbackRoutes =
     surfacedRoutes.length > 0
       ? []
@@ -3772,16 +3289,7 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
     originResolution,
     destinationResolution,
   );
-  const primaryRoadContext: PlannerRoadContext = {
-    lookups: 0,
-    maxLookups: GOOGLE_ROUTE_LOOKUP_LIMIT,
-  };
-  const primaryResult = await runPlanner(
-    payload,
-    originResolution,
-    destinationResolution,
-    primaryRoadContext,
-  );
+  const primaryResult = await runPlanner(payload, originResolution, destinationResolution);
 
   return calculateRouteResponseSchema.parse({
     routes: applyTripMapPreview(primaryResult.routes, tripMapPreview),

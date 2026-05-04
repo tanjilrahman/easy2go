@@ -128,15 +128,12 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
               <div>
                 <p className="text-sm font-medium text-foreground">Map Preview</p>
                 <p className="text-xs text-muted-foreground">
-                  Google trip preview from your selected start to destination.
+                  Route preview from your selected start to destination.
                 </p>
               </div>
             </div>
             <GoogleRoutePreview
-              originQuery={route.mapPreview.originQuery}
-              destinationQuery={route.mapPreview.destinationQuery}
-              originCoordinates={route.mapPreview.originCoordinates}
-              destinationCoordinates={route.mapPreview.destinationCoordinates}
+              route={route}
               className="h-64 w-full"
             />
           </section>

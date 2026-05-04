@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { clearRoadMetricsCache, resolveLocation } from "@/lib/server/google-maps";
+import { searchGooglePlaces } from "@/lib/server/google-maps";
 
-describe("resolveLocation", () => {
+describe("searchGooglePlaces", () => {
   const originalFetch = global.fetch;
 
   beforeEach(() => {
@@ -13,56 +13,42 @@ describe("resolveLocation", () => {
     global.fetch = originalFetch;
     vi.restoreAllMocks();
     vi.unstubAllEnvs();
-    clearRoadMetricsCache();
   });
 
-  it("prefers an exact placeId geocode over fuzzy known-place matching", async () => {
+  it("returns no results when autocomplete is disabled", async () => {
+    vi.stubEnv("GOOGLE_AUTOCOMPLETE_ENABLED", "false");
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as typeof fetch;
+
+    const result = await searchGooglePlaces("Farmgate");
+
+    expect(result).toEqual([]);
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("maps autocomplete predictions into local suggestions", async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
       json: async () => ({
-        status: "OK",
-        results: [
+        predictions: [
           {
-            formatted_address: "Road 14 Rupnagar Rd, Dhaka 1216, Bangladesh",
-            place_id: "exact-place-id",
-            geometry: {
-              location: {
-                lat: 23.8145337,
-                lng: 90.356373,
-              },
+            description: "Farmgate, Dhaka, Bangladesh",
+            place_id: "farmgate-place-id",
+            structured_formatting: {
+              main_text: "Farmgate",
+              secondary_text: "Dhaka, Bangladesh",
             },
           },
         ],
       }),
     }) as typeof fetch;
 
-    const result = await resolveLocation({
-      name: "Rupnagar Residential Area Central Mosque & Madrasah",
-      address: "Rupnagar Road, Dhaka, Bangladesh",
-      placeId: "exact-place-id",
-      type: "place",
-    });
+    const result = await searchGooglePlaces("Farmgate");
 
-    expect(result.coordinates).toEqual([23.8145337, 90.356373]);
-    expect(result.address).toBe("Road 14 Rupnagar Rd, Dhaka 1216, Bangladesh");
-    expect(result.placeId).toBe("exact-place-id");
-  });
-
-  it("still uses the local fallback place list when no exact placeId is provided", async () => {
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        status: "ZERO_RESULTS",
-        results: [],
-      }),
-    }) as typeof fetch;
-
-    const result = await resolveLocation({
-      name: "Bashundhara Residential Area",
-      type: "place",
-    });
-
-    expect(result.coordinates).toEqual([23.8151, 90.4396]);
-    expect(result.name).toBe("Bashundhara Residential Area");
+    expect(result).toHaveLength(1);
+    expect(result[0]?.name).toBe("Farmgate");
+    expect(result[0]?.address).toBe("Dhaka, Bangladesh");
+    expect(result[0]?.placeId).toBe("farmgate-place-id");
   });
 });
+

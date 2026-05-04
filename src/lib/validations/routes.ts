@@ -66,7 +66,6 @@ export type PricingConfidence = z.infer<typeof pricingConfidenceSchema>;
 
 export const distanceSourceSchema = z.enum([
   "local_estimate",
-  "google_road",
   "metro_exact",
 ]);
 

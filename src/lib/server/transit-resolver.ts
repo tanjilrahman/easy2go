@@ -1,7 +1,8 @@
 import { DHAKA_ACCESS_POINTS, type DhakaAccessPoint } from "@/lib/data/dhaka-access-points";
 import { dhakaBusSeedStops } from "@/lib/data/dhaka-bus-seed";
 import { DHAKA_METRO_STATIONS, type DhakaMetroStation } from "@/lib/data/dhaka-metro";
-import { resolveLocation, searchGooglePlaces, type ResolvedLocation } from "@/lib/server/google-maps";
+import { resolveLocation, type ResolvedLocation } from "@/lib/server/location-resolution";
+import { isGoogleAutocompleteEnabled, searchGooglePlaces } from "@/lib/server/google-maps";
 import {
   haversineDistanceKm,
   normalizeTransitText,
@@ -246,17 +247,20 @@ export function searchLocalTransitSuggestions(query: string) {
       point,
       score: textScore(query, [point.name, ...point.aliases]),
     }))
-    .filter((item) => item.score >= 24)
+    .filter((item) => item.score >= 18)
     .sort((a, b) => b.score - a.score)
     .slice(0, 8)
     .map((item) => toSuggestion(item.point));
 }
 
 export async function searchMixedLocationSuggestions(query: string) {
-  const [googleSuggestions, localSuggestions] = await Promise.all([
-    searchGooglePlaces(query),
-    Promise.resolve(searchLocalTransitSuggestions(query)),
-  ]);
+  const localSuggestions = searchLocalTransitSuggestions(query);
+
+  if (!isGoogleAutocompleteEnabled() || localSuggestions.length >= 4 || query.trim().length < 3) {
+    return dedupeSuggestions(localSuggestions).slice(0, 8);
+  }
+
+  const googleSuggestions = await searchGooglePlaces(query);
 
   const normalizedGoogleSuggestions = googleSuggestions.map((suggestion) => ({
     ...suggestion,

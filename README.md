@@ -1,6 +1,6 @@
 # Easy2Go Next.js
 
-Easy2Go is a mobile-first Dhaka route planner rebuilt as a production-ready Next.js App Router app with a serverless backend, shared Zod validation, Google Maps rendering, and deterministic route generation.
+Easy2Go is a mobile-first Dhaka route planner rebuilt as a production-ready Next.js App Router app with a serverless backend, shared Zod validation, Google autocomplete, and deterministic local route generation.
 
 ## Stack
 
@@ -9,7 +9,7 @@ Easy2Go is a mobile-first Dhaka route planner rebuilt as a production-ready Next
 - shadcn-style reusable UI primitives
 - Framer Motion for bottom-sheet and transition polish
 - React Query for client data fetching
-- Google Maps JavaScript API on the client
+- Google Maps Embed API for the public Google Maps route background
 - Next.js Route Handlers for serverless APIs
 - Zod for request and response validation
 
@@ -24,7 +24,14 @@ Easy2Go is a mobile-first Dhaka route planner rebuilt as a production-ready Next
 Copy `.env.example` to `.env.local` and configure:
 
 - `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
-  Used by both the client map and the server-side geocoding, autocomplete, and directions helpers.
+  Used by the Maps Embed iframe and the optional Google autocomplete provider.
+- `GOOGLE_AUTOCOMPLETE_ENABLED`
+  Set to `false` to disable Google autocomplete entirely.
+
+Enable these Google Maps Platform APIs for the key:
+
+- Maps Embed API
+- Places API / Places API (New), only if Google autocomplete is enabled
 
 ## Local development
 
@@ -54,6 +61,7 @@ Copy `.env.example` to `.env.local` and configure:
 ## Notes
 
 - When Google calls fail, the app falls back to curated Dhaka suggestions and deterministic local route logic so the UX remains usable.
+- Route computation is local and deterministic; Google is not used for geocoding or route planning. The route background is a plain Maps Embed directions iframe, which keeps the implementation close to the public Google Maps view and avoids Routes/Directions API calls.
 - Search history is stored in memory per server runtime. For fully durable shared history, swap the `src/db/search-store.ts` module with Vercel KV, Postgres, or another persistent store.
 
 ## Bus stop coordinate workflow

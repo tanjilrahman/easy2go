@@ -17,7 +17,7 @@ const outfit = Outfit({
 export const metadata: Metadata = {
   title: "Easy2Go | Dhaka Route Planner",
   description:
-    "Mobile-first deterministic bus and metro route finder for Dhaka with Google place search and transit map previews.",
+    "Mobile-first deterministic bus and metro route finder for Dhaka with local route planning, Google autocomplete, and a public Google Maps background.",
 };
 
 export default function RootLayout({

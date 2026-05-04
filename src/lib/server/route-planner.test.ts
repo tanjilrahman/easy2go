@@ -10,7 +10,6 @@ import {
   estimateRickshawFareBdt,
   surfaceRoutes,
 } from "@/lib/server/route-planner";
-import { clearRoadMetricsCache } from "@/lib/server/google-maps";
 import { routeOptionSchema, type RouteOption } from "@/lib/validations/routes";
 
 function makeRoute(overrides: Partial<RouteOption> = {}) {
@@ -80,14 +79,12 @@ const originalFetch = global.fetch;
 
 beforeEach(() => {
   vi.stubEnv("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", "");
-  clearRoadMetricsCache();
 });
 
 afterEach(() => {
   global.fetch = originalFetch;
   vi.restoreAllMocks();
   vi.unstubAllEnvs();
-  clearRoadMetricsCache();
 });
 
 describe("estimateRickshawFareBdt", () => {
@@ -343,7 +340,7 @@ describe("surfaceRoutes", () => {
           estimatedDistanceKm: 6.2,
           estimatedDurationMinutes: 31,
           stopCount: 7,
-          distanceSource: "google_road",
+          distanceSource: "local_estimate",
           pricingConfidence: "regulated_estimate",
           costLowBdt: 22,
           costHighBdt: 22,
@@ -710,26 +707,9 @@ describe("calculateRoutes", () => {
     expect(hasSuspiciousFallback).toBe(false);
   }, 60000);
 
-  it("keeps bus distance anchored to the local corridor estimate instead of inflating from road-driving detours", async () => {
-    vi.stubEnv("NEXT_PUBLIC_GOOGLE_MAPS_API_KEY", "test-key");
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        status: "OK",
-        routes: [
-          {
-            overview_polyline: { points: "a~l~Fjk~uOwHJy@P" },
-            legs: [
-              {
-                distance: { text: "11 km", value: 11000 },
-                duration: { text: "28 mins", value: 1680 },
-                steps: [],
-              },
-            ],
-          },
-        ],
-      }),
-    }) as typeof fetch;
+  it("keeps route calculation local and does not hit Google services", async () => {
+    const fetchSpy = vi.fn();
+    global.fetch = fetchSpy as typeof fetch;
 
     const response = await calculateRoutes({
       origin: {
@@ -751,5 +731,6 @@ describe("calculateRoutes", () => {
 
     expect(busSegment).toBeDefined();
     expect(busSegment!.distanceSource).toBe("local_estimate");
+    expect(fetchSpy).not.toHaveBeenCalled();
   }, 30000);
 });
