@@ -1,77 +1,22 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import {
+  fromRoot,
+  parsePathArgs,
+  readJson,
+  readOptionalJson,
+  unresolvedStopSummary,
+  writeJson,
+} from "./script-utils.mjs";
 
-const ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const INPUT_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-coordinate-review.json");
-const MANUAL_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-manual-coordinates.json");
-const OUTPUT_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-approved-coordinates.json");
+const INPUT_PATH = fromRoot("src/lib/data/dhaka-bus-stop-coordinate-review.json");
+const MANUAL_PATH = fromRoot("src/lib/data/dhaka-bus-stop-manual-coordinates.json");
+const OUTPUT_PATH = fromRoot("src/lib/data/dhaka-bus-stop-approved-coordinates.json");
 
 function parseArgs(argv) {
-  const args = {
+  return parsePathArgs(argv, {
     input: INPUT_PATH,
     manual: MANUAL_PATH,
     output: OUTPUT_PATH,
-  };
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const argument = argv[index];
-
-    if (argument.startsWith("--input=")) {
-      args.input = resolve(ROOT_DIR, argument.slice("--input=".length));
-      continue;
-    }
-
-    if (argument === "--input") {
-      args.input = resolve(ROOT_DIR, argv[index + 1] ?? args.input);
-      index += 1;
-      continue;
-    }
-
-    if (argument.startsWith("--output=")) {
-      args.output = resolve(ROOT_DIR, argument.slice("--output=".length));
-      continue;
-    }
-
-    if (argument.startsWith("--manual=")) {
-      args.manual = resolve(ROOT_DIR, argument.slice("--manual=".length));
-      continue;
-    }
-
-    if (argument === "--manual") {
-      args.manual = resolve(ROOT_DIR, argv[index + 1] ?? args.manual);
-      index += 1;
-      continue;
-    }
-
-    if (argument === "--output") {
-      args.output = resolve(ROOT_DIR, argv[index + 1] ?? args.output);
-      index += 1;
-    }
-  }
-
-  return args;
-}
-
-async function readJson(path) {
-  return JSON.parse(await readFile(path, "utf8"));
-}
-
-async function readOptionalJson(path, fallback) {
-  try {
-    return await readJson(path);
-  } catch (error) {
-    if (error?.code === "ENOENT") {
-      return fallback;
-    }
-
-    throw error;
-  }
-}
-
-async function writeJson(path, value) {
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  });
 }
 
 function buildApprovedCoordinateEntry(stop) {
@@ -102,25 +47,44 @@ function assertCoordinates(stopId, coordinates) {
   }
 
   const [latitude, longitude] = coordinates;
+  assertFiniteCoordinates(stopId, latitude, longitude);
+  assertDhakaAreaCoordinates(stopId, latitude, longitude);
+}
+
+function assertFiniteCoordinates(stopId, latitude, longitude) {
   if (!Number.isFinite(latitude) || !Number.isFinite(longitude)) {
     throw new Error(`Manual coordinate entry for ${stopId} must contain finite numbers.`);
   }
+}
 
+function assertDhakaAreaCoordinates(stopId, latitude, longitude) {
   if (latitude < 22.5 || latitude > 24.8 || longitude < 89.5 || longitude > 91.5) {
     throw new Error(`Manual coordinate entry for ${stopId} is outside the expected Dhaka-area bounds.`);
   }
+}
+
+function manualCoordinateLabels(entry, stop) {
+  return [entry.labelEn ?? stop?.labelEn, entry.label ?? stop?.label, entry.labelBn ?? stop?.labelBn].filter(Boolean);
+}
+
+function manualCoordinateAddress(entry, stop) {
+  return entry.address ?? entry.placeName ?? entry.label ?? stop?.label ?? entry.stopId;
+}
+
+function manualCoordinatePlaceName(entry, stop) {
+  return entry.placeName ?? entry.address ?? entry.labelEn ?? stop?.labelEn ?? entry.stopId;
 }
 
 function buildManualCoordinateEntry(entry, stop) {
   assertCoordinates(entry.stopId, entry.coordinates);
 
   return {
-    labels: [entry.labelEn ?? stop?.labelEn, entry.label ?? stop?.label, entry.labelBn ?? stop?.labelBn].filter(Boolean),
+    labels: manualCoordinateLabels(entry, stop),
     coordinates: entry.coordinates,
     source: entry.source ?? "manual",
     confidence: entry.confidence ?? "manual_verified",
-    address: entry.address ?? entry.placeName ?? entry.label ?? stop?.label ?? entry.stopId,
-    placeName: entry.placeName ?? entry.address ?? entry.labelEn ?? stop?.labelEn ?? entry.stopId,
+    address: manualCoordinateAddress(entry, stop),
+    placeName: manualCoordinatePlaceName(entry, stop),
     review: {
       status: "manual_approved",
       stopId: entry.stopId,
@@ -130,12 +94,8 @@ function buildManualCoordinateEntry(entry, stop) {
   };
 }
 
-async function main() {
-  const args = parseArgs(process.argv.slice(2));
-  const review = await readJson(args.input);
-  const manual = await readOptionalJson(args.manual, { coordinates: [] });
-  const stopsById = new Map(review.stops.map((stop) => [stop.stopId, stop]));
-  const manualEntries = (manual.coordinates ?? []).map((entry) => {
+function buildManualCoordinateEntries(manualCoordinates, stopsById) {
+  return manualCoordinates.map((entry) => {
     if (!entry.stopId) {
       throw new Error("Manual coordinate entries must include stopId.");
     }
@@ -146,7 +106,20 @@ async function main() {
 
     return buildManualCoordinateEntry(entry, stopsById.get(entry.stopId));
   });
-  const manualStopIds = new Set((manual.coordinates ?? []).map((entry) => entry.stopId));
+}
+
+function buildUnresolvedStop(stop) {
+  return unresolvedStopSummary(stop);
+}
+
+async function main() {
+  const args = parseArgs(process.argv.slice(2));
+  const review = await readJson(args.input);
+  const manual = await readOptionalJson(args.manual, { coordinates: [] });
+  const stopsById = new Map(review.stops.map((stop) => [stop.stopId, stop]));
+  const manualCoordinates = manual.coordinates ?? [];
+  const manualEntries = buildManualCoordinateEntries(manualCoordinates, stopsById);
+  const manualStopIds = new Set(manualCoordinates.map((entry) => entry.stopId));
   const approved = review.stops
     .filter((stop) => stop.status === "approved" && stop.approvedCandidate)
     .filter((stop) => !manualStopIds.has(stop.stopId))
@@ -156,24 +129,7 @@ async function main() {
   const unresolved = review.stops
     .filter((stop) => stop.status !== "approved")
     .filter((stop) => !manualStopIds.has(stop.stopId))
-    .map((stop) => ({
-      stopId: stop.stopId,
-      label: stop.label,
-      labelEn: stop.labelEn,
-      labelBn: stop.labelBn,
-      routeCount: stop.routeCount,
-      status: stop.status,
-      reviewReason: stop.reviewReason,
-      topCandidate: stop.candidates[0]
-        ? {
-            name: stop.candidates[0].name,
-            coordinates: stop.candidates[0].coordinates,
-            score: stop.candidates[0].score,
-            confidence: stop.candidates[0].confidence,
-            source: stop.candidates[0].source,
-          }
-        : null,
-    }));
+    .map(buildUnresolvedStop);
 
   await writeJson(args.output, {
     generatedAt: new Date().toISOString(),

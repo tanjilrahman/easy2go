@@ -1,33 +1,10 @@
-import { mkdir, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fromRoot, splitLocalizedLabel, writeJson } from "./script-utils.mjs";
 
 const SOURCE_URL = "https://bus.grelts.com/routes/";
-const OUTPUT_PATH = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "../src/lib/data/dhaka-bus-seed.json",
-);
+const OUTPUT_PATH = fromRoot("src/lib/data/dhaka-bus-seed.json");
 
 const ROUTE_MATCHER =
   /\{\\\"route\\\":\{\\\"bus_name\\\":.*?\},\\\"index\\\":\d+\}/g;
-
-function splitLocalizedLabel(label) {
-  const match = label.match(/^(.*)\s+\(([\p{Script=Bengali}].*)\)$/u);
-
-  if (!match) {
-    return {
-      label,
-      labelEn: label,
-      labelBn: null,
-    };
-  }
-
-  return {
-    label,
-    labelEn: match[1].trim(),
-    labelBn: match[2].trim(),
-  };
-}
 
 function slugify(value) {
   const slug = value
@@ -210,8 +187,7 @@ async function main() {
 
   const dataset = buildDataset(routeRecords, retrievedAt);
 
-  await mkdir(dirname(OUTPUT_PATH), { recursive: true });
-  await writeFile(OUTPUT_PATH, `${JSON.stringify(dataset, null, 2)}\n`, "utf8");
+  await writeJson(OUTPUT_PATH, dataset);
 
   console.log(
     `Wrote ${dataset.summary.routeCount} routes, ${dataset.summary.busCount} buses, and ${dataset.summary.stopCount} stops to ${OUTPUT_PATH}`,

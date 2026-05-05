@@ -313,6 +313,30 @@ function accessMetrics(leg: AccessLeg | null): Partial<RouteMetrics> {
     : {};
 }
 
+function combineTripMetrics(
+  origin: TransitCandidate,
+  destination: TransitCandidate,
+  coreMetrics: Partial<RouteMetrics>,
+) {
+  return combineMetrics([
+    accessMetrics(origin.accessLeg),
+    coreMetrics,
+    accessMetrics(destination.accessLeg),
+  ]);
+}
+
+function withAccessSegments(
+  origin: TransitCandidate,
+  destination: TransitCandidate,
+  coreSegments: RouteSegment[],
+) {
+  return [
+    ...(origin.accessLeg ? [buildAccessSegment(origin.accessLeg)] : []),
+    ...coreSegments,
+    ...(destination.accessLeg ? [buildAccessSegment(destination.accessLeg)] : []),
+  ];
+}
+
 function isTransitDatasetPoint(point: TransitPoint) {
   return point.type === "bus_stop" || point.type === "metro_station";
 }
@@ -635,13 +659,8 @@ function createDirectBusRoute(leg: BusLeg, origin: TransitCandidate, destination
   const distanceKm = estimateBusLegDistanceKm(leg);
   const durationMinutes = estimateBusDurationMinutes(distanceKm, leg.stopCount);
   const fare = estimateBusFareBdt(distanceKm, leg.stopCount);
-  const metrics = combineMetrics([
-    accessMetrics(origin.accessLeg),
-    { distanceKm, durationMinutes, costBdt: fare },
-    accessMetrics(destination.accessLeg),
-  ]);
-  const segments: RouteSegment[] = [
-    ...(origin.accessLeg ? [buildAccessSegment(origin.accessLeg)] : []),
+  const metrics = combineTripMetrics(origin, destination, { distanceKm, durationMinutes, costBdt: fare });
+  const segments = withAccessSegments(origin, destination, [
     {
       mode: "bus",
       instruction: `Board ${busName}`,
@@ -658,8 +677,7 @@ function createDirectBusRoute(leg: BusLeg, origin: TransitCandidate, destination
       costLowBdt: fare,
       costHighBdt: fare,
     },
-    ...(destination.accessLeg ? [buildAccessSegment(destination.accessLeg)] : []),
-  ];
+  ]);
 
   return finalizeRoute({
     id: `${leg.route.id}-${normalizeTransitText(leg.boardingLabel)}-${normalizeTransitText(leg.alightingLabel)}`,
@@ -786,13 +804,8 @@ function createMetroRoute(originStationId: string, destinationStationId: string,
   const fare = getDhakaMetroFareBdtBySequence(originStation.sequence, destinationStation.sequence) ?? undefined;
   const distanceKm = estimateMetroDistanceKm(originStation.id, destinationStation.id, stationCount);
   const durationMinutes = estimateMetroDurationMinutes(distanceKm, stationCount);
-  const metrics = combineMetrics([
-    accessMetrics(origin.accessLeg),
-    { distanceKm, durationMinutes, costBdt: fare },
-    accessMetrics(destination.accessLeg),
-  ]);
-  const segments: RouteSegment[] = [
-    ...(origin.accessLeg ? [buildAccessSegment(origin.accessLeg)] : []),
+  const metrics = combineTripMetrics(origin, destination, { distanceKm, durationMinutes, costBdt: fare });
+  const segments = withAccessSegments(origin, destination, [
     {
       mode: "metro",
       instruction: "Ride Metro Rail Line 6",
@@ -809,8 +822,7 @@ function createMetroRoute(originStationId: string, destinationStationId: string,
       costLowBdt: fare,
       costHighBdt: fare,
     },
-    ...(destination.accessLeg ? [buildAccessSegment(destination.accessLeg)] : []),
-  ];
+  ]);
 
   return finalizeRoute({
     id: `${originStation.id}-${destinationStation.id}`,

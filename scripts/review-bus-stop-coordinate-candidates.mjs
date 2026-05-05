@@ -1,10 +1,7 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fromRoot, parsePathArgs, readJson, writeJson } from "./script-utils.mjs";
 
-const ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const INPUT_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-coordinate-candidates.json");
-const OUTPUT_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-coordinate-review.json");
+const INPUT_PATH = fromRoot("src/lib/data/dhaka-bus-stop-coordinate-candidates.json");
+const OUTPUT_PATH = fromRoot("src/lib/data/dhaka-bus-stop-coordinate-review.json");
 const AUTO_APPROVE_MIN_SCORE = 107;
 
 const forcedManualReviewLabels = new Set([
@@ -38,46 +35,10 @@ function normalizeText(value) {
 }
 
 function parseArgs(argv) {
-  const args = {
+  return parsePathArgs(argv, {
     input: INPUT_PATH,
     output: OUTPUT_PATH,
-  };
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const argument = argv[index];
-
-    if (argument.startsWith("--input=")) {
-      args.input = resolve(ROOT_DIR, argument.slice("--input=".length));
-      continue;
-    }
-
-    if (argument === "--input") {
-      args.input = resolve(ROOT_DIR, argv[index + 1] ?? args.input);
-      index += 1;
-      continue;
-    }
-
-    if (argument.startsWith("--output=")) {
-      args.output = resolve(ROOT_DIR, argument.slice("--output=".length));
-      continue;
-    }
-
-    if (argument === "--output") {
-      args.output = resolve(ROOT_DIR, argv[index + 1] ?? args.output);
-      index += 1;
-    }
-  }
-
-  return args;
-}
-
-async function readJson(path) {
-  return JSON.parse(await readFile(path, "utf8"));
-}
-
-async function writeJson(path, value) {
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  });
 }
 
 function reviewReason(entry, topCandidate) {

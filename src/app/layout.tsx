@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Syne } from "next/font/google";
+import { Agentation } from "agentation";
 
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./globals.css";
@@ -38,6 +39,7 @@ export default function RootLayout({
     >
       <body className="min-h-full font-sans">
         <AppProviders>{children}</AppProviders>
+        {process.env.NODE_ENV === "development" && <Agentation />}
       </body>
     </html>
   );

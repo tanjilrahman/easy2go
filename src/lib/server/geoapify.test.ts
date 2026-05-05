@@ -15,8 +15,7 @@ describe("searchGeoapifyPlaces", () => {
     vi.unstubAllEnvs();
   });
 
-  it("returns no results when autocomplete is disabled", async () => {
-    vi.stubEnv("GEOAPIFY_AUTOCOMPLETE_ENABLED", "false");
+  async function expectNoGeoapifyLookup() {
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as typeof fetch;
 
@@ -24,17 +23,16 @@ describe("searchGeoapifyPlaces", () => {
 
     expect(result).toEqual([]);
     expect(fetchSpy).not.toHaveBeenCalled();
+  }
+
+  it("returns no results when autocomplete is disabled", async () => {
+    vi.stubEnv("GEOAPIFY_AUTOCOMPLETE_ENABLED", "false");
+    await expectNoGeoapifyLookup();
   });
 
   it("returns no results without an API key", async () => {
     vi.stubEnv("GEOAPIFY_API_KEY", "");
-    const fetchSpy = vi.fn();
-    global.fetch = fetchSpy as typeof fetch;
-
-    const result = await searchGeoapifyPlaces("Farmgate");
-
-    expect(result).toEqual([]);
-    expect(fetchSpy).not.toHaveBeenCalled();
+    await expectNoGeoapifyLookup();
   });
 
   it("maps autocomplete features into location suggestions", async () => {

@@ -1,10 +1,14 @@
 "use client";
 
-import { ArrowRight, CheckCircle2, Clock3, Coins, GitCompareArrows, MapPinned, Route } from "lucide-react";
+import { ArrowRight, CheckCircle2, Clock3, GitCompareArrows, MapPinned, Route } from "lucide-react";
 
 import { PlannerDebugRoutes } from "@/components/route-planner/planner-debug-routes";
+import {
+  RouteCoreMetrics,
+  RouteOverview,
+  RouteServiceLabels,
+} from "@/components/route-planner/route-summary";
 import { Button } from "@/components/ui/button";
-import { formatBdt, getConfidenceTone, getRouteKindLabel, getRouteKindTone } from "@/lib/transport";
 import { cn } from "@/lib/utils";
 import type { RouteOption } from "@/lib/validations/routes";
 
@@ -41,24 +45,7 @@ function CompareRow({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <div className="mb-2 flex flex-wrap items-center gap-2">
-            <span className="rounded-lg bg-foreground px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary-foreground">
-              {label}
-            </span>
-            <span className={cn("rounded-lg px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]", getRouteKindTone(route.kind))}>
-              {getRouteKindLabel(route.kind)}
-            </span>
-            <span className={cn("rounded-lg px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]", getConfidenceTone(route.confidence))}>
-              {route.confidence}
-            </span>
-          </div>
-          <h3 className="font-display text-base font-semibold text-foreground">{route.summary}</h3>
-          <p className="mt-0.5 text-sm text-muted-foreground">
-            {route.mapPreview.originLabel} to {route.mapPreview.destinationLabel}
-          </p>
-          {route.mapPreview.originLabel !== route.boarding.label ? (
-            <p className="mt-1 text-xs text-muted-foreground">Board at {route.boarding.label}</p>
-          ) : null}
+          <RouteOverview route={route} label={label} />
           {route.primaryReason ? (
             <p className="mt-2 inline-flex items-center gap-2 rounded-lg bg-primary/8 px-2.5 py-1 text-[11px] font-semibold text-primary">
               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -75,36 +62,16 @@ function CompareRow({
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-2 text-sm text-foreground sm:grid-cols-4">
-        <div className="compare-metric">
-          <Clock3 className="h-4 w-4 text-secondary" />
-          <span>{route.estimatedDurationMinutes ? `${route.estimatedDurationMinutes} min` : "N/A"}</span>
-        </div>
-        <div className="compare-metric">
-          <Coins className="h-4 w-4 text-emerald-600" />
-          <span>{formatBdt(route.totalCost)}</span>
-        </div>
-        <div className="compare-metric">
-          <GitCompareArrows className="h-4 w-4 text-amber-600" />
-          <span>{route.transferCount ? `${route.transferCount} transfer` : "Direct flow"}</span>
-        </div>
-        <div className="compare-metric">
-          <MapPinned className="h-4 w-4 text-primary" />
-          <span>{route.estimatedDistanceKm ? `${route.estimatedDistanceKm} km` : "Dhaka map"}</span>
-        </div>
+        <RouteCoreMetrics
+          route={route}
+          durationIcon={Clock3}
+          transferIcon={GitCompareArrows}
+          includeDistance
+          distanceIcon={MapPinned}
+        />
       </div>
 
-      {route.serviceLabels.length ? (
-        <div className="mt-3 flex flex-wrap gap-1.5">
-          {route.serviceLabels.map((service) => (
-            <span
-              key={service}
-              className="rounded-lg border border-border bg-surface-strong px-2.5 py-1 text-xs font-medium text-primary"
-            >
-              {service}
-            </span>
-          ))}
-        </div>
-      ) : null}
+      <RouteServiceLabels route={route} />
 
       {route.tradeoffs.length ? (
         <p className="mt-3 text-xs text-muted-foreground">{route.tradeoffs[0]}</p>

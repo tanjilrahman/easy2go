@@ -1,23 +1,31 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import {
+  fromRoot,
+  parsePathArgs,
+  readJson,
+  readOptionalJson,
+  unresolvedStopSummary,
+  writeJson,
+} from "./script-utils.mjs";
 
-const ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const REVIEW_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-coordinate-review.json");
-const APPROVED_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-approved-coordinates.json");
-const MANUAL_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-manual-coordinates.json");
-const SEED_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-seed.json");
-const OUTPUT_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-unresolved-report.json");
+const REVIEW_PATH = fromRoot("src/lib/data/dhaka-bus-stop-coordinate-review.json");
+const APPROVED_PATH = fromRoot("src/lib/data/dhaka-bus-stop-approved-coordinates.json");
+const MANUAL_PATH = fromRoot("src/lib/data/dhaka-bus-stop-manual-coordinates.json");
+const SEED_PATH = fromRoot("src/lib/data/dhaka-bus-seed.json");
+const OUTPUT_PATH = fromRoot("src/lib/data/dhaka-bus-stop-unresolved-report.json");
 
 function parseArgs(argv) {
-  const args = {
-    review: REVIEW_PATH,
-    approved: APPROVED_PATH,
-    manual: MANUAL_PATH,
-    seed: SEED_PATH,
-    output: OUTPUT_PATH,
-    limit: null,
-  };
+  const args = parsePathArgs(
+    argv,
+    {
+      review: REVIEW_PATH,
+      approved: APPROVED_PATH,
+      manual: MANUAL_PATH,
+      seed: SEED_PATH,
+      output: OUTPUT_PATH,
+      limit: null,
+    },
+    ["review", "approved", "manual", "seed", "output"],
+  );
 
   for (let index = 0; index < argv.length; index += 1) {
     const argument = argv[index];
@@ -35,16 +43,6 @@ function parseArgs(argv) {
 
     if (/^\d+$/.test(argument)) {
       args.limit = Number.parseInt(argument, 10);
-      continue;
-    }
-
-    for (const key of ["review", "approved", "manual", "seed", "output"]) {
-      if (argument.startsWith(`--${key}=`)) {
-        args[key] = resolve(ROOT_DIR, argument.slice(key.length + 3));
-      } else if (argument === `--${key}`) {
-        args[key] = resolve(ROOT_DIR, argv[index + 1] ?? args[key]);
-        index += 1;
-      }
     }
   }
 
@@ -53,27 +51,6 @@ function parseArgs(argv) {
   }
 
   return args;
-}
-
-async function readJson(path) {
-  return JSON.parse(await readFile(path, "utf8"));
-}
-
-async function readOptionalJson(path, fallback) {
-  try {
-    return await readJson(path);
-  } catch (error) {
-    if (error?.code === "ENOENT") {
-      return fallback;
-    }
-
-    throw error;
-  }
-}
-
-async function writeJson(path, value) {
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
 function normalize(value) {
@@ -211,22 +188,7 @@ async function main() {
     .sort((a, b) => b.routeCount - a.routeCount);
   const selectedStops = args.limit ? unresolvedStops.slice(0, args.limit) : unresolvedStops;
   const reportStops = selectedStops.map((stop) => ({
-    stopId: stop.stopId,
-    label: stop.label,
-    labelEn: stop.labelEn,
-    labelBn: stop.labelBn,
-    routeCount: stop.routeCount,
-    status: stop.status,
-    reviewReason: stop.reviewReason,
-    topCandidate: stop.candidates[0]
-      ? {
-          name: stop.candidates[0].name,
-          coordinates: stop.candidates[0].coordinates,
-          score: stop.candidates[0].score,
-          confidence: stop.candidates[0].confidence,
-          source: stop.candidates[0].source,
-        }
-      : null,
+    ...unresolvedStopSummary(stop),
     routeContexts: buildRouteContexts(stop, seed, stopsById, coordinatesByStopId, coordinatesByLabel),
   }));
 

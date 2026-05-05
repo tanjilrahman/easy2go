@@ -1,18 +1,16 @@
 "use client";
 
-import { ArrowLeft, Coins, History, Route, Timer } from "lucide-react";
+import { ArrowLeft, History, Route, Timer } from "lucide-react";
 
 import { PlannerDebugRoutes } from "@/components/route-planner/planner-debug-routes";
+import {
+  RouteCoreMetrics,
+  RouteOverview,
+  RouteServiceLabels,
+} from "@/components/route-planner/route-summary";
 import { Button } from "@/components/ui/button";
 import { TransportIcon } from "@/components/transport-icon";
-import {
-  formatBdt,
-  getConfidenceTone,
-  getPricingConfidenceLabel,
-  getRouteKindLabel,
-  getRouteKindTone,
-} from "@/lib/transport";
-import { cn } from "@/lib/utils";
+import { getPricingConfidenceLabel } from "@/lib/transport";
 import type { LocationInput, RouteOption } from "@/lib/validations/routes";
 
 interface PlannerItineraryPaneProps {
@@ -43,39 +41,7 @@ export function PlannerItineraryPane({
           <div className="rounded-xl border border-border bg-surface p-4">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
-                <div className="mb-2 flex flex-wrap items-center gap-2">
-                  <span
-                    className={cn(
-                      "rounded-lg px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]",
-                      getRouteKindTone(route.kind),
-                    )}
-                  >
-                    {getRouteKindLabel(route.kind)}
-                  </span>
-                  <span
-                    className={cn(
-                      "rounded-lg px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]",
-                      getConfidenceTone(route.confidence),
-                    )}
-                  >
-                    {route.confidence}
-                  </span>
-                </div>
-                <h3 className="font-display text-base font-semibold text-foreground">
-                  {route.summary}
-                </h3>
-                <p className="mt-0.5 text-sm text-muted-foreground">
-                  {route.mapPreview.originLabel} to {route.mapPreview.destinationLabel}
-                </p>
-                {route.mapPreview.originLabel !== route.boarding.label ? (
-                  <p className="mt-1 text-xs text-muted-foreground">Board at {route.boarding.label}</p>
-                ) : null}
-                {route.boarding.canonicalLabel &&
-                route.boarding.canonicalLabel !== route.boarding.label ? (
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Parent stop: {route.boarding.canonicalLabel}
-                  </p>
-                ) : null}
+                <RouteOverview route={route} showParentStop />
               </div>
               <Button
                 type="button"
@@ -89,32 +55,10 @@ export function PlannerItineraryPane({
             </div>
 
             <div className="mt-3 grid grid-cols-3 gap-2">
-              <div className="compare-metric">
-                <Timer className="h-4 w-4 text-secondary" />
-                <span>{route.estimatedDurationMinutes ? `${route.estimatedDurationMinutes} min` : "N/A"}</span>
-              </div>
-              <div className="compare-metric">
-                <Coins className="h-4 w-4 text-emerald-600" />
-                <span>{formatBdt(route.totalCost)}</span>
-              </div>
-              <div className="compare-metric">
-                <History className="h-4 w-4 text-amber-600" />
-                <span>{route.transferCount ? `${route.transferCount} transfer` : "Direct flow"}</span>
-              </div>
+              <RouteCoreMetrics route={route} durationIcon={Timer} transferIcon={History} />
             </div>
 
-            {route.serviceLabels.length ? (
-              <div className="mt-3 flex flex-wrap gap-1.5">
-                {route.serviceLabels.map((service) => (
-                  <span
-                    key={service}
-                    className="rounded-lg border border-border bg-surface-strong px-2.5 py-1 text-xs font-medium text-primary"
-                  >
-                    {service}
-                  </span>
-                ))}
-              </div>
-            ) : null}
+            <RouteServiceLabels route={route} />
             {route.scoringReason ? (
               <p className="mt-2 text-xs text-muted-foreground">{route.scoringReason}</p>
             ) : null}

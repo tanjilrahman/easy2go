@@ -1,10 +1,7 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { dirname, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
+import { fromRoot, readJson, splitLocalizedLabel, writeJson } from "./script-utils.mjs";
 
-const ROOT_DIR = resolve(dirname(fileURLToPath(import.meta.url)), "..");
-const DATASET_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-seed.json");
-const OUTPUT_PATH = resolve(ROOT_DIR, "src/lib/data/dhaka-bus-stop-coordinate-candidates.json");
+const DATASET_PATH = fromRoot("src/lib/data/dhaka-bus-seed.json");
+const OUTPUT_PATH = fromRoot("src/lib/data/dhaka-bus-stop-coordinate-candidates.json");
 const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
 const DHAKA_BOUNDS = {
   south: 23.55,
@@ -53,12 +50,12 @@ function parseArgs(argv) {
     }
 
     if (argument.startsWith("--output=")) {
-      args.output = resolve(ROOT_DIR, argument.slice("--output=".length));
+      args.output = fromRoot(argument.slice("--output=".length));
       continue;
     }
 
     if (argument === "--output") {
-      args.output = resolve(ROOT_DIR, argv[index + 1] ?? args.output);
+      args.output = fromRoot(argv[index + 1] ?? args.output);
       index += 1;
       continue;
     }
@@ -132,24 +129,6 @@ function dedupe(values) {
   return Array.from(new Set(values.filter(Boolean)));
 }
 
-function splitLocalizedLabel(label) {
-  const match = label.match(/^(.*)\s+\(([\p{Script=Bengali}].*)\)$/u);
-
-  if (!match) {
-    return {
-      label,
-      labelEn: label,
-      labelBn: null,
-    };
-  }
-
-  return {
-    label,
-    labelEn: match[1].trim(),
-    labelBn: match[2].trim(),
-  };
-}
-
 function buildOverpassQuery() {
   const { south, west, north, east } = DHAKA_BOUNDS;
   const bounds = `${south},${west},${north},${east}`;
@@ -167,15 +146,6 @@ function buildOverpassQuery() {
   relation["public_transport"~"platform|station|stop_position"](${bounds});
 );
 out center tags;`;
-}
-
-async function readJson(path) {
-  return JSON.parse(await readFile(path, "utf8"));
-}
-
-async function writeJson(path, value) {
-  await mkdir(dirname(path), { recursive: true });
-  await writeFile(path, `${JSON.stringify(value, null, 2)}\n`, "utf8");
 }
 
 async function fetchOverpassTransitObjects(overpassUrl) {
