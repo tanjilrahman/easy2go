@@ -227,10 +227,6 @@ export function getMetroStationById(id?: string) {
   return id ? DHAKA_METRO_STATIONS.find((station) => station.id === id) : undefined;
 }
 
-export function getHubPointById(id?: string) {
-  return undefined;
-}
-
 export function searchLocalTransitSuggestions(query: string) {
   return localSuggestionCatalog
     .map((point) => ({

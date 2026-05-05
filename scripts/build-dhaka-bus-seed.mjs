@@ -1,4 +1,4 @@
-import { mkdir, readFile, writeFile } from "node:fs/promises";
+import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -6,14 +6,6 @@ const SOURCE_URL = "https://bus.grelts.com/routes/";
 const OUTPUT_PATH = resolve(
   dirname(fileURLToPath(import.meta.url)),
   "../src/lib/data/dhaka-bus-seed.json",
-);
-const STOP_COORDINATE_OVERRIDES_PATH = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "../src/lib/data/dhaka-bus-stop-coordinates.json",
-);
-const STOP_METADATA_PATH = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "../src/lib/data/dhaka-bus-stop-metadata.json",
 );
 
 const ROUTE_MATCHER =
@@ -51,14 +43,6 @@ function slugify(value) {
 function extractTime(value) {
   const match = value.match(/(\d{2}:\d{2})/);
   return match?.[1] ?? null;
-}
-
-function normalizeLabel(value) {
-  return value
-    .normalize("NFKC")
-    .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
-    .trim();
 }
 
 function parseEmbeddedRoutes(html) {
@@ -100,33 +84,7 @@ async function fetchSourceHtml() {
   return response.text();
 }
 
-async function readStopCoordinateOverrides() {
-  try {
-    const raw = await readFile(STOP_COORDINATE_OVERRIDES_PATH, "utf8");
-    return JSON.parse(raw);
-  } catch (error) {
-    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
-      return [];
-    }
-
-    throw error;
-  }
-}
-
-async function readStopMetadata() {
-  try {
-    const raw = await readFile(STOP_METADATA_PATH, "utf8");
-    return JSON.parse(raw);
-  } catch (error) {
-    if (error && typeof error === "object" && "code" in error && error.code === "ENOENT") {
-      return [];
-    }
-
-    throw error;
-  }
-}
-
-function buildDataset(routeRecords, retrievedAt, stopCoordinateOverrides, stopMetadata) {
+function buildDataset(routeRecords, retrievedAt) {
   const uniqueBusLabels = [];
   const seenBusLabels = new Set();
   const uniqueStopLabels = [];
@@ -148,17 +106,6 @@ function buildDataset(routeRecords, retrievedAt, stopCoordinateOverrides, stopMe
 
   const busIds = createStableIds(uniqueBusLabels, "bus");
   const stopIds = createStableIds(uniqueStopLabels, "stop");
-  const stopCoordinateOverrideLookup = new Map(
-    stopCoordinateOverrides.flatMap((override) =>
-      override.labels.map((label) => [normalizeLabel(label), override]),
-    ),
-  );
-  const stopMetadataLookup = new Map(
-    stopMetadata.flatMap((entry) =>
-      entry.labels.map((label) => [normalizeLabel(label), entry]),
-    ),
-  );
-
   const routes = routeRecords.map((record) => {
     const bus = splitLocalizedLabel(record.route.bus_name);
     const start = splitLocalizedLabel(record.route.start);
@@ -212,18 +159,6 @@ function buildDataset(routeRecords, retrievedAt, stopCoordinateOverrides, stopMe
 
   const stops = uniqueStopLabels.map((label) => {
     const localized = splitLocalizedLabel(label);
-    const coordinateOverride =
-      stopCoordinateOverrideLookup.get(normalizeLabel(label)) ??
-      stopCoordinateOverrideLookup.get(normalizeLabel(localized.labelEn)) ??
-      (localized.labelBn
-        ? stopCoordinateOverrideLookup.get(normalizeLabel(localized.labelBn))
-        : undefined);
-    const metadata =
-      stopMetadataLookup.get(normalizeLabel(label)) ??
-      stopMetadataLookup.get(normalizeLabel(localized.labelEn)) ??
-      (localized.labelBn
-        ? stopMetadataLookup.get(normalizeLabel(localized.labelBn))
-        : undefined);
     const routeIds = routes
       .filter((route) => route.stopLabels.includes(label))
       .map((route) => route.id);
@@ -236,11 +171,6 @@ function buildDataset(routeRecords, retrievedAt, stopCoordinateOverrides, stopMe
       slug: slugify(localized.labelEn),
       routeIds,
       routeCount: routeIds.length,
-      placeName: metadata?.placeName,
-      address: metadata?.address ?? coordinateOverride?.address,
-      coordinates: coordinateOverride?.coordinates,
-      coordinateSource: coordinateOverride?.source,
-      coordinateConfidence: coordinateOverride?.confidence,
     };
   });
 
@@ -256,8 +186,6 @@ function buildDataset(routeRecords, retrievedAt, stopCoordinateOverrides, stopMe
         "Extracted from server-rendered route records on bus.grelts.com.",
         "This is a seed dataset for internal normalization and validation, not a licensed public feed.",
         "The source exposes route variants and ordered stop labels, but not verified stop coordinates or route geometry.",
-        "Optional stop coordinate overrides are merged from dhaka-bus-stop-coordinates.json during build.",
-        "Additional stop place metadata is merged from dhaka-bus-stop-metadata.json during build.",
       ],
     },
     summary: {
@@ -275,14 +203,12 @@ async function main() {
   const retrievedAt = new Date().toISOString();
   const html = await fetchSourceHtml();
   const routeRecords = parseEmbeddedRoutes(html);
-  const stopCoordinateOverrides = await readStopCoordinateOverrides();
-  const stopMetadata = await readStopMetadata();
 
   if (routeRecords.length === 0) {
     throw new Error("No route records were extracted from the source page.");
   }
 
-  const dataset = buildDataset(routeRecords, retrievedAt, stopCoordinateOverrides, stopMetadata);
+  const dataset = buildDataset(routeRecords, retrievedAt);
 
   await mkdir(dirname(OUTPUT_PATH), { recursive: true });
   await writeFile(OUTPUT_PATH, `${JSON.stringify(dataset, null, 2)}\n`, "utf8");

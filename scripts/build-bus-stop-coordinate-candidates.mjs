@@ -150,20 +150,6 @@ function splitLocalizedLabel(label) {
   };
 }
 
-function haversineDistanceKm(a, b) {
-  const toRadians = (value) => (value * Math.PI) / 180;
-  const earthRadiusKm = 6371;
-  const dLat = toRadians(b[0] - a[0]);
-  const dLng = toRadians(b[1] - a[1]);
-  const lat1 = toRadians(a[0]);
-  const lat2 = toRadians(b[0]);
-  const chord =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(lat1) * Math.cos(lat2) * Math.sin(dLng / 2) ** 2;
-
-  return 2 * earthRadiusKm * Math.asin(Math.sqrt(chord));
-}
-
 function buildOverpassQuery() {
   const { south, west, north, east } = DHAKA_BOUNDS;
   const bounds = `${south},${west},${north},${east}`;

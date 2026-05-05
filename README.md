@@ -70,17 +70,13 @@ No map key is required for the default map style. The app still works without `G
 
 ## Bus stop coordinate workflow
 
-- Seed and approved bus stop coordinates live in `src/lib/data/dhaka-bus-stop-coordinates.json`.
-- To generate reviewable suggestions for missing bus stops, run:
+- Runtime bus stop coordinates are built from `src/lib/data/dhaka-bus-stop-reviewed-metadata.json`.
+- Reviewed coordinates and unresolved follow-up data live in `src/lib/data/dhaka-bus-stop-approved-coordinates.json`.
+- Manually verified unresolved stops should be added to `src/lib/data/dhaka-bus-stop-manual-coordinates.json`.
+- After editing manual coordinates, regenerate the derived files:
 
   ```bash
-  npm run geocode:bus-stops -- --limit 25
-  ```
-
-- This writes `src/lib/data/dhaka-bus-stop-coordinate-suggestions.json` with candidate matches and a `recommended` coordinate for each stop.
-- Review that file and change any trusted rows from `"status": "suggested"` to `"status": "approved"`.
-- Then merge approved rows into the production override file:
-
-  ```bash
-  npm run merge:bus-stop-coordinates
+  npm run export:bus-stop-coordinates
+  npm run build:reviewed-bus-stop-metadata
+  npm run report:unresolved-bus-stops
   ```

@@ -10,16 +10,13 @@
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "build:bus-dataset": "node scripts/build-dhaka-bus-seed.mjs",
-    "geocode:bus-stops": "node scripts/geocode-dhaka-bus-stops.mjs",
     "geocode:bus-stop-candidates": "node scripts/build-bus-stop-coordinate-candidates.mjs",
     "review:bus-stop-candidates": "node scripts/review-bus-stop-coordinate-candidates.mjs",
     "export:bus-stop-coordinates": "node scripts/export-approved-bus-stop-coordinates.mjs",
     "report:unresolved-bus-stops": "node scripts/report-unresolved-bus-stops.mjs",
-    "build:reviewed-bus-stop-metadata": "node scripts/build-reviewed-bus-stop-metadata.mjs",
-    "merge:bus-stop-coordinates": "node scripts/geocode-dhaka-bus-stops.mjs --merge-approved"
+    "build:reviewed-bus-stop-metadata": "node scripts/build-reviewed-bus-stop-metadata.mjs"
   },
   "dependencies": {
-    "@radix-ui/react-scroll-area": "^1.2.10",
     "@radix-ui/react-slot": "^1.2.4",
     "@tanstack/react-query": "^5.96.1",
     "class-variance-authority": "^0.7.1",

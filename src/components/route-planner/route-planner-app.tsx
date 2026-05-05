@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useEffect, useMemo, useState } from "react";
-import { LocateFixed, MapPin, Navigation2, X } from "lucide-react";
+import { LocateFixed, MapPin, X } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { MapFrame, type MapPickMode } from "@/components/map/dhaka-map";
