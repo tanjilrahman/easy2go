@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { dhakaBusSeedRoutes } from "@/lib/data/dhaka-bus-seed";
 import {
@@ -10,6 +10,14 @@ import {
   surfaceRoutes,
 } from "@/lib/server/route-planner";
 import type { RouteOption } from "@/lib/validations/routes";
+
+const originalFetch = global.fetch;
+
+afterEach(() => {
+  global.fetch = originalFetch;
+  vi.unstubAllEnvs();
+  vi.restoreAllMocks();
+});
 
 function makeRoute(overrides: Partial<RouteOption> & Pick<RouteOption, "id">): RouteOption {
   const base = {
@@ -67,7 +75,7 @@ describe("simple distance and fare estimation", () => {
   });
 
   it("estimates metro distance from the metro station dataset", () => {
-    expect(estimateMetroDistanceKm("metro-farmgate", "metro-motijheel", 5)).toBeCloseTo(4.7, 1);
+    expect(estimateMetroDistanceKm("metro-farmgate", "metro-motijheel", 5)).toBeCloseTo(5.8, 1);
   });
 
   it("estimates bus distance from reviewed bus stop coordinates", () => {
@@ -127,6 +135,19 @@ describe("calculateRoutes", () => {
     expect(response.routes[0]?.totalCost).toBe(30);
   });
 
+  it("draws metro routes on the MRT Line 6 shape instead of sparse straight station links", async () => {
+    const response = await calculateRoutes({
+      origin: { name: "Farmgate", canonicalId: "metro-farmgate", type: "metro_station" },
+      destination: { name: "Motijheel", canonicalId: "metro-motijheel", type: "metro_station" },
+      optimization: "recommended",
+    });
+    const metroLine = response.routes[0]?.mapPreview.lines.find((line) => line.mode === "metro");
+
+    expect(metroLine?.coordinates.length).toBeGreaterThan(2);
+    expect(metroLine?.coordinates[0]).toEqual([23.758939, 90.389118]);
+    expect(metroLine?.coordinates.at(-1)).toEqual([23.72774, 90.41943]);
+  });
+
   it("keeps user-selected endpoint labels in route previews", async () => {
     const response = await calculateRoutes({
       origin: {
@@ -145,9 +166,123 @@ describe("calculateRoutes", () => {
     expect(response.routes.length).toBeGreaterThan(0);
     expect(response.routes[0]?.mapPreview.originLabel).toBe("Custom start");
     expect(response.routes[0]?.mapPreview.destinationLabel).toBe("Custom end");
+    expect(response.routes[0]?.mapPreview.points.some((point) => point.role === "origin")).toBe(true);
+    expect(response.routes[0]?.mapPreview.points.some((point) => point.role === "destination")).toBe(true);
+    expect(response.routes[0]?.mapPreview.lines.length).toBeGreaterThanOrEqual(
+      response.routes[0]?.segments.length ?? 0,
+    );
   });
 
-  it("uses only local bus and metro datasets while calculating routes", async () => {
+  it("builds map lines for each route step with known endpoint coordinates", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Technical",
+        canonicalId: "stop-technical",
+        type: "bus_stop",
+      },
+      destination: {
+        name: "Kallyanpur",
+        canonicalId: "stop-kallyanpur",
+        type: "bus_stop",
+      },
+      optimization: "recommended",
+    });
+    const route = response.routes[0];
+
+    expect(route).toBeDefined();
+    expect(route?.segments.length).toBeGreaterThan(0);
+    expect(route?.mapPreview.lines.length).toBeGreaterThan(0);
+    expect(route?.mapPreview.lines.map((line) => line.mode)).toEqual(
+      expect.arrayContaining(route?.segments.map((segment) => segment.mode) ?? []),
+    );
+  });
+
+  it("keeps bus map geometry bounded to the selected bus segment endpoints", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Technical",
+        canonicalId: "stop-technical",
+        type: "bus_stop",
+      },
+      destination: {
+        name: "Kallyanpur",
+        canonicalId: "stop-kallyanpur",
+        type: "bus_stop",
+      },
+      optimization: "recommended",
+    });
+    const route = response.routes[0];
+    const busSegment = route?.segments.find((segment) => segment.mode === "bus");
+    const busLine = route?.mapPreview.lines.find((line) => line.mode === "bus");
+
+    expect(busSegment).toBeDefined();
+    expect(busLine).toBeDefined();
+    expect(busLine?.coordinates).toHaveLength(2);
+    expect(busLine?.coordinates[0]).toEqual(busSegment?.startLocation ? route?.mapPreview.points.find((point) => point.label === busSegment.startLocation)?.coordinates : undefined);
+    expect(busLine?.coordinates.at(-1)).toEqual(busSegment?.endLocation ? route?.mapPreview.points.find((point) => point.label === busSegment.endLocation)?.coordinates : undefined);
+  });
+
+  it("draws the final connector from alighting stop to custom destination", async () => {
+    const destinationCoordinates: [number, number] = [23.9172, 90.3342];
+    const response = await calculateRoutes({
+      origin: {
+        name: "Technical",
+        canonicalId: "stop-technical",
+        type: "bus_stop",
+      },
+      destination: {
+        name: "Near Birulia",
+        coordinates: destinationCoordinates,
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+    const route = response.routes[0];
+    const finalSegment = route?.segments.at(-1);
+    const finalLine = route?.mapPreview.lines.at(-1);
+
+    expect(finalSegment?.connectorType).toBeDefined();
+    expect(finalSegment?.endLocation).toBe("Near Birulia");
+    expect(finalLine?.mode).toBe(finalSegment?.mode);
+    expect(finalLine?.coordinates.at(-1)).toEqual(destinationCoordinates);
+  });
+
+  it("snaps non-metro map lines to road geometry when routing API is configured", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "test-key");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        features: [
+          {
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                [90.39, 23.75],
+                [90.4, 23.74],
+              ],
+            },
+          },
+        ],
+      }),
+    }) as typeof fetch;
+
+    const response = await calculateRoutes({
+      origin: { name: "Technical", canonicalId: "stop-technical", type: "bus_stop" },
+      destination: { name: "Kallyanpur", canonicalId: "stop-kallyanpur", type: "bus_stop" },
+      optimization: "recommended",
+    });
+    const snappedLine = response.routes[0]?.mapPreview.lines.find((line) => line.mode !== "metro");
+
+    expect(global.fetch).toHaveBeenCalled();
+    expect(snappedLine?.confidence).toBe("exact");
+    expect(snappedLine?.coordinates).toEqual([
+      [23.75, 90.39],
+      [23.74, 90.4],
+    ]);
+  });
+
+  it("uses only local bus and metro datasets while calculating routes when snapping is disabled", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "");
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as typeof fetch;
 

@@ -34,6 +34,12 @@ describe("transit resolver bus stop metadata", () => {
     expect(suggestions[0]?.address).toContain("Technical Mor Bus stop");
   });
 
+  it("does not use unresolved seed-only bus stops as local suggestions", () => {
+    const suggestions = searchLocalTransitSuggestions("GPO");
+
+    expect(suggestions.some((suggestion) => suggestion.name === "GPO")).toBe(false);
+  });
+
   it("does not surface unreviewed grouped-stop variants", () => {
     const suggestions = searchLocalTransitSuggestions("mirpur 1");
     const busStopNames = suggestions
@@ -57,28 +63,48 @@ describe("transit resolver bus stop metadata", () => {
 
   it("falls back to Geoapify autocomplete for unknown typed places", async () => {
     vi.stubEnv("GEOAPIFY_API_KEY", "test-key");
-    global.fetch = vi.fn().mockResolvedValue({
-      ok: true,
-      json: async () => ({
-        features: [
-          {
-            properties: {
-              place_id: "coffee-place-id",
-              name: "Coffee House",
-              formatted: "Coffee House, Dhanmondi, Dhaka, Bangladesh",
-            },
-            geometry: {
-              coordinates: [90.3742, 23.7461],
-            },
-          },
-        ],
-      }),
+    global.fetch = vi.fn((input) => {
+      const url = new URL(String(input));
+
+      return Promise.resolve({
+        ok: true,
+        json: async () => ({
+          features: url.pathname.includes("/v2/places")
+            ? []
+            : [
+                {
+                  properties: {
+                    place_id: "coffee-place-id",
+                    name: "Coffee House",
+                    formatted: "Coffee House, Dhanmondi, Dhaka, Bangladesh",
+                  },
+                  geometry: {
+                    coordinates: [90.3742, 23.7461],
+                  },
+                },
+              ],
+        }),
+      } as Response);
     }) as typeof fetch;
 
     const suggestions = await searchMixedLocationSuggestions("coffee house dhanmondi");
 
     expect(suggestions.some((suggestion) => suggestion.provider === "geoapify")).toBe(true);
     expect(suggestions[0]?.coordinates).toEqual([23.7461, 90.3742]);
+  });
+
+  it("queries Geoapify Places and Autocomplete in parallel for fallback search", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "test-key");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ features: [] }),
+    }) as typeof fetch;
+
+    await searchMixedLocationSuggestions("unknown landmark xyz");
+    const requestedPaths = vi.mocked(global.fetch).mock.calls.map((call) => new URL(String(call[0])).pathname);
+
+    expect(requestedPaths).toContain("/v2/places");
+    expect(requestedPaths).toContain("/v1/geocode/autocomplete");
   });
 
   it("survives Geoapify failures by returning local results", async () => {

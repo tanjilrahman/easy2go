@@ -1,8 +1,11 @@
-import { DHAKA_ACCESS_POINTS, type DhakaAccessPoint } from "@/lib/data/dhaka-access-points";
-import { dhakaBusSeedStops } from "@/lib/data/dhaka-bus-seed";
+import dhakaBusStopReviewedMetadataJson from "@/lib/data/dhaka-bus-stop-reviewed-metadata.json";
 import { DHAKA_METRO_STATIONS, type DhakaMetroStation } from "@/lib/data/dhaka-metro";
 import { resolveLocation, type ResolvedLocation } from "@/lib/server/location-resolution";
-import { isGeoapifyAutocompleteEnabled, searchGeoapifyPlaces } from "@/lib/server/geoapify";
+import {
+  isGeoapifyAutocompleteEnabled,
+  searchGeoapifyPlacePois,
+  searchGeoapifyPlaces,
+} from "@/lib/server/geoapify";
 import {
   haversineDistanceKm,
   normalizeTransitText,
@@ -39,48 +42,47 @@ export interface ResolvedTransitInput {
   matchedPointIds: string[];
 }
 
-const busStopPoints: TransitPoint[] = dhakaBusSeedStops.flatMap((stop) => {
-  if (stop.variants?.length) {
-    return stop.variants.map((variant, index) => ({
-      id: `${stop.id}::variant-${index + 1}`,
-      name: variant.placeName ?? variant.name,
-      address: variant.address ?? stop.address ?? "Bus stop, Dhaka",
-      type: "bus_stop" as const,
-      nodeType: "bus_stop" as const,
-      coordinates: variant.coordinates,
-      aliases: [
-        stop.labelEn,
-        stop.labelBn ?? "",
-        stop.label,
-        stop.placeName ?? "",
-        variant.name,
-        variant.placeName ?? "",
-      ],
-      busStopLabels: [stop.label],
-      advisories: [],
-      variantId: `${stop.id}::variant-${index + 1}`,
-      variantName: variant.placeName ?? variant.name,
-      variantCoordinates: variant.coordinates,
-      canonicalBusStopId: stop.id,
-      canonicalBusStopLabel: stop.label,
-    }));
-  }
+interface ReviewedBusStopMetadataEntry {
+  labels: string[];
+  placeName?: string;
+  address?: string;
+  coordinates: [number, number];
+  source?: string;
+  confidence?: string;
+}
 
-  return [
-    {
-      id: stop.id,
-      name: stop.placeName ?? stop.label,
-      address: stop.address ?? "Bus stop, Dhaka",
-      type: "bus_stop" as const,
-      nodeType: "bus_stop" as const,
-      coordinates: stop.coordinates,
-      aliases: [stop.labelEn, stop.labelBn ?? "", stop.label, stop.placeName ?? ""],
-      busStopLabels: [stop.label],
-      advisories: [],
-      canonicalBusStopId: stop.id,
-      canonicalBusStopLabel: stop.label,
-    },
-  ];
+const reviewedBusStopMetadata =
+  dhakaBusStopReviewedMetadataJson as ReviewedBusStopMetadataEntry[];
+
+function slugify(value: string) {
+  const slug = value
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+
+  return slug || "item";
+}
+
+const busStopPoints: TransitPoint[] = reviewedBusStopMetadata.map((entry) => {
+  const labelEn = entry.labels[0] ?? entry.placeName ?? "Bus stop";
+  const canonicalLabel = entry.labels[1] ?? labelEn;
+  const id = `stop-${slugify(labelEn)}`;
+
+  return {
+    id,
+    name: entry.placeName ?? labelEn,
+    address: entry.address ?? "Reviewed bus stop, Dhaka",
+    type: "bus_stop" as const,
+    nodeType: "bus_stop" as const,
+    coordinates: entry.coordinates,
+    aliases: [...entry.labels, entry.placeName ?? "", entry.address ?? ""],
+    busStopLabels: [canonicalLabel],
+    advisories: [],
+    canonicalBusStopId: id,
+    canonicalBusStopLabel: canonicalLabel,
+  };
 });
 
 const metroPoints: TransitPoint[] = DHAKA_METRO_STATIONS.map((station) => ({
@@ -96,21 +98,8 @@ const metroPoints: TransitPoint[] = DHAKA_METRO_STATIONS.map((station) => ({
   advisories: [],
 }));
 
-const hubPoints: TransitPoint[] = DHAKA_ACCESS_POINTS.map((point) => ({
-  id: point.id,
-  name: point.name,
-  address: point.address,
-  type: "hub",
-  nodeType: "hub",
-  coordinates: point.coordinates,
-  aliases: [point.name, ...point.aliases],
-  busStopLabels: point.busStopLabels,
-  metroStationId: point.metroStationId,
-  advisories: point.advisories ?? [],
-}));
-
-const localSuggestionCatalog = [...hubPoints, ...metroPoints, ...busStopPoints];
-const coordinateCandidates = [...hubPoints, ...metroPoints, ...busStopPoints].filter(
+const localSuggestionCatalog = [...metroPoints, ...busStopPoints];
+const coordinateCandidates = localSuggestionCatalog.filter(
   (point) => point.coordinates,
 );
 
@@ -239,7 +228,7 @@ export function getMetroStationById(id?: string) {
 }
 
 export function getHubPointById(id?: string) {
-  return id ? hubPoints.find((point) => point.id === id) : undefined;
+  return undefined;
 }
 
 export function searchLocalTransitSuggestions(query: string) {
@@ -261,13 +250,14 @@ export async function searchMixedLocationSuggestions(query: string) {
     return dedupeSuggestions(localSuggestions).slice(0, 8);
   }
 
-  let geoapifySuggestions: LocationSuggestion[] = [];
-
-  try {
-    geoapifySuggestions = await searchGeoapifyPlaces(query);
-  } catch {
-    geoapifySuggestions = [];
-  }
+  const [placeSuggestions, autocompleteSuggestions] = await Promise.all([
+    searchGeoapifyPlacePois(query).catch(() => []),
+    searchGeoapifyPlaces(query).catch(() => []),
+  ]);
+  const geoapifySuggestions = [
+    ...placeSuggestions,
+    ...autocompleteSuggestions,
+  ];
 
   return dedupeSuggestions([
     ...localSuggestions,
@@ -345,7 +335,7 @@ export function buildAccessAdvisories(
 }
 
 export function getAllHubPoints() {
-  return hubPoints;
+  return [];
 }
 
 export function getAllTransitPoints() {
@@ -367,8 +357,4 @@ export function getBusStopPointByLabel(label: string) {
 
 export function getMetroPointForStation(station: DhakaMetroStation) {
   return metroPoints.find((point) => point.metroStationId === station.id);
-}
-
-export function getAccessPointDetails(point: DhakaAccessPoint) {
-  return point;
 }

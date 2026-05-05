@@ -9,6 +9,7 @@ import {
   DHAKA_METRO_STATIONS,
   getDhakaMetroFareBdtBySequence,
 } from "@/lib/data/dhaka-metro";
+import { DHAKA_METRO_LINE_6_SHAPE } from "@/lib/data/dhaka-metro-line-6-shape";
 import {
   getBusStopPointByLabel,
   getMetroStationById,
@@ -20,6 +21,7 @@ import {
   haversineDistanceKm,
   normalizeTransitText,
 } from "@/lib/server/transit-support";
+import { getRoadSnappedRouteGeometry } from "@/lib/server/geoapify-routing";
 import {
   calculateRouteResponseSchema,
   routeOptionSchema,
@@ -239,7 +241,11 @@ export function estimateMetroDistanceKm(originStationId: string, destinationStat
   const destination = getMetroStationById(destinationStationId);
 
   if (origin?.coordinates && destination?.coordinates) {
-    return Math.max(1, haversineDistanceKm(origin.coordinates, destination.coordinates) * 1.15);
+    const coordinates = findMetroShapeCoordinates(origin.coordinates, destination.coordinates);
+
+    if (coordinates.length >= 2) {
+      return Math.max(1, sumCoordinateDistanceKm(coordinates));
+    }
   }
 
   return Math.max(1, stationCount * METRO_STATION_SPACING_KM);
@@ -267,6 +273,7 @@ function createAccessLeg(
     Math.round((distanceKm / (isWalk ? WALK_SPEED_KMPH : RICKSHAW_SPEED_KMPH)) * 60),
   );
   const costBdt = isWalk ? undefined : estimateRickshawFareBdt(distanceKm);
+  const transitLabel = point.canonicalBusStopLabel ?? point.name;
 
   return {
     connectorType: isWalk ? "walk" : distanceKm <= 3.5 ? "rickshaw" : "long_rickshaw",
@@ -274,8 +281,8 @@ function createAccessLeg(
     distanceKm,
     durationMinutes,
     costBdt,
-    startLocation: role === "origin" ? resolution.displayName : point.name,
-    endLocation: role === "origin" ? point.name : resolution.displayName,
+    startLocation: role === "origin" ? resolution.displayName : transitLabel,
+    endLocation: role === "origin" ? transitLabel : resolution.displayName,
   };
 }
 
@@ -370,39 +377,147 @@ export { createPathSignature };
 function applyTripEndpoints(route: RouteOption, payload: CalculateRouteRequest) {
   return routeOptionSchema.parse({
     ...route,
+    mapPreview: buildMapPreview(
+      payload.origin.name,
+      payload.destination.name,
+      route.segments,
+      payload.origin.coordinates ?? route.mapPreview.originCoordinates,
+      payload.destination.coordinates ?? route.mapPreview.destinationCoordinates,
+    ),
+  });
+}
+
+async function applyRoadSnappedMapPreview(route: RouteOption) {
+  const lines = await Promise.all(
+    route.mapPreview.lines.map(async (line) => {
+      const snappedCoordinates = await getRoadSnappedRouteGeometry(line.mode, line.coordinates);
+
+      return {
+        ...line,
+        coordinates: snappedCoordinates ?? line.coordinates,
+        confidence: line.mode === "metro" || snappedCoordinates ? "exact" : line.confidence,
+      } satisfies RouteMapLine;
+    }),
+  );
+
+  return routeOptionSchema.parse({
+    ...route,
     mapPreview: {
       ...route.mapPreview,
-      originLabel: payload.origin.name,
-      destinationLabel: payload.destination.name,
-      originQuery: payload.origin.name,
-      destinationQuery: payload.destination.name,
-      originCoordinates: payload.origin.coordinates ?? route.mapPreview.originCoordinates,
-      destinationCoordinates: payload.destination.coordinates ?? route.mapPreview.destinationCoordinates,
+      lines,
     },
   });
 }
 
-function buildMapPreview(originLabel: string, destinationLabel: string, segments: RouteSegment[]): RouteMapPreview {
+function addMapPoint(
+  points: RouteMapPoint[],
+  label: string,
+  coordinates: [number, number] | undefined,
+  role: RouteMapPoint["role"],
+) {
+  if (!coordinates || points.some((point) => point.label === label && point.role === role)) {
+    return;
+  }
+
+  points.push({ label, coordinates, role });
+}
+
+function findMetroSegmentCoordinates(startLabel: string, endLabel: string) {
+  const start = DHAKA_METRO_STATIONS.find((station) => station.name === startLabel);
+  const end = DHAKA_METRO_STATIONS.find((station) => station.name === endLabel);
+
+  if (!start?.coordinates || !end?.coordinates) {
+    return null;
+  }
+
+  return findMetroShapeCoordinates(start.coordinates, end.coordinates);
+}
+
+function findMetroShapeCoordinates(startCoordinates: [number, number], endCoordinates: [number, number]) {
+  const startIndex = findNearestShapeIndex(startCoordinates, DHAKA_METRO_LINE_6_SHAPE);
+  const endIndex = findNearestShapeIndex(endCoordinates, DHAKA_METRO_LINE_6_SHAPE);
+  const [from, to] = [startIndex, endIndex].sort((left, right) => left - right);
+  const coordinates = DHAKA_METRO_LINE_6_SHAPE.slice(from, to + 1);
+
+  return startIndex <= endIndex ? coordinates : [...coordinates].reverse();
+}
+
+function findNearestShapeIndex(coordinates: [number, number], shape: [number, number][]) {
+  let nearestIndex = 0;
+  let nearestDistance = Number.POSITIVE_INFINITY;
+
+  for (const [index, shapeCoordinate] of shape.entries()) {
+    const distance = haversineDistanceKm(coordinates, shapeCoordinate);
+
+    if (distance < nearestDistance) {
+      nearestDistance = distance;
+      nearestIndex = index;
+    }
+  }
+
+  return nearestIndex;
+}
+
+function getSegmentCoordinates(
+  segment: RouteSegment,
+  endpointCoordinates: Map<string, [number, number]>,
+) {
+  const start = endpointCoordinates.get(segment.startLocation) ?? findLabelCoordinates(segment.startLocation);
+  const end = endpointCoordinates.get(segment.endLocation) ?? findLabelCoordinates(segment.endLocation);
+  const fallback = start && end ? [start, end] : [];
+
+  if (segment.mode === "metro") {
+    return findMetroSegmentCoordinates(segment.startLocation, segment.endLocation) ?? fallback;
+  }
+
+  return fallback;
+}
+
+function buildMapPreview(
+  originLabel: string,
+  destinationLabel: string,
+  segments: RouteSegment[],
+  originCoordinates?: [number, number],
+  destinationCoordinates?: [number, number],
+): RouteMapPreview {
   const points: RouteMapPoint[] = [];
   const lines: RouteMapLine[] = [];
+  const endpointCoordinates = new Map<string, [number, number]>();
+  const firstSegment = segments[0];
+  const lastSegment = segments.at(-1);
+
+  if (originCoordinates) {
+    endpointCoordinates.set(originLabel, originCoordinates);
+
+    if (firstSegment) {
+      endpointCoordinates.set(firstSegment.startLocation, originCoordinates);
+    }
+  }
+
+  if (destinationCoordinates) {
+    endpointCoordinates.set(destinationLabel, destinationCoordinates);
+
+    if (lastSegment) {
+      endpointCoordinates.set(lastSegment.endLocation, destinationCoordinates);
+    }
+  }
+
+  addMapPoint(points, originLabel, originCoordinates, "origin");
+  addMapPoint(points, destinationLabel, destinationCoordinates, "destination");
 
   for (const segment of segments) {
-    const start = findLabelCoordinates(segment.startLocation);
-    const end = findLabelCoordinates(segment.endLocation);
+    const coordinates = getSegmentCoordinates(segment, endpointCoordinates);
+    const start = coordinates[0];
+    const end = coordinates.at(-1);
 
-    if (start && !points.some((point) => point.label === segment.startLocation)) {
-      points.push({ label: segment.startLocation, coordinates: start, role: "stop" });
-    }
+    addMapPoint(points, segment.startLocation, start, "stop");
+    addMapPoint(points, segment.endLocation, end, "stop");
 
-    if (end && !points.some((point) => point.label === segment.endLocation)) {
-      points.push({ label: segment.endLocation, coordinates: end, role: "stop" });
-    }
-
-    if (start && end) {
+    if (coordinates.length >= 2) {
       lines.push({
         mode: segment.mode,
         label: segment.instruction,
-        coordinates: [start, end],
+        coordinates,
         confidence: segment.mode === "metro" ? "exact" : "estimated",
       });
     }
@@ -413,8 +528,8 @@ function buildMapPreview(originLabel: string, destinationLabel: string, segments
     destinationLabel,
     originQuery: originLabel,
     destinationQuery: destinationLabel,
-    originCoordinates: findLabelCoordinates(originLabel),
-    destinationCoordinates: findLabelCoordinates(destinationLabel),
+    originCoordinates: originCoordinates ?? findLabelCoordinates(originLabel),
+    destinationCoordinates: destinationCoordinates ?? findLabelCoordinates(destinationLabel),
     points,
     lines,
   };
@@ -794,7 +909,11 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
   const destinationCandidates = buildTransitCandidates(destinationResolution, "destination");
   const routes = collectRoutes(originCandidates, destinationCandidates);
 
-  const surfacedRoutes = surfaceRoutes(routes, payload.optimization).map((route) => applyTripEndpoints(route, payload));
+  const surfacedRoutes = await Promise.all(
+    surfaceRoutes(routes, payload.optimization)
+      .map((route) => applyTripEndpoints(route, payload))
+      .map(applyRoadSnappedMapPreview),
+  );
   const debugRoutes = dedupeRoutes(routes).map((route) => applyTripEndpoints(route, payload));
 
   return calculateRouteResponseSchema.parse({

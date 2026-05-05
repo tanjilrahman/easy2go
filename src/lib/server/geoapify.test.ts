@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { searchGeoapifyPlaces } from "@/lib/server/geoapify";
+import { searchGeoapifyPlacePois, searchGeoapifyPlaces } from "@/lib/server/geoapify";
 
 describe("searchGeoapifyPlaces", () => {
   const originalFetch = global.fetch;
@@ -79,5 +79,41 @@ describe("searchGeoapifyPlaces", () => {
     }) as typeof fetch;
 
     await expect(searchGeoapifyPlaces("Farmgate")).resolves.toEqual([]);
+  });
+
+  it("maps Places API POIs into location suggestions", async () => {
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        features: [
+          {
+            properties: {
+              place_id: "jfp-place-id",
+              name: "Jamuna Future Park",
+              formatted: "Jamuna Future Park, Dhaka, Bangladesh",
+              address_line1: "Jamuna Future Park",
+              address_line2: "Dhaka, Bangladesh",
+              categories: ["commercial.shopping_mall"],
+            },
+            geometry: {
+              coordinates: [90.4215, 23.8133],
+            },
+          },
+        ],
+      }),
+    }) as typeof fetch;
+
+    const result = await searchGeoapifyPlacePois("Jamuna Future Park");
+    const requestedUrl = new URL(String(vi.mocked(global.fetch).mock.calls[0]?.[0]));
+
+    expect(requestedUrl.pathname).toBe("/v2/places");
+    expect(requestedUrl.searchParams.get("name")).toBe("Jamuna Future Park");
+    expect(result[0]).toMatchObject({
+      id: "jfp-place-id",
+      name: "Jamuna Future Park",
+      coordinates: [23.8133, 90.4215],
+      provider: "geoapify",
+      confidence: "external",
+    });
   });
 });
