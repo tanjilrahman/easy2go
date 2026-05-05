@@ -9,7 +9,7 @@ export function BrandLogo() {
         fill
         priority
         sizes="(min-width: 640px) 118px, 96px"
-        className="object-contain drop-shadow-[0_8px_18px_rgba(90,67,215,0.14)]"
+        className="object-contain"
       />
     </div>
   );

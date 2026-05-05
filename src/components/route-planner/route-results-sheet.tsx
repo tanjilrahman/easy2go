@@ -60,7 +60,7 @@ export function RouteResultsSheet({
     >
       {routes.length ? (
         <div className="space-y-4">
-          <div className="flex items-center justify-between rounded-[24px] bg-muted/80 px-4 py-3">
+          <div className="flex items-center justify-between rounded-xl bg-surface-strong border border-border px-4 py-3">
             <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
               <BadgeCheck className="h-4 w-4 text-secondary" />
               Tap a route to open boarding, transfer, and map preview details.

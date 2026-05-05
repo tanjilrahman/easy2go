@@ -221,155 +221,136 @@ export function PlannerComposerPane({
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-        <div className="space-y-3 pb-3">
-          <div className="flex items-start justify-between gap-3 px-1 py-1">
+        <div className="space-y-4 pb-4">
+          <div className="flex items-start justify-between gap-3">
             <div className="min-w-0">
-              <p className="text-[0.95rem] font-semibold tracking-tight text-slate-900">Plan your trip</p>
-              <p className="mt-1 text-xs text-[rgb(87,80,119)]">
+              <p className="text-base font-semibold tracking-tight text-foreground font-display">Plan your trip</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">
                 Fastest bus route with the right last-mile connector.
               </p>
             </div>
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
+              size="sm"
               onClick={onOpenSaved}
-              className="h-8 shrink-0 rounded-full border border-[rgba(90,67,215,0.12)] bg-white px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
+              className="shrink-0"
             >
-              <Bookmark className="mr-1.5 h-4 w-4" />
+              <Bookmark className="mr-1.5 h-3.5 w-3.5" />
               Saved
             </Button>
           </div>
 
-          <div className="grid gap-2">
-            <div className="planner-input-shell">
-              <div className="relative">
-                <LocateFixed className="planner-input-icon text-[rgb(90,67,215)]" />
-                <Input
-                  id="planner-origin"
-                  role="combobox"
-                  aria-expanded={activeField === "origin" && suggestions.length > 0}
-                  aria-controls={listboxId}
-                  aria-autocomplete="list"
-                  aria-activedescendant={
-                    activeField === "origin" && suggestions[activeSuggestionIndex]
-                      ? `${listboxId}-${suggestions[activeSuggestionIndex]?.id}`
-                      : undefined
-                  }
-                  value={originText}
-                  placeholder="Start"
-                  onFocus={() => setActiveField("origin")}
-                  onChange={(event) => {
-                    onOriginTextChange(event.target.value);
-                    onOriginSelectionChange(null);
-                    setActiveField("origin");
-                    setActiveSuggestionIndex(0);
-                  }}
-                  onKeyDown={handleKeyDown}
-                  className="planner-input pr-28"
-                />
-                <button
-                  type="button"
-                  onClick={onUseCurrentLocation}
-                  disabled={isLocating}
-                  className="absolute right-1.5 top-1/2 inline-flex h-8 -translate-y-1/2 items-center gap-1.5 rounded-full bg-[rgba(90,67,215,0.1)] px-2.5 text-[11px] font-semibold text-[rgb(67,50,154)] transition hover:bg-[rgba(90,67,215,0.16)] disabled:opacity-60"
-                >
-                  {isLocating ? (
-                    <LoaderCircle className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <LocateFixed className="h-4 w-4" />
-                  )}
-                  {isLocating ? "Locating" : "Current"}
-                </button>
-              </div>
-              <div className="mt-1 flex flex-wrap gap-1">
-                {savedPlaces.home ? (
-                  <button
-                    type="button"
-                    onClick={() => applySavedPlace(savedPlaces.home!, "origin")}
-                    className="planner-chip"
-                  >
-                    <Star className="h-3.5 w-3.5" />
-                    Home
-                  </button>
-                ) : null}
-                {savedPlaces.work ? (
-                  <button
-                    type="button"
-                    onClick={() => applySavedPlace(savedPlaces.work!, "origin")}
-                    className="planner-chip"
-                  >
-                    <Bookmark className="h-3.5 w-3.5" />
-                    Work
-                  </button>
-                ) : null}
-              </div>
-            </div>
-
-            <div className="flex justify-center">
+          {/* Unified stacked input block */}
+          <div className="relative rounded-xl border border-border bg-surface">
+            {/* Origin row */}
+            <div className="relative flex items-center gap-3 px-3.5 py-3">
+              <LocateFixed className="shrink-0 h-4 w-4 text-primary" />
+              <Input
+                id="planner-origin"
+                role="combobox"
+                aria-expanded={activeField === "origin" && suggestions.length > 0}
+                aria-controls={listboxId}
+                aria-autocomplete="list"
+                aria-activedescendant={
+                  activeField === "origin" && suggestions[activeSuggestionIndex]
+                    ? `${listboxId}-${suggestions[activeSuggestionIndex]?.id}`
+                    : undefined
+                }
+                value={originText}
+                placeholder="Start"
+                onFocus={() => setActiveField("origin")}
+                onChange={(event) => {
+                  onOriginTextChange(event.target.value);
+                  onOriginSelectionChange(null);
+                  setActiveField("origin");
+                  setActiveSuggestionIndex(0);
+                }}
+                onKeyDown={handleKeyDown}
+                className="h-8 border-0 bg-transparent p-0 text-sm shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
               <button
                 type="button"
-                onClick={onSwap}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[rgba(90,67,215,0.14)] bg-white text-[rgb(95,86,135)] transition hover:bg-[rgba(244,241,255,0.96)]"
-                aria-label="Swap origin and destination"
+                onClick={onUseCurrentLocation}
+                disabled={isLocating}
+                className="shrink-0 inline-flex h-7 items-center gap-1 rounded-md bg-primary/10 px-2 text-[11px] font-semibold text-primary transition hover:bg-primary/15 disabled:opacity-60"
               >
-                <ArrowDownUp className="h-4 w-4" />
+                {isLocating ? (
+                  <LoaderCircle className="h-3 w-3 animate-spin" />
+                ) : (
+                  <LocateFixed className="h-3 w-3" />
+                )}
+                {isLocating ? "Locating" : "Current"}
               </button>
             </div>
 
-            <div className="planner-input-shell">
-              <div className="relative">
-                <Navigation2 className="planner-input-icon text-[rgb(118,94,241)]" />
-                <Input
-                  id="planner-destination"
-                  role="combobox"
-                  aria-expanded={activeField === "destination" && suggestions.length > 0}
-                  aria-controls={listboxId}
-                  aria-autocomplete="list"
-                  aria-activedescendant={
-                    activeField === "destination" && suggestions[activeSuggestionIndex]
-                      ? `${listboxId}-${suggestions[activeSuggestionIndex]?.id}`
-                      : undefined
-                  }
-                  value={destinationText}
-                  placeholder="Destination"
-                  onFocus={() => setActiveField("destination")}
-                  onChange={(event) => {
-                    onDestinationTextChange(event.target.value);
-                    onDestinationSelectionChange(null);
-                    setActiveField("destination");
-                    setActiveSuggestionIndex(0);
-                  }}
-                  onKeyDown={handleKeyDown}
-                  className="planner-input"
-                />
-              </div>
-              <div className="mt-1 flex flex-wrap gap-1">
-                {savedPlaces.home ? (
-                  <button
-                    type="button"
-                    onClick={() => applySavedPlace(savedPlaces.home!, "destination")}
-                    className="planner-chip"
-                  >
-                    <Star className="h-3.5 w-3.5" />
-                    Home
-                  </button>
-                ) : null}
-                {savedPlaces.work ? (
-                  <button
-                    type="button"
-                    onClick={() => applySavedPlace(savedPlaces.work!, "destination")}
-                    className="planner-chip"
-                  >
-                    <Bookmark className="h-3.5 w-3.5" />
-                    Work
-                  </button>
-                ) : null}
-              </div>
+            {/* Divider with swap button overlapping */}
+            <div className="relative h-px bg-border">
+              <button
+                type="button"
+                onClick={onSwap}
+                className="absolute right-3 top-1/2 z-10 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md border border-border bg-surface text-muted-foreground shadow-sm transition hover:bg-muted hover:text-foreground"
+                aria-label="Swap origin and destination"
+              >
+                <ArrowDownUp className="h-3.5 w-3.5" />
+              </button>
+            </div>
+
+            {/* Destination row */}
+            <div className="relative flex items-center gap-3 px-3.5 py-3">
+              <Navigation2 className="shrink-0 h-4 w-4 text-secondary" />
+              <Input
+                id="planner-destination"
+                role="combobox"
+                aria-expanded={activeField === "destination" && suggestions.length > 0}
+                aria-controls={listboxId}
+                aria-autocomplete="list"
+                aria-activedescendant={
+                  activeField === "destination" && suggestions[activeSuggestionIndex]
+                    ? `${listboxId}-${suggestions[activeSuggestionIndex]?.id}`
+                    : undefined
+                }
+                value={destinationText}
+                placeholder="Destination"
+                onFocus={() => setActiveField("destination")}
+                onChange={(event) => {
+                  onDestinationTextChange(event.target.value);
+                  onDestinationSelectionChange(null);
+                  setActiveField("destination");
+                  setActiveSuggestionIndex(0);
+                }}
+                onKeyDown={handleKeyDown}
+                className="h-8 border-0 bg-transparent p-0 text-sm shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+              />
             </div>
           </div>
 
+          {/* Saved chips below the unified input */}
+          <div className="flex flex-wrap gap-1.5">
+            {savedPlaces.home ? (
+              <button
+                type="button"
+                onClick={() => applySavedPlace(savedPlaces.home!, "origin")}
+                className="planner-chip"
+              >
+                <Star className="h-3.5 w-3.5" />
+                Home
+              </button>
+            ) : null}
+            {savedPlaces.work ? (
+              <button
+                type="button"
+                onClick={() => applySavedPlace(savedPlaces.work!, "origin")}
+                className="planner-chip"
+              >
+                <Bookmark className="h-3.5 w-3.5" />
+                Work
+              </button>
+            ) : null}
+          </div>
+
           {locationError ? (
-            <p className="rounded-2xl border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-800">
+            <p className="rounded-xl border border-danger/20 bg-danger/5 px-3 py-2 text-xs font-medium text-danger">
               {locationError}
             </p>
           ) : null}
@@ -379,15 +360,15 @@ export function PlannerComposerPane({
               id={listboxId}
               role="listbox"
               aria-label="Suggested places"
-              className="overflow-hidden rounded-[20px] border border-slate-200 bg-white"
+              className="overflow-hidden rounded-xl border border-border bg-surface shadow-md"
             >
               {suggestionsQuery.isPending ? (
-                <div className="flex items-center gap-2 px-4 py-3 text-sm text-slate-500">
+                <div className="flex items-center gap-2 px-4 py-3 text-sm text-muted-foreground">
                   <LoaderCircle className="h-4 w-4 animate-spin" />
                   Searching...
                 </div>
               ) : suggestions.length ? (
-                <div className="max-h-56 overflow-y-auto py-1.5">
+                <div className="max-h-56 overflow-y-auto py-1">
                   {suggestions.map((item, index) => (
                     <button
                       id={`${listboxId}-${item.id}`}
@@ -400,32 +381,32 @@ export function PlannerComposerPane({
                       className={cn(
                         "flex w-full items-start gap-3 px-4 py-2.5 text-left transition",
                         index === activeSuggestionIndex
-                          ? "bg-[rgba(90,67,215,0.07)]"
-                          : "hover:bg-[rgba(90,67,215,0.04)]",
+                          ? "bg-primary/6"
+                          : "hover:bg-primary/[0.03]",
                       )}
                     >
-                      <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-2xl bg-[rgba(90,67,215,0.09)] text-[rgb(90,67,215)]">
+                      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
                         <MapPin className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1 space-y-0.5">
-                        <p className="break-words text-sm font-semibold leading-snug text-slate-900">{item.name}</p>
-                        <p className="break-words text-xs leading-snug text-slate-500">
+                        <p className="break-words text-sm font-semibold leading-snug text-foreground">{item.name}</p>
+                        <p className="break-words text-xs leading-snug text-muted-foreground">
                           {item.address ?? "Dhaka, Bangladesh"}
                         </p>
                       </div>
-                      <span className="shrink-0 rounded-full bg-[rgba(118,94,241,0.1)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[rgb(84,67,174)]">
+                      <span className="shrink-0 rounded-lg bg-secondary/10 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-secondary">
                         {suggestionTypeLabel(item.type)}
                       </span>
                     </button>
                   ))}
                   {hasGeoapifySuggestions ? (
-                    <p className="border-t border-slate-100 px-4 py-2 text-[11px] font-medium text-slate-500">
+                    <p className="border-t border-border px-4 py-2 text-[11px] font-medium text-muted-foreground">
                       Powered by Geoapify
                     </p>
                   ) : null}
                 </div>
               ) : (
-                <div className="px-4 py-3 text-sm text-slate-500">
+                <div className="px-4 py-3 text-sm text-muted-foreground">
                   No suggestion found.
                 </div>
               )}
@@ -435,9 +416,10 @@ export function PlannerComposerPane({
               <div className="sm:hidden">
                 <Button
                   type="button"
-                  variant="ghost"
+                  variant="outline"
+                  size="sm"
                   onClick={() => setShowRecentTripsOnMobile((current) => !current)}
-                  className="h-9 w-full justify-between rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
+                  className="w-full justify-between"
                 >
                   <span>Recent trips</span>
                   {showRecentTripsOnMobile ? (
@@ -449,10 +431,10 @@ export function PlannerComposerPane({
               </div>
 
               <div className={cn("space-y-2 sm:block", showRecentTripsOnMobile ? "block" : "hidden")}>
-                <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.16em] text-[rgb(95,86,135)]">
+                <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
                   Recent trips
                 </p>
-                <div className="flex flex-wrap gap-1">
+                <div className="flex flex-wrap gap-1.5">
                   {recentTrips.slice(0, 4).map((trip) => (
                     <button
                       type="button"
@@ -461,7 +443,7 @@ export function PlannerComposerPane({
                       className="planner-trip-chip"
                     >
                       <span className="truncate">{trip.origin.name}</span>
-                      <span className="text-slate-500">to</span>
+                      <span className="text-muted-foreground/60">to</span>
                       <span className="truncate">{trip.destination.name}</span>
                     </button>
                   ))}
@@ -472,7 +454,7 @@ export function PlannerComposerPane({
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 shrink-0 border-t border-slate-200 bg-white/95 pt-3 backdrop-blur">
+      <div className="sticky bottom-0 z-10 shrink-0 border-t border-border bg-surface/95 pt-3 backdrop-blur-sm">
         <Button
           type="button"
           onClick={() => {
@@ -487,7 +469,8 @@ export function PlannerComposerPane({
             });
           }}
           disabled={Boolean(!canSearch || isLoading)}
-          className="h-11 w-full rounded-[20px] bg-[linear-gradient(135deg,#5a43d7_0%,#765ef1_100%)] text-sm text-white shadow-[0_20px_40px_-20px_rgba(90,67,215,0.42)]"
+          size="lg"
+          className="h-11 w-full text-sm shadow-lg shadow-primary/15"
         >
           {isLoading ? (
             <>

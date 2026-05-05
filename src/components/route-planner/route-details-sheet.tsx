@@ -40,22 +40,22 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
     >
       {route ? (
         <div className="space-y-6">
-          <section className="rounded-[30px] border border-white/60 bg-white/82 p-5 shadow-[0_28px_60px_-42px_rgba(15,31,55,0.45)]">
+          <section className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge className={`border-0 px-3 py-1 ${getRouteKindTone(route.kind)}`}>
+              <Badge variant="subtle" className={getRouteKindTone(route.kind)}>
                 {getRouteKindLabel(route.kind)}
               </Badge>
-              <Badge className={`border-0 px-3 py-1 ${getConfidenceTone(route.confidence)}`}>
+              <Badge variant="subtle" className={getConfidenceTone(route.confidence)}>
                 {route.confidence}
               </Badge>
-              <Badge className="border border-primary/10 bg-primary/6 px-3 py-1 text-primary">
+              <Badge variant="outline" className="text-primary">
                 {route.fareText}
               </Badge>
             </div>
 
             <div className="mt-4">
               <p className="text-sm text-muted-foreground">Board at</p>
-              <h3 className="font-display text-[1.7rem] font-semibold text-primary">
+              <h3 className="font-display text-[1.6rem] font-semibold text-primary">
                 {route.boarding.label}
               </h3>
               {route.boarding.canonicalLabel &&
@@ -68,7 +68,7 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
 
             <div className="mt-4">
               <p className="text-sm text-muted-foreground">Get down at</p>
-              <h3 className="font-display text-[1.35rem] font-semibold text-foreground">
+              <h3 className="font-display text-[1.3rem] font-semibold text-foreground">
                 {route.alighting.label}
               </h3>
               {route.alighting.canonicalLabel &&
@@ -81,7 +81,7 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
 
             <div className="mt-4 grid grid-cols-2 gap-4 text-sm text-muted-foreground">
               <div>
-                <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground/80">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground/80">
                   Est. time
                 </p>
                 <p className="mt-1 font-medium text-foreground">
@@ -91,7 +91,7 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
                 </p>
               </div>
               <div>
-                <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground/80">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground/80">
                   Distance
                 </p>
                 <p className="mt-1 font-medium text-foreground">
@@ -99,7 +99,7 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
                 </p>
               </div>
               <div>
-                <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground/80">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground/80">
                   Stops
                 </p>
                 <p className="mt-1 font-medium text-foreground">
@@ -107,7 +107,7 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
                 </p>
               </div>
               <div>
-                <p className="text-[11px] uppercase tracking-[0.16em] text-muted-foreground/80">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-muted-foreground/80">
                   Stations
                 </p>
                 <p className="mt-1 font-medium text-foreground">
@@ -117,13 +117,13 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
             </div>
 
             {route.serviceWindowText ? (
-              <p className="mt-4 rounded-2xl bg-muted px-3 py-2 text-sm text-muted-foreground">
+              <p className="mt-4 rounded-xl bg-surface-strong border border-border px-3 py-2 text-sm text-muted-foreground">
                 Service window: {route.serviceWindowText}
               </p>
             ) : null}
           </section>
 
-          <section className="rounded-[30px] border border-white/60 bg-white/82 p-4 shadow-[0_28px_60px_-42px_rgba(15,31,55,0.45)]">
+          <section className="rounded-2xl border border-border bg-surface p-4 shadow-sm">
             <div className="mb-3 flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-foreground">Map Preview</p>
@@ -132,7 +132,7 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
                 </p>
               </div>
             </div>
-            <OpenMap activeRoute={route} className="h-64 w-full" />
+            <OpenMap activeRoute={route} className="h-64 w-full rounded-xl overflow-hidden" />
           </section>
 
           <section className="relative pl-4">
@@ -140,16 +140,16 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
             <div className="space-y-6">
               {route.segments.map((segment, index) => (
                 <div key={`${segment.instruction}-${index}`} className="relative flex gap-4">
-                  <div className="relative z-10 bg-[rgba(243,247,251,0.98)] px-1">
+                  <div className="relative z-10 bg-surface px-1">
                     <TransportIcon mode={segment.mode} />
                   </div>
 
-                  <div className="min-w-0 flex-1 rounded-[28px] border border-white/70 bg-white/82 px-4 py-4 shadow-[0_18px_40px_-34px_rgba(15,31,55,0.48)]">
+                  <div className="min-w-0 flex-1 rounded-2xl border border-border bg-surface px-4 py-4 shadow-sm">
                     <div className="mb-2 flex items-center gap-2">
                       <p className="font-display text-base font-semibold text-foreground">
                         {segment.instruction}
                       </p>
-                      <Badge className="border border-border bg-muted px-2 py-1 text-[11px] text-muted-foreground">
+                      <Badge variant="outline" className="text-[10px]">
                         {transportModeMeta[segment.mode].label}
                       </Badge>
                     </div>
@@ -162,40 +162,40 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
 
                     <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
                       {segment.stopCount ? (
-                        <Badge className="border border-border bg-white px-2 py-1 text-xs text-muted-foreground">
+                        <Badge variant="outline" className="text-xs">
                           {segment.stopCount} stops
                         </Badge>
                       ) : null}
                       {segment.stationCount ? (
-                        <Badge className="border border-border bg-white px-2 py-1 text-xs text-muted-foreground">
+                        <Badge variant="outline" className="text-xs">
                           {segment.stationCount} stations
                         </Badge>
                       ) : null}
                       {segment.fareText ? (
-                        <Badge className="border border-border bg-white px-2 py-1 text-xs text-muted-foreground">
+                        <Badge variant="outline" className="text-xs">
                           {segment.fareText}
                         </Badge>
                       ) : null}
                       {getPricingConfidenceLabel(segment.pricingConfidence) ? (
-                        <Badge className="border border-border bg-white px-2 py-1 text-xs text-muted-foreground">
+                        <Badge variant="outline" className="text-xs">
                           {getPricingConfidenceLabel(segment.pricingConfidence)}
                         </Badge>
                       ) : null}
                     </div>
 
                     {segment.serviceWindowText ? (
-                      <p className="mt-3 rounded-2xl bg-muted px-3 py-2 text-sm text-muted-foreground">
+                      <p className="mt-3 rounded-xl bg-surface-strong border border-border px-3 py-2 text-sm text-muted-foreground">
                         Service window: {segment.serviceWindowText}
                       </p>
                     ) : null}
 
                     {segment.note ? (
-                      <p className="mt-3 rounded-2xl bg-muted px-3 py-2 text-sm text-muted-foreground">
+                      <p className="mt-3 rounded-xl bg-surface-strong border border-border px-3 py-2 text-sm text-muted-foreground">
                         {segment.note}
                       </p>
                     ) : null}
                     {segment.connectorType === "long_rickshaw" ? (
-                      <p className="mt-3 rounded-2xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
+                      <p className="mt-3 rounded-xl bg-amber-50 border border-amber-100 px-3 py-2 text-sm text-amber-800">
                         This is a long rickshaw connector. Expect a larger last-mile hop than the
                         usual short connector.
                       </p>
@@ -205,12 +205,12 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
               ))}
 
               <div className="relative flex gap-4">
-                <div className="relative z-10 bg-[rgba(243,247,251,0.98)] px-1">
-                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-rose-500 text-white shadow-lg shadow-rose-500/20">
+                <div className="relative z-10 bg-surface px-1">
+                  <div className="flex h-11 w-11 items-center justify-center rounded-full bg-rose-500 text-white shadow-md">
                     <MapPin className="h-5 w-5" />
                   </div>
                 </div>
-                <div className="flex flex-1 items-center rounded-[28px] border border-white/70 bg-white/82 px-4 py-4 shadow-[0_18px_40px_-34px_rgba(15,31,55,0.48)]">
+                <div className="flex flex-1 items-center rounded-2xl border border-border bg-surface px-4 py-4 shadow-sm">
                   <div>
                     <p className="font-display text-base font-semibold text-foreground">
                       Arrive at destination
@@ -223,7 +223,7 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
           </section>
 
           {route.advisories.length ? (
-            <section className="rounded-[30px] border border-white/60 bg-white/82 p-5 shadow-[0_28px_60px_-42px_rgba(15,31,55,0.45)]">
+            <section className="rounded-2xl border border-border bg-surface p-5 shadow-sm">
               <p className="mb-3 font-display text-base font-semibold text-foreground">
                 Advisory Notes
               </p>
@@ -231,7 +231,7 @@ export function RouteDetailsSheet({ open, route, onClose }: RouteDetailsSheetPro
                 {route.advisories.map((advisory) => (
                   <p
                     key={advisory}
-                    className="rounded-2xl bg-muted px-3 py-2 text-sm text-muted-foreground"
+                    className="rounded-xl bg-surface-strong border border-border px-3 py-2 text-sm text-muted-foreground"
                   >
                     {advisory}
                   </p>

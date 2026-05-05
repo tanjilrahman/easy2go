@@ -57,32 +57,28 @@ export function RouteCard({ route, selected, onClick }: RouteCardProps) {
   return (
     <motion.button
       type="button"
-      whileHover={{ y: -2, scale: 1.01 }}
+      whileHover={{ y: -1 }}
       whileTap={{ scale: 0.985 }}
       onClick={onClick}
       className={cn(
-        "relative w-full overflow-hidden rounded-[30px] border px-4 py-4 text-left shadow-[0_24px_50px_-40px_rgba(15,31,55,0.5)] transition",
+        "relative w-full overflow-hidden rounded-xl border px-4 py-4 text-left shadow-sm transition",
         selected
-          ? "border-primary/25 bg-primary/6"
-          : "border-white/65 bg-white/84 hover:border-primary/16",
+          ? "border-primary/25 bg-primary/[0.03]"
+          : "border-border bg-surface hover:border-primary/15",
       )}
     >
-      <div className="mb-4 flex items-start justify-between gap-4">
-        <div>
+      <div className="mb-3 flex items-start justify-between gap-4">
+        <div className="min-w-0 flex-1">
           <div className="mb-2 flex flex-wrap items-center gap-2">
             <Badge
-              className={cn(
-                "border-0 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em]",
-                getRouteKindTone(route.kind),
-              )}
+              variant="subtle"
+              className={cn(getRouteKindTone(route.kind))}
             >
               {getRouteKindLabel(route.kind)}
             </Badge>
             <Badge
-              className={cn(
-                "border-0 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.18em]",
-                getConfidenceTone(route.confidence),
-              )}
+              variant="subtle"
+              className={cn(getConfidenceTone(route.confidence))}
             >
               {route.confidence}
             </Badge>
@@ -95,7 +91,7 @@ export function RouteCard({ route, selected, onClick }: RouteCardProps) {
             {route.mapPreview.originLabel} to {route.mapPreview.destinationLabel}
           </p>
           {route.mapPreview.originLabel !== route.boarding.label ? (
-            <p className="mt-1 text-xs text-muted-foreground/90">
+            <p className="mt-1 text-xs text-muted-foreground">
               Board at {route.boarding.label}
             </p>
           ) : null}
@@ -106,10 +102,10 @@ export function RouteCard({ route, selected, onClick }: RouteCardProps) {
           ) : null}
         </div>
 
-        <ArrowRight className="mt-1 h-5 w-5 text-muted-foreground" />
+        <ArrowRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground/40" />
       </div>
 
-      <div className="mb-4 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+      <div className="mb-3 flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
         {route.estimatedDurationMinutes ? (
           <div className="flex items-center gap-1.5">
             <Clock3 className="h-4 w-4 text-secondary" />
@@ -146,7 +142,8 @@ export function RouteCard({ route, selected, onClick }: RouteCardProps) {
           {route.advisories.slice(0, 2).map((advisory) => (
             <Badge
               key={advisory}
-              className="border border-border bg-white px-2 py-1 text-[10px] text-muted-foreground"
+              variant="outline"
+              className="text-[10px]"
             >
               {advisory}
             </Badge>

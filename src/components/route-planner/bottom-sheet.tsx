@@ -32,7 +32,7 @@ export function BottomSheet({
           <motion.button
             aria-label="Close sheet"
             type="button"
-            className="fixed inset-0 z-40 bg-[rgba(8,20,37,0.34)] backdrop-blur-[3px]"
+            className="fixed inset-0 z-40 bg-foreground/20 backdrop-blur-[2px]"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -46,15 +46,15 @@ export function BottomSheet({
             transition={{ type: "spring", stiffness: 220, damping: 28 }}
             style={{ height, maxHeight: "90vh" }}
             className={cn(
-              "sheet-shadow fixed inset-x-0 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-[34px] bg-[rgba(250,253,255,0.96)] backdrop-blur-2xl",
+              "sheet-shadow fixed inset-x-0 bottom-0 z-50 flex flex-col overflow-hidden rounded-t-2xl bg-surface backdrop-blur-xl",
               className,
             )}
           >
-            <div className="flex-none border-b border-border/70 px-5 pb-4 pt-3">
-              <div className="mx-auto mb-4 h-1.5 w-14 rounded-full bg-muted-foreground/18" />
+            <div className="flex-none border-b border-border px-5 pb-4 pt-3">
+              <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-muted-foreground/20" />
               <div className="flex items-start justify-between gap-3">
                 <div>
-                  <h2 className="font-display text-[1.4rem] font-semibold tracking-tight text-foreground">
+                  <h2 className="font-display text-[1.3rem] font-semibold tracking-tight text-foreground">
                     {title}
                   </h2>
                   {subtitle ? (
@@ -65,7 +65,7 @@ export function BottomSheet({
                   <button
                     type="button"
                     onClick={onClose}
-                    className="flex h-11 w-11 items-center justify-center rounded-full border border-white/60 bg-white/72 text-muted-foreground transition hover:text-foreground"
+                    className="flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface-strong text-muted-foreground transition hover:bg-muted hover:text-foreground"
                   >
                     <X className="h-5 w-5" />
                   </button>

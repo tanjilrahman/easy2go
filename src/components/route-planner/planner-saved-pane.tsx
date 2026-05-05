@@ -40,15 +40,15 @@ function SavedPlaceCard({
   const Icon = slot === "home" ? Home : Bookmark;
 
   return (
-    <div className="rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-white p-3">
+    <div className="rounded-xl border border-border bg-surface p-4">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-[rgba(90,67,215,0.08)] text-[rgb(72,53,173)]">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary/8 text-primary">
             <Icon className="h-5 w-5" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900">{label}</p>
-            <p className="text-xs text-slate-500">
+            <p className="text-sm font-semibold text-foreground">{label}</p>
+            <p className="text-xs text-muted-foreground">
               {place?.location.name ?? `No ${label.toLowerCase()} saved yet`}
             </p>
           </div>
@@ -58,7 +58,7 @@ function SavedPlaceCard({
           <button
             type="button"
             onClick={() => onRemovePlace(slot)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] text-[rgb(95,86,135)] transition hover:bg-[rgba(238,232,255,0.98)]"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-border bg-surface-strong text-muted-foreground transition hover:bg-muted"
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -70,17 +70,17 @@ function SavedPlaceCard({
           <>
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
+              size="sm"
               onClick={() => onApplyPlace(place.location, "origin")}
-              className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
             >
               Use as start
             </Button>
             <Button
               type="button"
-              variant="ghost"
+              variant="outline"
+              size="sm"
               onClick={() => onApplyPlace(place.location, "destination")}
-              className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
             >
               Use as destination
             </Button>
@@ -90,11 +90,11 @@ function SavedPlaceCard({
         {currentOrigin ? (
           <Button
             type="button"
-            variant="ghost"
+            variant="outline"
+            size="sm"
             onClick={() => onSavePlace(slot, currentOrigin)}
-            className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
           >
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
             Save current start
           </Button>
         ) : null}
@@ -102,11 +102,11 @@ function SavedPlaceCard({
         {currentDestination ? (
           <Button
             type="button"
-            variant="ghost"
+            variant="outline"
+            size="sm"
             onClick={() => onSavePlace(slot, currentDestination)}
-            className="h-8 rounded-full border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
           >
-            <Plus className="mr-2 h-4 w-4" />
+            <Plus className="mr-1.5 h-3.5 w-3.5" />
             Save current destination
           </Button>
         ) : null}
@@ -133,8 +133,8 @@ export function PlannerSavedPane({
     <div className="flex h-full min-h-0 flex-col gap-4">
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
         <div className="space-y-4 pb-3">
-          <div className="rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-white px-3 py-2.5">
-            <p className="text-sm font-semibold text-slate-900">Places</p>
+          <div className="rounded-xl border border-border bg-surface px-4 py-3">
+            <p className="text-sm font-semibold text-foreground">Places</p>
           </div>
 
           <SavedPlaceCard
@@ -160,24 +160,24 @@ export function PlannerSavedPane({
           />
 
           {recentTrips.length ? (
-            <div className="rounded-[18px] border border-[rgba(90,67,215,0.12)] bg-white p-3">
-              <p className="mb-3 text-sm font-semibold text-slate-900">Recent trips</p>
+            <div className="rounded-xl border border-border bg-surface p-4">
+              <p className="mb-3 text-sm font-semibold text-foreground">Recent trips</p>
               <div className="space-y-2">
                 {recentTrips.map((trip) => (
                   <button
                     key={trip.id}
                     type="button"
                     onClick={() => onApplyTrip(trip)}
-                    className="flex w-full items-center gap-3 rounded-2xl border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] px-3 py-2.5 text-left transition hover:bg-[rgba(238,232,255,0.98)]"
+                    className="flex w-full items-center gap-3 rounded-xl border border-border bg-surface-strong px-3 py-2.5 text-left transition hover:bg-muted"
                   >
-                    <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-white text-[rgb(95,86,135)]">
+                    <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-surface text-muted-foreground">
                       <MapPin className="h-4 w-4" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-semibold text-slate-900">
+                      <p className="truncate text-sm font-semibold text-foreground">
                         {trip.origin.name} to {trip.destination.name}
                       </p>
-                      <p className="text-xs text-slate-500">
+                      <p className="text-xs text-muted-foreground">
                         {new Date(trip.createdAt).toLocaleDateString()}
                       </p>
                     </div>
@@ -189,12 +189,13 @@ export function PlannerSavedPane({
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 shrink-0 border-t border-slate-200 bg-white/95 pt-3 backdrop-blur">
+      <div className="sticky bottom-0 z-10 shrink-0 border-t border-border bg-surface/95 pt-3 backdrop-blur-sm">
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           onClick={onBack}
-          className="h-11 w-full rounded-[20px] border border-[rgba(90,67,215,0.12)] bg-[rgba(244,241,255,0.98)] text-[rgb(72,53,173)] hover:bg-[rgba(238,232,255,0.98)]"
+          size="lg"
+          className="h-11 w-full"
         >
           <ArrowLeft className="mr-2 h-4 w-4" />
           Back

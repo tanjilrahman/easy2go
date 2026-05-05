@@ -200,7 +200,7 @@ export function SearchCard({
 
   return (
     <div className="pointer-events-auto mx-auto w-full max-w-md px-4 pb-8">
-      <div className="glass-panel rounded-[34px] p-4 sm:p-5">
+      <div className="glass-panel rounded-2xl p-4 sm:p-5">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <p className="font-display text-[1.1rem] font-semibold text-foreground">
@@ -210,7 +210,7 @@ export function SearchCard({
               Deterministic bus and metro guidance with map previews.
             </p>
           </div>
-          <Badge className="rounded-full border-0 bg-secondary/12 px-3 py-1 text-secondary">
+          <Badge variant="secondary" className="shrink-0">
             Transit finder
           </Badge>
         </div>
@@ -227,8 +227,8 @@ export function SearchCard({
               }}
               onFocus={() => setActiveField("origin")}
               className={cn(
-                "h-14 rounded-[22px] border-0 bg-white/70 pl-12 pr-28 text-[15px] shadow-none ring-1 ring-white/55 placeholder:text-muted-foreground",
-                activeField === "origin" ? "ring-2 ring-primary/20" : "",
+                "h-14 pl-12 pr-28 text-[15px]",
+                activeField === "origin" ? "ring-2 ring-ring border-primary" : "",
               )}
             />
             <LocateFixed className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-primary" />
@@ -236,7 +236,7 @@ export function SearchCard({
               type="button"
               onClick={useCurrentLocation}
               disabled={isLocatingOrigin}
-              className="absolute right-2 top-1/2 inline-flex h-10 items-center gap-2 rounded-full bg-primary/10 px-3 text-xs font-semibold text-primary transition hover:bg-primary/14 disabled:cursor-not-allowed disabled:opacity-70"
+              className="absolute right-2 top-1/2 inline-flex h-10 items-center gap-2 rounded-lg bg-primary/10 px-3 text-xs font-semibold text-primary transition hover:bg-primary/15 disabled:cursor-not-allowed disabled:opacity-70"
             >
               {isLocatingOrigin ? (
                 <LoaderCircle className="h-4 w-4 animate-spin" />
@@ -248,7 +248,7 @@ export function SearchCard({
           </div>
 
           {locationError ? (
-            <p className="px-1 text-xs text-rose-600">{locationError}</p>
+            <p className="px-1 text-xs text-danger">{locationError}</p>
           ) : null}
 
           <div className="relative">
@@ -261,30 +261,30 @@ export function SearchCard({
               }}
               onFocus={() => setActiveField("destination")}
               className={cn(
-                "h-14 rounded-[22px] border-0 bg-white/70 pl-12 pr-4 text-[15px] shadow-none ring-1 ring-white/55 placeholder:text-muted-foreground",
-                activeField === "destination" ? "ring-2 ring-secondary/25" : "",
+                "h-14 pl-12 pr-4 text-[15px]",
+                activeField === "destination" ? "ring-2 ring-ring border-secondary" : "",
               )}
             />
             <Navigation2 className="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-secondary" />
           </div>
 
           {renderSuggestionList ? (
-            <div className="overflow-hidden rounded-[26px] border border-white/65 bg-white/80">
+            <div className="overflow-hidden rounded-xl border border-border bg-surface shadow-md">
               {suggestionsQuery.isPending ? (
                 <div className="flex items-center justify-center gap-2 px-4 py-4 text-sm text-muted-foreground">
                   <LoaderCircle className="h-4 w-4 animate-spin" />
                   Searching places and transit hubs...
                 </div>
               ) : suggestions.length ? (
-                <div className="max-h-64 overflow-y-auto py-2">
+                <div className="max-h-64 overflow-y-auto py-1">
                   {suggestions.map((item) => (
                     <button
                       type="button"
                       key={item.id}
                       onClick={() => selectSuggestion(item)}
-                      className="flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-muted/70"
+                      className="flex w-full items-start gap-3 px-4 py-3 text-left transition hover:bg-primary/[0.03]"
                     >
-                      <div className="mt-0.5 flex h-9 w-9 items-center justify-center rounded-2xl bg-primary/10 text-primary">
+                      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/8 text-primary">
                         <MapPin className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1 space-y-0.5">
@@ -293,13 +293,13 @@ export function SearchCard({
                           {item.address ?? "Dhaka, Bangladesh"}
                         </p>
                       </div>
-                      <Badge className="ml-auto shrink-0 border border-border bg-white px-2 py-1 text-[10px] text-muted-foreground">
+                      <Badge variant="outline" className="ml-auto shrink-0 text-[10px]">
                         {suggestionTypeLabel(item.type)}
                       </Badge>
                     </button>
                   ))}
                   {hasGeoapifySuggestions ? (
-                    <p className="border-t border-border/60 px-4 py-2 text-[11px] font-medium text-muted-foreground">
+                    <p className="border-t border-border px-4 py-2 text-[11px] font-medium text-muted-foreground">
                       Powered by Geoapify
                     </p>
                   ) : null}
@@ -312,8 +312,8 @@ export function SearchCard({
             </div>
           ) : null}
 
-          <div className="rounded-[24px] border border-white/65 bg-white/70 p-3">
-            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-muted-foreground">
+          <div className="rounded-xl border border-border bg-surface-strong p-3">
+            <p className="mb-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
               Optimize for
             </p>
             <div className="grid grid-cols-3 gap-2">
@@ -323,10 +323,10 @@ export function SearchCard({
                   type="button"
                   onClick={() => setOptimization(option.value)}
                   className={cn(
-                    "rounded-[20px] px-3 py-3 text-left transition",
+                    "rounded-xl px-3 py-3 text-left transition",
                     optimization === option.value
-                      ? "bg-primary text-primary-foreground shadow-[0_20px_36px_-28px_rgba(21,95,200,0.8)]"
-                      : "bg-muted/80 text-foreground hover:bg-muted",
+                      ? "bg-primary text-primary-foreground shadow-md shadow-primary/15"
+                      : "bg-surface text-foreground hover:bg-muted border border-border",
                   )}
                 >
                   <p className="text-sm font-semibold">{option.label}</p>
@@ -350,7 +350,7 @@ export function SearchCard({
             onClick={submit}
             disabled={!canSearch || isLoading}
             size="lg"
-            className="h-14 w-full rounded-[24px] bg-gradient-to-r from-primary to-[#2b79e8] text-base shadow-[0_26px_42px_-28px_rgba(21,95,200,0.75)]"
+            className="h-14 w-full text-base shadow-lg shadow-primary/15"
           >
             {isLoading ? (
               <>

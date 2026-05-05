@@ -19,11 +19,11 @@ const icons: Record<TransportMode, LucideIcon> = {
 };
 
 const tones: Record<TransportMode, string> = {
-  walk: "bg-[rgba(101,93,137,0.1)] text-[rgb(95,86,135)]",
-  bus: "bg-[rgba(90,67,215,0.12)] text-[rgb(72,53,173)]",
-  rickshaw: "bg-[rgba(15,138,107,0.12)] text-[rgb(13,104,81)]",
-  metro: "bg-[rgba(118,94,241,0.12)] text-[rgb(79,61,180)]",
-  ride_share: "bg-[rgba(195,75,119,0.12)] text-[rgb(156,53,93)]",
+  walk: "bg-slate-100 text-slate-600",
+  bus: "bg-primary/10 text-primary",
+  rickshaw: "bg-emerald-50 text-emerald-700",
+  metro: "bg-secondary/10 text-secondary",
+  ride_share: "bg-rose-50 text-rose-600",
 };
 
 export function TransportIcon({
@@ -38,7 +38,7 @@ export function TransportIcon({
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-2xl shadow-[0_18px_32px_-24px_rgba(15,31,55,0.55)]",
+        "flex items-center justify-center rounded-xl",
         tones[mode],
         size === "sm" ? "h-9 w-9" : "h-11 w-11",
       )}

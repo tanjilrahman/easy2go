@@ -25,7 +25,7 @@ export function RecentSearches({ searches, onSelect }: RecentSearchesProps) {
             key={search.id}
             type="button"
             onClick={() => onSelect(search.origin, search.destination)}
-            className="flex items-center gap-2 rounded-full border border-white/65 bg-white/70 px-3 py-2 text-left text-xs font-medium text-foreground transition hover:-translate-y-0.5 hover:shadow-md"
+            className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-left text-xs font-medium text-foreground transition hover:bg-surface-strong hover:border-primary/20"
           >
             <span>{search.origin}</span>
             <MoveRight className="h-3.5 w-3.5 text-muted-foreground" />

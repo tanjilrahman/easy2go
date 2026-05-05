@@ -60,19 +60,19 @@ export function PlannerPane({
         layout
         transition={{ type: "spring", stiffness: 180, damping: 24 }}
         style={{ height: maxHeight, maxHeight }}
-        className="planner-pane mx-auto flex h-full w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-[30px] sm:max-w-[min(70vw,34rem)]"
+        className="planner-pane mx-auto flex h-full w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-2xl sm:max-w-[min(70vw,34rem)]"
       >
         {showHeader ? (
-          <div className="flex items-start justify-between gap-3 border-b border-slate-200/80 px-4 pb-3 pt-3">
+          <div className="flex items-start justify-between gap-3 border-b border-border px-5 pb-3 pt-4">
             <div className="min-w-0">
-              <div className="mb-2 h-1.5 w-12 rounded-full bg-slate-300/70" />
+              <div className="mb-2 h-1 w-10 rounded-full bg-muted-foreground/20" />
               {title ? (
-                <h2 className="truncate font-display text-[1.02rem] font-semibold tracking-tight text-slate-900">
+                <h2 className="truncate font-display text-lg font-semibold tracking-tight text-foreground">
                   {title}
                 </h2>
               ) : null}
               {subtitle ? (
-                <p className="mt-0.5 truncate text-xs text-slate-500">{subtitle}</p>
+                <p className="mt-0.5 truncate text-xs text-muted-foreground">{subtitle}</p>
               ) : null}
             </div>
             {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
@@ -83,12 +83,12 @@ export function PlannerPane({
           <AnimatePresence mode="wait">
             <motion.div
               key={paneKey}
-              initial={{ opacity: 0, y: 18 }}
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2, ease: "easeOut" }}
+              exit={{ opacity: 0, y: -10 }}
+              transition={{ duration: 0.18, ease: "easeOut" }}
               className={cn(
-                "flex h-full min-h-0 flex-col px-4 pb-4 pt-3",
+                "flex h-full min-h-0 flex-col px-5 pb-5 pt-4",
                 scrollable ? "overflow-hidden" : "overflow-hidden",
               )}
             >
