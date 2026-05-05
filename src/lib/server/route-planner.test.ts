@@ -254,6 +254,10 @@ describe("calculateRoutes", () => {
       json: async () => ({
         features: [
           {
+            properties: {
+              distance: 2400,
+              time: 600,
+            },
             geometry: {
               type: "LineString",
               coordinates: [
@@ -271,7 +275,9 @@ describe("calculateRoutes", () => {
       destination: { name: "Kallyanpur", canonicalId: "stop-kallyanpur", type: "bus_stop" },
       optimization: "recommended",
     });
-    const snappedLine = response.routes[0]?.mapPreview.lines.find((line) => line.mode !== "metro");
+    const route = response.routes[0];
+    const snappedLine = route?.mapPreview.lines.find((line) => line.mode !== "metro");
+    const snappedSegment = route?.segments.find((segment) => segment.mode !== "metro");
 
     expect(global.fetch).toHaveBeenCalled();
     expect(snappedLine?.confidence).toBe("exact");
@@ -279,6 +285,9 @@ describe("calculateRoutes", () => {
       [23.75, 90.39],
       [23.74, 90.4],
     ]);
+    expect(snappedSegment?.estimatedDistanceKm).toBe(2.4);
+    expect(snappedSegment?.distanceSource).toBe("road_api");
+    expect(route?.estimatedDistanceKm).toBe(2.4);
   });
 
   it("uses only local bus and metro datasets while calculating routes when snapping is disabled", async () => {

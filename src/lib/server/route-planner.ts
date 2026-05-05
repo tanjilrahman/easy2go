@@ -19,7 +19,10 @@ import {
   haversineDistanceKm,
   normalizeTransitText,
 } from "@/lib/server/transit-support";
-import { getRoadSnappedRouteGeometry } from "@/lib/server/geoapify-routing";
+import {
+  getRoadSnappedRoute,
+  type RoadSnappedRoute,
+} from "@/lib/server/geoapify-routing";
 import {
   calculateRouteResponseSchema,
   routeOptionSchema,
@@ -337,6 +340,93 @@ function withAccessSegments(
   ];
 }
 
+function getRoadDistanceKm(route: RoadSnappedRoute) {
+  return route.distanceMeters !== undefined
+    ? route.distanceMeters / 1000
+    : undefined;
+}
+
+function estimateRoadDurationMinutes(segment: RouteSegment, distanceKm: number) {
+  if (segment.mode === "bus") {
+    return estimateBusDurationMinutes(distanceKm, segment.stopCount ?? 0);
+  }
+
+  if (segment.mode === "walk") {
+    return Math.max(4, Math.round((distanceKm / WALK_SPEED_KMPH) * 60));
+  }
+
+  if (segment.mode === "rickshaw" || segment.mode === "ride_share") {
+    return Math.max(6, Math.round((distanceKm / RICKSHAW_SPEED_KMPH) * 60));
+  }
+
+  return segment.estimatedDurationMinutes;
+}
+
+function applyRoadMetricsToSegment(segment: RouteSegment, route: RoadSnappedRoute) {
+  const distanceKm = getRoadDistanceKm(route);
+
+  if (distanceKm === undefined || segment.mode === "metro") {
+    return segment;
+  }
+
+  const roundedDistanceKm = roundDistanceKm(distanceKm);
+  const durationMinutes = estimateRoadDurationMinutes(segment, distanceKm);
+
+  if (segment.mode === "bus") {
+    const fare = estimateBusFareBdt(distanceKm, segment.stopCount ?? 0);
+
+    return {
+      ...segment,
+      fareText: formatApproxFare(fare),
+      estimatedDistanceKm: roundedDistanceKm,
+      estimatedDurationMinutes: durationMinutes,
+      distanceSource: "road_api" as const,
+      pricingConfidence: "regulated_estimate" as const,
+      costLowBdt: fare,
+      costHighBdt: fare,
+    };
+  }
+
+  if (segment.mode === "rickshaw" || segment.mode === "ride_share") {
+    const fare = estimateRickshawFareBdt(distanceKm);
+
+    return {
+      ...segment,
+      fareText: fare ? formatApproxFare(fare) : undefined,
+      estimatedDistanceKm: roundedDistanceKm,
+      estimatedDurationMinutes: durationMinutes,
+      distanceSource: "road_api" as const,
+      pricingConfidence: fare ? "estimated" as const : undefined,
+      connectorDistanceKm: segment.connectorType ? roundedDistanceKm : segment.connectorDistanceKm,
+      connectorFare: fare,
+      costLowBdt: fare,
+      costHighBdt: fare,
+    };
+  }
+
+  if (segment.mode === "walk") {
+    return {
+      ...segment,
+      estimatedDistanceKm: roundedDistanceKm,
+      estimatedDurationMinutes: durationMinutes,
+      distanceSource: "road_api" as const,
+      connectorDistanceKm: segment.connectorType ? roundedDistanceKm : segment.connectorDistanceKm,
+    };
+  }
+
+  return segment;
+}
+
+function metricsFromSegments(segments: RouteSegment[]) {
+  return combineMetrics(
+    segments.map((segment) => ({
+      distanceKm: segment.estimatedDistanceKm,
+      durationMinutes: segment.estimatedDurationMinutes,
+      costBdt: segment.costLowBdt,
+    })),
+  );
+}
+
 function isTransitDatasetPoint(point: TransitPoint) {
   return point.type === "bus_stop" || point.type === "metro_station";
 }
@@ -410,20 +500,61 @@ function applyTripEndpoints(route: RouteOption, payload: CalculateRouteRequest) 
 }
 
 async function applyRoadSnappedMapPreview(route: RouteOption) {
-  const lines = await Promise.all(
+  const lineResults = await Promise.all(
     route.mapPreview.lines.map(async (line) => {
-      const snappedCoordinates = await getRoadSnappedRouteGeometry(line.mode, line.coordinates);
+      const snappedRoute = await getRoadSnappedRoute(line.mode, line.coordinates);
 
       return {
-        ...line,
-        coordinates: snappedCoordinates ?? line.coordinates,
-        confidence: line.mode === "metro" || snappedCoordinates ? "exact" : line.confidence,
-      } satisfies RouteMapLine;
+        line,
+        snappedRoute,
+      };
     }),
   );
+  const lines = lineResults.map(({ line, snappedRoute }) => ({
+    ...line,
+    coordinates: snappedRoute?.coordinates ?? line.coordinates,
+    confidence: line.mode === "metro" || snappedRoute ? "exact" : line.confidence,
+  }) satisfies RouteMapLine);
+  const metricQueue = [...lineResults];
+  const segments = route.segments.map((segment) => {
+    const resultIndex = metricQueue.findIndex(
+      ({ line, snappedRoute }) =>
+        snappedRoute &&
+        line.mode === segment.mode &&
+        line.label === segment.instruction,
+    );
+
+    if (resultIndex < 0) {
+      return segment;
+    }
+
+    const [result] = metricQueue.splice(resultIndex, 1);
+
+    return result?.snappedRoute
+      ? applyRoadMetricsToSegment(segment, result.snappedRoute)
+      : segment;
+  });
+  const metrics = metricsFromSegments(segments);
+  const fareText = metrics.totalCost !== undefined
+    ? route.fareType === "exact"
+      ? formatExactFare(metrics.totalCost)
+      : formatApproxFare(metrics.totalCost)
+    : "Fare varies";
 
   return routeOptionSchema.parse({
     ...route,
+    fareText,
+    totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.totalCost,
+    totalCostHighBdt: metrics.totalCost,
+    estimatedDistanceKm: metrics.estimatedDistanceKm,
+    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
+    highlights: dedupeStrings([
+      metrics.estimatedDurationMinutes ? `${metrics.estimatedDurationMinutes} min` : "",
+      metrics.totalCost !== undefined ? `BDT ${Math.round(metrics.totalCost)}` : "",
+      route.transferCount === 0 ? "No transfers" : `${route.transferCount} transfer`,
+    ]),
+    segments,
     mapPreview: {
       ...route.mapPreview,
       lines,

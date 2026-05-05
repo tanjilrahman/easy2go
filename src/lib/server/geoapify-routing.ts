@@ -7,13 +7,23 @@ interface GeoapifyRouteFeature {
     type?: string;
     coordinates?: unknown;
   };
+  properties?: {
+    distance?: unknown;
+    time?: unknown;
+  };
 }
 
 interface GeoapifyRouteResponse {
   features?: GeoapifyRouteFeature[];
 }
 
-const routeGeometryCache = new Map<string, [number, number][]>();
+export interface RoadSnappedRoute {
+  coordinates: [number, number][];
+  distanceMeters?: number;
+  durationSeconds?: number;
+}
+
+const routeGeometryCache = new Map<string, RoadSnappedRoute>();
 const MAX_CACHE_ENTRIES = 500;
 const REQUEST_TIMEOUT_MS = 3500;
 const DEFAULT_MAX_WAYPOINTS = 24;
@@ -50,7 +60,7 @@ function cacheKey(mode: GeoapifyMode, coordinates: [number, number][]) {
   return `${mode}:${coordinates.map(coordinateKey).join("|")}`;
 }
 
-function rememberRouteGeometry(key: string, coordinates: [number, number][]) {
+function rememberRouteGeometry(key: string, route: RoadSnappedRoute) {
   if (routeGeometryCache.size >= MAX_CACHE_ENTRIES) {
     const oldestKey = routeGeometryCache.keys().next().value as string | undefined;
 
@@ -59,7 +69,7 @@ function rememberRouteGeometry(key: string, coordinates: [number, number][]) {
     }
   }
 
-  routeGeometryCache.set(key, coordinates);
+  routeGeometryCache.set(key, route);
 }
 
 function isLngLatPair(value: unknown): value is [number, number] {
@@ -181,7 +191,13 @@ function simplifyRouteGeometry(coordinates: [number, number][]) {
   );
 }
 
-export async function getRoadSnappedRouteGeometry(
+function finiteMetric(value: unknown) {
+  return typeof value === "number" && Number.isFinite(value) && value >= 0
+    ? value
+    : undefined;
+}
+
+export async function getRoadSnappedRoute(
   mode: TransportMode,
   coordinates: [number, number][],
 ) {
@@ -228,8 +244,9 @@ export async function getRoadSnappedRouteGeometry(
     }
 
     const payload = (await response.json()) as GeoapifyRouteResponse;
-    const coordinatesLngLat = payload.features?.[0]
-      ? flattenGeoapifyGeometry(payload.features[0])
+    const feature = payload.features?.[0];
+    const coordinatesLngLat = feature
+      ? flattenGeoapifyGeometry(feature)
       : [];
     const snappedCoordinates = simplifyRouteGeometry(
       dedupeAdjacentCoordinates(coordinatesLngLat.map(([lng, lat]) => [lat, lng])),
@@ -239,9 +256,15 @@ export async function getRoadSnappedRouteGeometry(
       return null;
     }
 
-    rememberRouteGeometry(key, snappedCoordinates);
+    const route = {
+      coordinates: snappedCoordinates,
+      distanceMeters: finiteMetric(feature?.properties?.distance),
+      durationSeconds: finiteMetric(feature?.properties?.time),
+    } satisfies RoadSnappedRoute;
 
-    return snappedCoordinates;
+    rememberRouteGeometry(key, route);
+
+    return route;
   } catch {
     return null;
   } finally {
