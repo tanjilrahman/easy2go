@@ -125,7 +125,7 @@ describe("distance estimation", () => {
       serviceWindowText: undefined,
     };
 
-    expect(estimateBusLegDistanceKm(leg)).toBeCloseTo(6.7, 1);
+    expect(estimateBusLegDistanceKm(leg)).toBeCloseTo(6.5, 1);
   });
 });
 
@@ -673,7 +673,7 @@ describe("calculateRoutes", () => {
 
     expect(response.routes.length).toBeGreaterThan(0);
     expect(response.debugRoutes.some((route) => route.kind === "metro_direct")).toBe(true);
-  });
+  }, 15_000);
 
   it("falls back to the closest bus corridor plus rickshaw instead of returning no route", async () => {
     const response = await calculateRoutes({

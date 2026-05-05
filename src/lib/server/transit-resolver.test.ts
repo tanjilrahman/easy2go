@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  resolveTransitInput,
   searchLocalTransitSuggestions,
   searchMixedLocationSuggestions,
 } from "@/lib/server/transit-resolver";
@@ -14,22 +15,33 @@ afterEach(() => {
 });
 
 describe("transit resolver bus stop metadata", () => {
+  it("orders coordinate-based bus stop candidates by closest distance", async () => {
+    const resolution = await resolveTransitInput({
+      name: "near Farmgate",
+      coordinates: [23.75905, 90.3871],
+      type: "place",
+    });
+    const busStops = resolution.candidates.filter((candidate) => candidate.type === "bus_stop");
+
+    expect(busStops[0]?.name).toBe("ফার্মগেট");
+  });
+
   it("matches bus stops by approved place-name aliases", () => {
     const suggestions = searchLocalTransitSuggestions("technical mor");
 
     expect(suggestions[0]?.type).toBe("bus_stop");
-    expect(suggestions[0]?.name).toBe("Technical Mor Bus stop");
+    expect(suggestions[0]?.name).toBe("Technical Mor Bus stop, Bus stop");
     expect(suggestions[0]?.address).toContain("Technical Mor Bus stop");
   });
 
-  it("surfaces multiple boarding-point variants for grouped stops", () => {
+  it("does not surface unreviewed grouped-stop variants", () => {
     const suggestions = searchLocalTransitSuggestions("mirpur 1");
     const busStopNames = suggestions
       .filter((suggestion) => suggestion.type === "bus_stop")
       .map((suggestion) => suggestion.name);
 
-    expect(busStopNames).toContain("Mirpur 1 Bus Stop");
-    expect(busStopNames).toContain("Sony Hall / Mirpur 1");
+    expect(busStopNames).toContain("Mirpur 1 Bus Stop, Bus station");
+    expect(busStopNames).not.toContain("Sony Hall / Mirpur 1");
   });
 
   it("uses local suggestions without external autocomplete when local coverage is strong", async () => {
@@ -75,6 +87,6 @@ describe("transit resolver bus stop metadata", () => {
 
     const suggestions = await searchMixedLocationSuggestions("technical mor");
 
-    expect(suggestions[0]?.name).toBe("Technical Mor Bus stop");
+    expect(suggestions[0]?.name).toBe("Technical Mor Bus stop, Bus stop");
   });
 });

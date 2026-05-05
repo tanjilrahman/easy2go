@@ -1,0 +1,5201 @@
+{
+  "generatedAt": "2026-05-05T10:06:59.624Z",
+  "sourceReview": "src/lib/data/dhaka-bus-stop-coordinate-review.json",
+  "runtimeSafe": false,
+  "notes": [
+    "Approved coordinate entries only. This file is a staging export, not wired into routing.",
+    "Manual-review, weak, and no-source entries are intentionally excluded from approvedCoordinates."
+  ],
+  "summary": {
+    "approved": 142,
+    "unresolved": 122,
+    "unresolvedByStatus": {
+      "needs_source": 45,
+      "rejected_weak_match": 57,
+      "needs_manual_review": 20
+    }
+  },
+  "approvedCoordinates": [
+    {
+      "labels": [
+        "Adabor",
+        "Adabor (আদাবর)",
+        "আদাবর"
+      ],
+      "coordinates": [
+        23.773753,
+        90.3617377
+      ],
+      "source": "osm:node/3010862225",
+      "confidence": "verified",
+      "address": "আদাবর বাস স্টপ",
+      "placeName": "আদাবর বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Adabor",
+        "matchedValue": "Adabor Bus Stop",
+        "osmType": "node",
+        "osmId": 3010862225
+      }
+    },
+    {
+      "labels": [
+        "Agargaon",
+        "Agargaon (আগারগাঁও)",
+        "আগারগাঁও"
+      ],
+      "coordinates": [
+        23.7784483,
+        90.3801611
+      ],
+      "source": "osm:node/10294007250",
+      "confidence": "verified",
+      "address": "আগারগাঁও",
+      "placeName": "আগারগাঁও",
+      "review": {
+        "status": "approved",
+        "score": 109,
+        "matchedLabel": "Agargaon",
+        "matchedValue": "Agargaon",
+        "osmType": "node",
+        "osmId": 10294007250
+      }
+    },
+    {
+      "labels": [
+        "Ansar Camp",
+        "Ansar Camp (আনসার ক্যাম্প)",
+        "আনসার ক্যাম্প"
+      ],
+      "coordinates": [
+        23.7910955,
+        90.353924
+      ],
+      "source": "osm:node/3016326145",
+      "confidence": "verified",
+      "address": "আনসার ক্যাম্প",
+      "placeName": "আনসার ক্যাম্প",
+      "review": {
+        "status": "approved",
+        "score": 133,
+        "matchedLabel": "Ansar Camp",
+        "matchedValue": "Ansar Camp",
+        "osmType": "node",
+        "osmId": 3016326145
+      }
+    },
+    {
+      "labels": [
+        "Arambagh",
+        "Arambagh (আরামবাগ)",
+        "আরামবাগ"
+      ],
+      "coordinates": [
+        23.7308424,
+        90.4212047
+      ],
+      "source": "osm:node/12002685206",
+      "confidence": "verified",
+      "address": "Arambagh Bus stop",
+      "placeName": "Arambagh Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Arambagh",
+        "matchedValue": "Arambagh Bus stop",
+        "osmType": "node",
+        "osmId": 12002685206
+      }
+    },
+    {
+      "labels": [
+        "Asad Gate",
+        "Asad Gate (আসাদ গেট)",
+        "আসাদ গেট"
+      ],
+      "coordinates": [
+        23.7604615,
+        90.3727226
+      ],
+      "source": "osm:node/12014798660",
+      "confidence": "verified",
+      "address": "Asad Gate Bus Stand",
+      "placeName": "Asad Gate Bus Stand",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Asad Gate",
+        "matchedValue": "Asad Gate Bus Stand",
+        "osmType": "node",
+        "osmId": 12014798660
+      }
+    },
+    {
+      "labels": [
+        "Ashulia",
+        "Ashulia (আশুলিয়া)",
+        "আশুলিয়া"
+      ],
+      "coordinates": [
+        23.8923998,
+        90.3614806
+      ],
+      "source": "osm:node/12285190759",
+      "confidence": "verified",
+      "address": "Ashulia - Beribadh Mor Bus stop",
+      "placeName": "Ashulia - Beribadh Mor Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Ashulia",
+        "matchedValue": "Ashulia - Beribadh Mor Bus stop",
+        "osmType": "node",
+        "osmId": 12285190759
+      }
+    },
+    {
+      "labels": [
+        "Azampur",
+        "Azampur (আজমপুর)",
+        "আজমপুর"
+      ],
+      "coordinates": [
+        23.867992,
+        90.4001848
+      ],
+      "source": "osm:node/4737732166",
+      "confidence": "verified",
+      "address": "Azampur",
+      "placeName": "Azampur",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Azampur",
+        "matchedValue": "Azampur",
+        "osmType": "node",
+        "osmId": 4737732166
+      }
+    },
+    {
+      "labels": [
+        "Azimpur",
+        "Azimpur (আজিমপুর)",
+        "আজিমপুর"
+      ],
+      "coordinates": [
+        23.7274628,
+        90.3864092
+      ],
+      "source": "osm:node/11818528202",
+      "confidence": "verified",
+      "address": "Azimpur Bus stop, Azimpur Rd, Dhaka",
+      "placeName": "Azimpur Bus stop, Azimpur Rd, Dhaka",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Azimpur",
+        "matchedValue": "Azimpur Bus stop, Azimpur Rd, Dhaka",
+        "osmType": "node",
+        "osmId": 11818528202
+      }
+    },
+    {
+      "labels": [
+        "Baipayl",
+        "Baipayl (বাইপাইল)",
+        "বাইপাইল"
+      ],
+      "coordinates": [
+        23.9380015,
+        90.270064
+      ],
+      "source": "osm:node/2895146942",
+      "confidence": "verified",
+      "address": "Baipayl",
+      "placeName": "Baipayl",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Baipayl",
+        "matchedValue": "Baipayl",
+        "osmType": "node",
+        "osmId": 2895146942
+      }
+    },
+    {
+      "labels": [
+        "Bakshi Bazar",
+        "Bakshi Bazar (বকশী বাজার)",
+        "বকশী বাজার"
+      ],
+      "coordinates": [
+        23.7225591,
+        90.3955594
+      ],
+      "source": "osm:node/11818501325",
+      "confidence": "verified",
+      "address": "Bokshi Bazaar Bus stop, Bakshi Bazar Road, Dhaka",
+      "placeName": "Bokshi Bazaar Bus stop, Bakshi Bazar Road, Dhaka",
+      "review": {
+        "status": "approved",
+        "score": 108,
+        "matchedLabel": "Bakshi Bazar",
+        "matchedValue": "Bokshi Bazaar Bus stop, Bakshi Bazar Road, Dhaka",
+        "osmType": "node",
+        "osmId": 11818501325
+      }
+    },
+    {
+      "labels": [
+        "Banani",
+        "Banani (বনানী)",
+        "বনানী"
+      ],
+      "coordinates": [
+        23.7952569,
+        90.4013241
+      ],
+      "source": "osm:node/12073098779",
+      "confidence": "verified",
+      "address": "Banani Bus stop",
+      "placeName": "Banani Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Banani",
+        "matchedValue": "Banani Bus stop",
+        "osmType": "node",
+        "osmId": 12073098779
+      }
+    },
+    {
+      "labels": [
+        "Bangla Motor",
+        "Bangla Motor (বাংলা মোটর)",
+        "বাংলা মোটর"
+      ],
+      "coordinates": [
+        23.7453479,
+        90.3950094
+      ],
+      "source": "osm:node/3501236944",
+      "confidence": "verified",
+      "address": "বাংলা মোটর বাস স্টপ",
+      "placeName": "বাংলা মোটর বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Bangla Motor",
+        "matchedValue": "Bangla Motor Bus Stop",
+        "osmType": "node",
+        "osmId": 3501236944
+      }
+    },
+    {
+      "labels": [
+        "Bashabo",
+        "Bashabo (বাসাবো)",
+        "বাসাবো"
+      ],
+      "coordinates": [
+        23.7392397,
+        90.4279048
+      ],
+      "source": "osm:node/6387076020",
+      "confidence": "verified",
+      "address": "বাসাবো উত্তর",
+      "placeName": "বাসাবো উত্তর",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Bashabo",
+        "matchedValue": "Bashabo North",
+        "osmType": "node",
+        "osmId": 6387076020
+      }
+    },
+    {
+      "labels": [
+        "Bashtola",
+        "Bashtola (বাঁশতলা)",
+        "বাঁশতলা"
+      ],
+      "coordinates": [
+        23.7943849,
+        90.4240761
+      ],
+      "source": "osm:node/2994114617",
+      "confidence": "verified",
+      "address": "Bashtola Bus Stand",
+      "placeName": "Bashtola Bus Stand",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Bashtola",
+        "matchedValue": "Bashtola Bus Stand",
+        "osmType": "node",
+        "osmId": 2994114617
+      }
+    },
+    {
+      "labels": [
+        "Bashundhara",
+        "Bashundhara (বসুন্ধরা)",
+        "বসুন্ধরা"
+      ],
+      "coordinates": [
+        23.8118974,
+        90.4211787
+      ],
+      "source": "osm:node/3443268627",
+      "confidence": "verified",
+      "address": "বসুন্ধরা বাস স্টপ",
+      "placeName": "বসুন্ধরা বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "বসুন্ধরা",
+        "matchedValue": "বসুন্ধরা বাস স্টপ",
+        "osmType": "node",
+        "osmId": 3443268627
+      }
+    },
+    {
+      "labels": [
+        "Bata Signal",
+        "Bata Signal (বাটা সিগন্যাল)",
+        "বাটা সিগন্যাল"
+      ],
+      "coordinates": [
+        23.7389887,
+        90.388255
+      ],
+      "source": "osm:node/3345602131",
+      "confidence": "verified",
+      "address": "Bata Signal Bus Stop",
+      "placeName": "Bata Signal Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Bata Signal",
+        "matchedValue": "Bata Signal Bus Stop",
+        "osmType": "node",
+        "osmId": 3345602131
+      }
+    },
+    {
+      "labels": [
+        "Beribadh",
+        "Beribadh (বেড়িবাঁধ)",
+        "বেড়িবাঁধ"
+      ],
+      "coordinates": [
+        23.7566448,
+        90.3562044
+      ],
+      "source": "osm:node/12497979607",
+      "confidence": "verified",
+      "address": "Beribadh Tin Rastar Mor Bus Stop, Bus stop",
+      "placeName": "Beribadh Tin Rastar Mor Bus Stop, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Beribadh",
+        "matchedValue": "Beribadh Tin Rastar Mor Bus Stop, Bus stop",
+        "osmType": "node",
+        "osmId": 12497979607
+      }
+    },
+    {
+      "labels": [
+        "Bijoy Sarani",
+        "Bijoy Sarani (বিজয় সারাণী)",
+        "বিজয় সারাণী"
+      ],
+      "coordinates": [
+        23.7665451,
+        90.3831114
+      ],
+      "source": "osm:way/1125773738",
+      "confidence": "verified",
+      "address": "বিজয় সরণি মেট্রো স্টেশন",
+      "placeName": "বিজয় সরণি মেট্রো স্টেশন",
+      "review": {
+        "status": "approved",
+        "score": 108,
+        "matchedLabel": "Bijoy Sarani",
+        "matchedValue": "Bijoy Sarani Metro Station",
+        "osmType": "way",
+        "osmId": 1125773738
+      }
+    },
+    {
+      "labels": [
+        "Birulia",
+        "Birulia (বিরুলিয়া)",
+        "বিরুলিয়া"
+      ],
+      "coordinates": [
+        23.8505948,
+        90.3409259
+      ],
+      "source": "osm:node/13245641794",
+      "confidence": "verified",
+      "address": "Birulia Bridge Bus stop",
+      "placeName": "Birulia Bridge Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Birulia",
+        "matchedValue": "Birulia Bridge Bus stop",
+        "osmType": "node",
+        "osmId": 13245641794
+      }
+    },
+    {
+      "labels": [
+        "Board Bazar",
+        "Board Bazar (বোর্ড বাজার)",
+        "বোর্ড বাজার"
+      ],
+      "coordinates": [
+        23.9452769,
+        90.3827366
+      ],
+      "source": "osm:node/5205634293",
+      "confidence": "verified",
+      "address": "Board Bazar Bus Stop বোর্ড বাজার বাস স্টপ",
+      "placeName": "Board Bazar Bus Stop বোর্ড বাজার বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Board Bazar",
+        "matchedValue": "Board Bazar Bus Stop বোর্ড বাজার বাস স্টপ",
+        "osmType": "node",
+        "osmId": 5205634293
+      }
+    },
+    {
+      "labels": [
+        "Bosila",
+        "Bosila (বসিলা)",
+        "বসিলা"
+      ],
+      "coordinates": [
+        23.7450945,
+        90.3475527
+      ],
+      "source": "osm:node/5123958187",
+      "confidence": "verified",
+      "address": "Bosila Bus Stop",
+      "placeName": "Bosila Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Bosila",
+        "matchedValue": "Bosila Bus Stop",
+        "osmType": "node",
+        "osmId": 5123958187
+      }
+    },
+    {
+      "labels": [
+        "Bot tola",
+        "Bot tola (বট তলা)",
+        "বট তলা"
+      ],
+      "coordinates": [
+        23.7987187,
+        90.3436027
+      ],
+      "source": "osm:node/13251980762",
+      "confidence": "verified",
+      "address": "Bot Tola Mor Diabari Bus stop, Bus stop",
+      "placeName": "Bot Tola Mor Diabari Bus stop, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Bot tola",
+        "matchedValue": "Bot Tola Mor Diabari Bus stop, Bus stop",
+        "osmType": "node",
+        "osmId": 13251980762
+      }
+    },
+    {
+      "labels": [
+        "Chairman Bari",
+        "Chairman Bari (চেয়ারম্যান বাড়ী)",
+        "চেয়ারম্যান বাড়ী"
+      ],
+      "coordinates": [
+        23.7887799,
+        90.4002171
+      ],
+      "source": "osm:node/12073086780",
+      "confidence": "verified",
+      "address": "Chairman Bari Bus",
+      "placeName": "Chairman Bari Bus",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Chairman Bari",
+        "matchedValue": "Chairman Bari Bus",
+        "osmType": "node",
+        "osmId": 12073086780
+      }
+    },
+    {
+      "labels": [
+        "Chandra",
+        "Chandra (চন্দ্রা)",
+        "চন্দ্রা"
+      ],
+      "coordinates": [
+        24.047862,
+        90.239023
+      ],
+      "source": "osm:node/12169756263",
+      "confidence": "verified",
+      "address": "Chandra",
+      "placeName": "Chandra",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Chandra",
+        "matchedValue": "Chandra",
+        "osmType": "node",
+        "osmId": 12169756263
+      }
+    },
+    {
+      "labels": [
+        "Chankhar Pul",
+        "Chankhar Pul (চাঁকহার পুল)",
+        "চাঁকহার পুল"
+      ],
+      "coordinates": [
+        23.7238334,
+        90.4003441
+      ],
+      "source": "osm:node/11801293500",
+      "confidence": "verified",
+      "address": "Chankhar Pul Bus Stop, Zahir Raihan Rd, Dhaka",
+      "placeName": "Chankhar Pul Bus Stop, Zahir Raihan Rd, Dhaka",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Chankhar Pul",
+        "matchedValue": "Chankhar Pul Bus Stop, Zahir Raihan Rd, Dhaka",
+        "osmType": "node",
+        "osmId": 11801293500
+      }
+    },
+    {
+      "labels": [
+        "Chasara",
+        "Chasara (চাষারা)",
+        "চাষারা"
+      ],
+      "coordinates": [
+        23.6237322,
+        90.4994847
+      ],
+      "source": "osm:node/819614162",
+      "confidence": "verified",
+      "address": "Chasara Bus Stop",
+      "placeName": "Chasara Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Chasara",
+        "matchedValue": "Chasara Bus Stop",
+        "osmType": "node",
+        "osmId": 819614162
+      }
+    },
+    {
+      "labels": [
+        "Chittagong Road",
+        "Chittagong Road (চট্টগ্রাম রোড)",
+        "চট্টগ্রাম রোড"
+      ],
+      "coordinates": [
+        23.6977454,
+        90.5092521
+      ],
+      "source": "osm:node/10308611782",
+      "confidence": "verified",
+      "address": "চিটাগং রোড বাস স্টেশন",
+      "placeName": "চিটাগং রোড বাস স্টেশন",
+      "review": {
+        "status": "approved",
+        "score": 116,
+        "matchedLabel": "Chittagong Road",
+        "matchedValue": "Chittagong Road Bus station",
+        "osmType": "node",
+        "osmId": 10308611782
+      }
+    },
+    {
+      "labels": [
+        "City College",
+        "City College (সিটি কলেজ)",
+        "সিটি কলেজ"
+      ],
+      "coordinates": [
+        23.7391036,
+        90.3833174
+      ],
+      "source": "osm:node/11821930860",
+      "confidence": "verified",
+      "address": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+      "placeName": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+      "review": {
+        "status": "approved",
+        "score": 108,
+        "matchedLabel": "City College",
+        "matchedValue": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+        "osmType": "node",
+        "osmId": 11821930860
+      }
+    },
+    {
+      "labels": [
+        "College Gate",
+        "College Gate (কলেজ গেট)",
+        "কলেজ গেট"
+      ],
+      "coordinates": [
+        23.9085927,
+        90.3979778
+      ],
+      "source": "osm:node/5203887931",
+      "confidence": "verified",
+      "address": "College Gate Bus Stop কলেজ গেট বাস স্টপ",
+      "placeName": "College Gate Bus Stop কলেজ গেট বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "College Gate",
+        "matchedValue": "College Gate Bus Stop কলেজ গেট বাস স্টপ",
+        "osmType": "node",
+        "osmId": 5203887931
+      }
+    },
+    {
+      "labels": [
+        "Darussalam",
+        "Darussalam (দারুস্সালাম)",
+        "দারুস্সালাম"
+      ],
+      "coordinates": [
+        23.7800468,
+        90.3542107
+      ],
+      "source": "osm:node/12500493275",
+      "confidence": "verified",
+      "address": "Darussalam Bus stop, Bus stop",
+      "placeName": "Darussalam Bus stop, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Darussalam",
+        "matchedValue": "Darussalam Bus stop, Bus stop",
+        "osmType": "node",
+        "osmId": 12500493275
+      }
+    },
+    {
+      "labels": [
+        "Demra Staff Quarter",
+        "Demra Staff Quarter (ডেমরা স্টাফ কোয়ার্টার)",
+        "ডেমরা স্টাফ কোয়ার্টার"
+      ],
+      "coordinates": [
+        23.7197292,
+        90.4905289
+      ],
+      "source": "osm:node/4832053622",
+      "confidence": "verified",
+      "address": "Demra staff quarter",
+      "placeName": "Demra staff quarter",
+      "review": {
+        "status": "approved",
+        "score": 142,
+        "matchedLabel": "Demra Staff Quarter",
+        "matchedValue": "Demra staff quarter",
+        "osmType": "node",
+        "osmId": 4832053622
+      }
+    },
+    {
+      "labels": [
+        "Dhakeshwari",
+        "Dhakeshwari (ঢাকেশ্বরী)",
+        "ঢাকেশ্বরী"
+      ],
+      "coordinates": [
+        23.7224743,
+        90.3897214
+      ],
+      "source": "osm:node/11818488152",
+      "confidence": "verified",
+      "address": "Dhakeshwari Mandir Bus stop, Azad Staff Quarter Dhakeshwari Rd, Dhaka",
+      "placeName": "Dhakeshwari Mandir Bus stop, Azad Staff Quarter Dhakeshwari Rd, Dhaka",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Dhakeshwari",
+        "matchedValue": "Dhakeshwari Mandir Bus stop, Azad Staff Quarter Dhakeshwari Rd, Dhaka",
+        "osmType": "node",
+        "osmId": 11818488152
+      }
+    },
+    {
+      "labels": [
+        "Dhanmondi 15",
+        "Dhanmondi 15 (ধানমন্ডি ১৫)",
+        "ধানমন্ডি ১৫"
+      ],
+      "coordinates": [
+        23.7443576,
+        90.3728855
+      ],
+      "source": "osm:node/12012285851",
+      "confidence": "verified",
+      "address": "Dhanmondi 15 Bus stop",
+      "placeName": "Dhanmondi 15 Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Dhanmondi 15",
+        "matchedValue": "Dhanmondi 15 Bus stop",
+        "osmType": "node",
+        "osmId": 12012285851
+      }
+    },
+    {
+      "labels": [
+        "Dhanmondi 27",
+        "Dhanmondi 27 (ধানমন্ডি ২৭)",
+        "ধানমন্ডি ২৭"
+      ],
+      "coordinates": [
+        23.7560325,
+        90.3757211
+      ],
+      "source": "osm:node/12009447484",
+      "confidence": "verified",
+      "address": "Dhanmondi 27 Bus stop",
+      "placeName": "Dhanmondi 27 Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Dhanmondi 27",
+        "matchedValue": "Dhanmondi 27 Bus stop",
+        "osmType": "node",
+        "osmId": 12009447484
+      }
+    },
+    {
+      "labels": [
+        "Dhanmondi 32",
+        "Dhanmondi 32 (ধানমন্ডি ৩২)",
+        "ধানমন্ডি ৩২"
+      ],
+      "coordinates": [
+        23.7516016,
+        90.3779467
+      ],
+      "source": "osm:node/4836072721",
+      "confidence": "verified",
+      "address": "Dhanmondi 32 Bus Stp",
+      "placeName": "Dhanmondi 32 Bus Stp",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Dhanmondi 32",
+        "matchedValue": "Dhanmondi 32 Bus Stp",
+        "osmType": "node",
+        "osmId": 4836072721
+      }
+    },
+    {
+      "labels": [
+        "Dholairpar",
+        "Dholairpar (ধলাইড়পাড়)",
+        "ধলাইড়পাড়"
+      ],
+      "coordinates": [
+        23.702791,
+        90.4351668
+      ],
+      "source": "osm:node/5185127957",
+      "confidence": "verified",
+      "address": "Dholairpar Bus Stop",
+      "placeName": "Dholairpar Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Dholairpar",
+        "matchedValue": "Dholairpar Bus Stop",
+        "osmType": "node",
+        "osmId": 5185127957
+      }
+    },
+    {
+      "labels": [
+        "Dhour",
+        "Dhour (ঢাউর)",
+        "ঢাউর"
+      ],
+      "coordinates": [
+        23.8933082,
+        90.3666085
+      ],
+      "source": "osm:node/2895200402",
+      "confidence": "verified",
+      "address": "Dhour Bus Stopage",
+      "placeName": "Dhour Bus Stopage",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Dhour",
+        "matchedValue": "Dhour Bus Stopage",
+        "osmType": "node",
+        "osmId": 2895200402
+      }
+    },
+    {
+      "labels": [
+        "Farmgate",
+        "Farmgate (ফার্মগেট)",
+        "ফার্মগেট"
+      ],
+      "coordinates": [
+        23.7590206,
+        90.387124
+      ],
+      "source": "osm:node/10294553595",
+      "confidence": "verified",
+      "address": "ফার্মগেট",
+      "placeName": "ফার্মগেট",
+      "review": {
+        "status": "approved",
+        "score": 109,
+        "matchedLabel": "Farmgate",
+        "matchedValue": "Farmgate",
+        "osmType": "node",
+        "osmId": 10294553595
+      }
+    },
+    {
+      "labels": [
+        "Gabtoli",
+        "Gabtoli (গাবতলি)",
+        "গাবতলি"
+      ],
+      "coordinates": [
+        23.7824951,
+        90.3393413
+      ],
+      "source": "osm:node/12500494396",
+      "confidence": "verified",
+      "address": "Gabtoli / Parbat Bus stop, Bus stop",
+      "placeName": "Gabtoli / Parbat Bus stop, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Gabtoli",
+        "matchedValue": "Gabtoli / Parbat Bus stop, Bus stop",
+        "osmType": "node",
+        "osmId": 12500494396
+      }
+    },
+    {
+      "labels": [
+        "Golapbagh Chowrasta",
+        "Golapbagh Chowrasta (গোলাপবাগ চৌরাস্তা)",
+        "গোলাপবাগ চৌরাস্তা"
+      ],
+      "coordinates": [
+        23.7176698,
+        90.4293125
+      ],
+      "source": "osm:node/12057002356",
+      "confidence": "verified",
+      "address": "Golapbagh Chowrasta Bus stop",
+      "placeName": "Golapbagh Chowrasta Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Golapbagh Chowrasta",
+        "matchedValue": "Golapbagh Chowrasta Bus stop",
+        "osmType": "node",
+        "osmId": 12057002356
+      }
+    },
+    {
+      "labels": [
+        "Gulistan",
+        "Gulistan (গুলিস্তান)",
+        "গুলিস্তান"
+      ],
+      "coordinates": [
+        23.7245952,
+        90.4119248
+      ],
+      "source": "osm:node/11818535608",
+      "confidence": "verified",
+      "address": "Gulistan Bus Stop",
+      "placeName": "Gulistan Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Gulistan",
+        "matchedValue": "Gulistan Bus Stop",
+        "osmType": "node",
+        "osmId": 11818535608
+      }
+    },
+    {
+      "labels": [
+        "Gulshan Bridge",
+        "Gulshan Bridge (গুলশান ব্রিজ)",
+        "গুলশান ব্রিজ"
+      ],
+      "coordinates": [
+        23.780372,
+        90.4129214
+      ],
+      "source": "osm:node/12006324895",
+      "confidence": "verified",
+      "address": "Gulshan Bridge Bus Stop",
+      "placeName": "Gulshan Bridge Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Gulshan Bridge",
+        "matchedValue": "Gulshan Bridge Bus Stop",
+        "osmType": "node",
+        "osmId": 12006324895
+      }
+    },
+    {
+      "labels": [
+        "Hasnabad",
+        "Hasnabad (হাসনাবাদ)",
+        "হাসনাবাদ"
+      ],
+      "coordinates": [
+        23.6831264,
+        90.4226066
+      ],
+      "source": "osm:node/12440860422",
+      "confidence": "verified",
+      "address": "Hasnabad Bus Stop",
+      "placeName": "Hasnabad Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Hasnabad",
+        "matchedValue": "Hasnabad Bus Stop",
+        "osmType": "node",
+        "osmId": 12440860422
+      }
+    },
+    {
+      "labels": [
+        "Hemayetpur",
+        "Hemayetpur (হেমায়েতপুর)",
+        "হেমায়েতপুর"
+      ],
+      "coordinates": [
+        23.793063,
+        90.271944
+      ],
+      "source": "osm:node/12169756197",
+      "confidence": "verified",
+      "address": "Hemayetpur",
+      "placeName": "Hemayetpur",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Hemayetpur",
+        "matchedValue": "Hemayetpur",
+        "osmType": "node",
+        "osmId": 12169756197
+      }
+    },
+    {
+      "labels": [
+        "High Court",
+        "High Court (উচ্চ আদালত)",
+        "উচ্চ আদালত"
+      ],
+      "coordinates": [
+        23.731685,
+        90.4048858
+      ],
+      "source": "osm:node/12002690741",
+      "confidence": "verified",
+      "address": "High Court Bus stop",
+      "placeName": "High Court Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "High Court",
+        "matchedValue": "High Court Bus stop",
+        "osmType": "node",
+        "osmId": 12002690741
+      }
+    },
+    {
+      "labels": [
+        "House Building",
+        "House Building (হাউজ বিল্ডিং)",
+        "হাউজ বিল্ডিং"
+      ],
+      "coordinates": [
+        23.8748268,
+        90.4006897
+      ],
+      "source": "osm:node/4737689211",
+      "confidence": "verified",
+      "address": "House Building",
+      "placeName": "House Building",
+      "review": {
+        "status": "approved",
+        "score": 133,
+        "matchedLabel": "House Building",
+        "matchedValue": "House Building",
+        "osmType": "node",
+        "osmId": 4737689211
+      }
+    },
+    {
+      "labels": [
+        "Jahangir Gate",
+        "Jahangir Gate (জাহাঙ্গীর গেট)",
+        "জাহাঙ্গীর গেট"
+      ],
+      "coordinates": [
+        23.7752606,
+        90.3897653
+      ],
+      "source": "osm:node/12009429417",
+      "confidence": "verified",
+      "address": "Jahangir Gate Bus stop",
+      "placeName": "Jahangir Gate Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Jahangir Gate",
+        "matchedValue": "Jahangir Gate Bus stop",
+        "osmType": "node",
+        "osmId": 12009429417
+      }
+    },
+    {
+      "labels": [
+        "Jalkuri",
+        "Jalkuri (জলকুড়ি)",
+        "জলকুড়ি"
+      ],
+      "coordinates": [
+        23.6632342,
+        90.486848
+      ],
+      "source": "osm:node/5185377210",
+      "confidence": "verified",
+      "address": "Jalkuri BRTC AC Bus Stop জালকুরী বি আর টি সি এসি বাস স্টপ",
+      "placeName": "Jalkuri BRTC AC Bus Stop জালকুরী বি আর টি সি এসি বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Jalkuri",
+        "matchedValue": "Jalkuri BRTC AC Bus Stop জালকুরী বি আর টি সি এসি বাস স্টপ",
+        "osmType": "node",
+        "osmId": 5185377210
+      }
+    },
+    {
+      "labels": [
+        "Jashimuddin",
+        "Jashimuddin (জসিমউদ্দিন)",
+        "জসিমউদ্দিন"
+      ],
+      "coordinates": [
+        23.8592618,
+        90.4015608
+      ],
+      "source": "osm:node/12082598792",
+      "confidence": "verified",
+      "address": "Jashimuddin Bus stop",
+      "placeName": "Jashimuddin Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Jashimuddin",
+        "matchedValue": "Jashimuddin Bus stop",
+        "osmType": "node",
+        "osmId": 12082598792
+      }
+    },
+    {
+      "labels": [
+        "Jurain",
+        "Jurain (জুরাইন)",
+        "জুরাইন"
+      ],
+      "coordinates": [
+        23.6938194,
+        90.4346128
+      ],
+      "source": "osm:node/5183327535",
+      "confidence": "verified",
+      "address": "জুরাইন রেল গেট বাস স্টপ",
+      "placeName": "জুরাইন রেল গেট বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Jurain",
+        "matchedValue": "Jurain Rail Gate Bus Stop",
+        "osmType": "node",
+        "osmId": 5183327535
+      }
+    },
+    {
+      "labels": [
+        "Kakrail",
+        "Kakrail (কাকরাইল)",
+        "কাকরাইল"
+      ],
+      "coordinates": [
+        23.7376473,
+        90.4083108
+      ],
+      "source": "osm:node/12028981747",
+      "confidence": "verified",
+      "address": "Kakrail Bus stop",
+      "placeName": "Kakrail Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Kakrail",
+        "matchedValue": "Kakrail Bus stop",
+        "osmType": "node",
+        "osmId": 12028981747
+      }
+    },
+    {
+      "labels": [
+        "Kalabagan",
+        "Kalabagan (কলাবাগান)",
+        "কলাবাগান"
+      ],
+      "coordinates": [
+        23.7474966,
+        90.3801973
+      ],
+      "source": "osm:node/6179302589",
+      "confidence": "verified",
+      "address": "Kalabagan Bus Stand",
+      "placeName": "Kalabagan Bus Stand",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Kalabagan",
+        "matchedValue": "Kalabagan Bus Stand",
+        "osmType": "node",
+        "osmId": 6179302589
+      }
+    },
+    {
+      "labels": [
+        "Kallyanpur",
+        "Kallyanpur (কল্যাণপুর)",
+        "কল্যাণপুর"
+      ],
+      "coordinates": [
+        23.7777584,
+        90.3610369
+      ],
+      "source": "osm:node/6632582785",
+      "confidence": "verified",
+      "address": "Kallyanpur Bus Stop",
+      "placeName": "Kallyanpur Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Kallyanpur",
+        "matchedValue": "Kallyanpur Bus Stop",
+        "osmType": "node",
+        "osmId": 6632582785
+      }
+    },
+    {
+      "labels": [
+        "Kamalapur",
+        "Kamalapur (কমলাপুর)",
+        "কমলাপুর"
+      ],
+      "coordinates": [
+        23.7317162,
+        90.4254731
+      ],
+      "source": "osm:node/12043393435",
+      "confidence": "verified",
+      "address": "Kamalapur Railway Station Bus stop",
+      "placeName": "Kamalapur Railway Station Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Kamalapur",
+        "matchedValue": "Kamalapur Railway Station Bus stop",
+        "osmType": "node",
+        "osmId": 12043393435
+      }
+    },
+    {
+      "labels": [
+        "Kamarpara",
+        "Kamarpara (কামারপাড়া)",
+        "কামারপাড়া"
+      ],
+      "coordinates": [
+        23.8916243,
+        90.3885659
+      ],
+      "source": "osm:node/12285149081",
+      "confidence": "verified",
+      "address": "Kamarpara Bus stop",
+      "placeName": "Kamarpara Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Kamarpara",
+        "matchedValue": "Kamarpara Bus stop",
+        "osmType": "node",
+        "osmId": 12285149081
+      }
+    },
+    {
+      "labels": [
+        "Kamrangirchar",
+        "Kamrangirchar (কামরাঙ্গীরচর)",
+        "কামরাঙ্গীরচর"
+      ],
+      "coordinates": [
+        23.7145473,
+        90.3813578
+      ],
+      "source": "osm:node/12028963991",
+      "confidence": "verified",
+      "address": "Kamrangirchar Bus Stop",
+      "placeName": "Kamrangirchar Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Kamrangirchar",
+        "matchedValue": "Kamrangirchar Bus Stop",
+        "osmType": "node",
+        "osmId": 12028963991
+      }
+    },
+    {
+      "labels": [
+        "Kanchpur",
+        "Kanchpur (কাঁচপুর)",
+        "কাঁচপুর"
+      ],
+      "coordinates": [
+        23.700464,
+        90.5204289
+      ],
+      "source": "osm:node/5116388691",
+      "confidence": "verified",
+      "address": "কাঁচপুর বাস স্টপ",
+      "placeName": "কাঁচপুর বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Kanchpur",
+        "matchedValue": "Kanchpur Bus Stop",
+        "osmType": "node",
+        "osmId": 5116388691
+      }
+    },
+    {
+      "labels": [
+        "Katabon",
+        "Katabon (কাটাবন)",
+        "কাটাবন"
+      ],
+      "coordinates": [
+        23.7386356,
+        90.3914195
+      ],
+      "source": "osm:node/11824661595",
+      "confidence": "verified",
+      "address": "Katabon Bus stop, Shahbagh Rd, Dhaka",
+      "placeName": "Katabon Bus stop, Shahbagh Rd, Dhaka",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Katabon",
+        "matchedValue": "Katabon Bus stop, Shahbagh Rd, Dhaka",
+        "osmType": "node",
+        "osmId": 11824661595
+      }
+    },
+    {
+      "labels": [
+        "Kazipara",
+        "Kazipara (কাজীপাড়া)",
+        "কাজীপাড়া"
+      ],
+      "coordinates": [
+        23.7992485,
+        90.3720193
+      ],
+      "source": "osm:node/10294007256",
+      "confidence": "verified",
+      "address": "কাজীপাড়া",
+      "placeName": "কাজীপাড়া",
+      "review": {
+        "status": "approved",
+        "score": 109,
+        "matchedLabel": "Kazipara",
+        "matchedValue": "Kazipara",
+        "osmType": "node",
+        "osmId": 10294007256
+      }
+    },
+    {
+      "labels": [
+        "Kazla",
+        "Kazla (কাজলা)",
+        "কাজলা"
+      ],
+      "coordinates": [
+        23.7105652,
+        90.4413783
+      ],
+      "source": "osm:node/3522838183",
+      "confidence": "verified",
+      "address": "কাজলা বাস স্টপ",
+      "placeName": "কাজলা বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "কাজলা",
+        "matchedValue": "কাজলা বাস স্টপ",
+        "osmType": "node",
+        "osmId": 3522838183
+      }
+    },
+    {
+      "labels": [
+        "Khamar Bari",
+        "Khamar Bari (খামার বাড়ি)",
+        "খামার বাড়ি"
+      ],
+      "coordinates": [
+        23.7591274,
+        90.383882
+      ],
+      "source": "osm:node/11928193364",
+      "confidence": "verified",
+      "address": "Khamar Bari Bus stop",
+      "placeName": "Khamar Bari Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Khamar Bari",
+        "matchedValue": "Khamar Bari Bus stop",
+        "osmType": "node",
+        "osmId": 11928193364
+      }
+    },
+    {
+      "labels": [
+        "Khejur Bagan",
+        "Khejur Bagan (খেজুর বাগান)",
+        "খেজুর বাগান"
+      ],
+      "coordinates": [
+        23.8898191,
+        90.3219224
+      ],
+      "source": "osm:node/12169756237",
+      "confidence": "verified",
+      "address": "Khejur Bagan Bus Stop",
+      "placeName": "Khejur Bagan Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Khejur Bagan",
+        "matchedValue": "Khejur Bagan Bus Stop",
+        "osmType": "node",
+        "osmId": 12169756237
+      }
+    },
+    {
+      "labels": [
+        "Khilgaon",
+        "Khilgaon (খিলগাঁও)",
+        "খিলগাঁও"
+      ],
+      "coordinates": [
+        23.7481057,
+        90.4236954
+      ],
+      "source": "osm:node/12045859740",
+      "confidence": "verified",
+      "address": "Khilgaon Bus Stop",
+      "placeName": "Khilgaon Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Khilgaon",
+        "matchedValue": "Khilgaon Bus Stop",
+        "osmType": "node",
+        "osmId": 12045859740
+      }
+    },
+    {
+      "labels": [
+        "Khilkhet",
+        "Khilkhet (খিলক্ষেত)",
+        "খিলক্ষেত"
+      ],
+      "coordinates": [
+        23.8294051,
+        90.4200925
+      ],
+      "source": "osm:node/12079833328",
+      "confidence": "verified",
+      "address": "Khilkhet Bus stop, Bus stop",
+      "placeName": "Khilkhet Bus stop, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Khilkhet",
+        "matchedValue": "Khilkhet Bus stop, Bus stop",
+        "osmType": "node",
+        "osmId": 12079833328
+      }
+    },
+    {
+      "labels": [
+        "Kochukhet",
+        "Kochukhet (কচুক্ষেত)",
+        "কচুক্ষেত"
+      ],
+      "coordinates": [
+        23.7908874,
+        90.387795
+      ],
+      "source": "osm:node/13264888608",
+      "confidence": "verified",
+      "address": "Kochukhet - Cantonment Circle, Bus stop",
+      "placeName": "Kochukhet - Cantonment Circle, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Kochukhet",
+        "matchedValue": "Kochukhet - Cantonment Circle, Bus stop",
+        "osmType": "node",
+        "osmId": 13264888608
+      }
+    },
+    {
+      "labels": [
+        "Konabari",
+        "Konabari (কোনাবাড়ী)",
+        "কোনাবাড়ী"
+      ],
+      "coordinates": [
+        24.010895,
+        90.321578
+      ],
+      "source": "osm:node/12169756249",
+      "confidence": "verified",
+      "address": "Konabari",
+      "placeName": "Konabari",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Konabari",
+        "matchedValue": "Konabari",
+        "osmType": "node",
+        "osmId": 12169756249
+      }
+    },
+    {
+      "labels": [
+        "Konabari",
+        "Konabari (কোনাবাড়ি)",
+        "কোনাবাড়ি"
+      ],
+      "coordinates": [
+        24.010895,
+        90.321578
+      ],
+      "source": "osm:node/12169756249",
+      "confidence": "verified",
+      "address": "Konabari",
+      "placeName": "Konabari",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Konabari",
+        "matchedValue": "Konabari",
+        "osmType": "node",
+        "osmId": 12169756249
+      }
+    },
+    {
+      "labels": [
+        "Kuril Bishwa Road",
+        "Kuril Bishwa Road (কুড়িল বিশ্ব রোড)",
+        "কুড়িল বিশ্ব রোড"
+      ],
+      "coordinates": [
+        23.8207235,
+        90.417603
+      ],
+      "source": "osm:node/12078090950",
+      "confidence": "verified",
+      "address": "Kuril Bishwa Road, Bus stop",
+      "placeName": "Kuril Bishwa Road, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 135,
+        "matchedLabel": "Kuril Bishwa Road",
+        "matchedValue": "Kuril Bishwa Road, Bus stop",
+        "osmType": "node",
+        "osmId": 12078090950
+      }
+    },
+    {
+      "labels": [
+        "Malibaag Moor",
+        "Malibaag Moor (মালিবাগ মোড়)",
+        "মালিবাগ মোড়"
+      ],
+      "coordinates": [
+        23.7442587,
+        90.4142449
+      ],
+      "source": "osm:node/5890252086",
+      "confidence": "verified",
+      "address": "মালিবাগ মোড়",
+      "placeName": "মালিবাগ মোড়",
+      "review": {
+        "status": "approved",
+        "score": 133,
+        "matchedLabel": "মালিবাগ মোড়",
+        "matchedValue": "মালিবাগ মোড়",
+        "osmType": "node",
+        "osmId": 5890252086
+      }
+    },
+    {
+      "labels": [
+        "Malibagh",
+        "Malibagh (মালিবাগ)",
+        "মালিবাগ"
+      ],
+      "coordinates": [
+        23.7499107,
+        90.4132552
+      ],
+      "source": "osm:node/6796984913",
+      "confidence": "verified",
+      "address": "Malibagh Rail Gate",
+      "placeName": "Malibagh Rail Gate",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Malibagh",
+        "matchedValue": "Malibagh Rail Gate",
+        "osmType": "node",
+        "osmId": 6796984913
+      }
+    },
+    {
+      "labels": [
+        "Malibagh Railgate",
+        "Malibagh Railgate (মালিবাগ রেলগেট)",
+        "মালিবাগ রেলগেট"
+      ],
+      "coordinates": [
+        23.7496972,
+        90.4126346
+      ],
+      "source": "osm:node/12045952220",
+      "confidence": "verified",
+      "address": "Malibagh Railgate South Bus Stop",
+      "placeName": "Malibagh Railgate South Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Malibagh Railgate",
+        "matchedValue": "Malibagh Railgate South Bus Stop",
+        "osmType": "node",
+        "osmId": 12045952220
+      }
+    },
+    {
+      "labels": [
+        "Manik Nagar",
+        "Manik Nagar (মানিক নগর)",
+        "মানিক নগর"
+      ],
+      "coordinates": [
+        23.7224852,
+        90.4289394
+      ],
+      "source": "osm:node/12057056990",
+      "confidence": "verified",
+      "address": "Manik Nagar Bus stop",
+      "placeName": "Manik Nagar Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Manik Nagar",
+        "matchedValue": "Manik Nagar Bus stop",
+        "osmType": "node",
+        "osmId": 12057056990
+      }
+    },
+    {
+      "labels": [
+        "Matsya Bhaban",
+        "Matsya Bhaban (মৎস্য ভবন)",
+        "মৎস্য ভবন"
+      ],
+      "coordinates": [
+        23.7337607,
+        90.4029274
+      ],
+      "source": "osm:node/6858475735",
+      "confidence": "verified",
+      "address": "মৎস্য ভবন মোড়",
+      "placeName": "মৎস্য ভবন মোড়",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "মৎস্য ভবন",
+        "matchedValue": "মৎস্য ভবন মোড়",
+        "osmType": "node",
+        "osmId": 6858475735
+      }
+    },
+    {
+      "labels": [
+        "Matuail",
+        "Matuail (মাতুয়াইল)",
+        "মাতুয়াইল"
+      ],
+      "coordinates": [
+        23.6949652,
+        90.4663909
+      ],
+      "source": "osm:node/3522842672",
+      "confidence": "verified",
+      "address": "Matuail medical bus stop",
+      "placeName": "Matuail medical bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Matuail",
+        "matchedValue": "Matuail medical bus stop",
+        "osmType": "node",
+        "osmId": 3522842672
+      }
+    },
+    {
+      "labels": [
+        "Mazar Road",
+        "Mazar Road (মাজার রোড)",
+        "মাজার রোড"
+      ],
+      "coordinates": [
+        23.7950254,
+        90.3486124
+      ],
+      "source": "osm:node/13252006190",
+      "confidence": "verified",
+      "address": "Mazar Road Konabari, Bus stop",
+      "placeName": "Mazar Road Konabari, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Mazar Road",
+        "matchedValue": "Mazar Road Konabari, Bus stop",
+        "osmType": "node",
+        "osmId": 13252006190
+      }
+    },
+    {
+      "labels": [
+        "Meghna Ghat",
+        "Meghna Ghat (মেঘনা ঘাট)",
+        "মেঘনা ঘাট"
+      ],
+      "coordinates": [
+        23.6184552,
+        90.6096763
+      ],
+      "source": "osm:way/526351654",
+      "confidence": "verified",
+      "address": "Meghna Ghat Bus Stop মেঘনা ঘাট বাস স্টপ",
+      "placeName": "Meghna Ghat Bus Stop মেঘনা ঘাট বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 116,
+        "matchedLabel": "Meghna Ghat",
+        "matchedValue": "Meghna Ghat Bus Stop মেঘনা ঘাট বাস স্টপ",
+        "osmType": "way",
+        "osmId": 526351654
+      }
+    },
+    {
+      "labels": [
+        "Merul Badda",
+        "Merul Badda (মেরুল বাড্ডা)",
+        "মেরুল বাড্ডা"
+      ],
+      "coordinates": [
+        23.7716566,
+        90.4253879
+      ],
+      "source": "osm:node/3653698097",
+      "confidence": "verified",
+      "address": "Merul Badda Bus Stand",
+      "placeName": "Merul Badda Bus Stand",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Merul Badda",
+        "matchedValue": "Merul Badda Bus Stand",
+        "osmType": "node",
+        "osmId": 3653698097
+      }
+    },
+    {
+      "labels": [
+        "MES",
+        "MES (এমইএস)",
+        "এমইএস"
+      ],
+      "coordinates": [
+        23.8161374,
+        90.4054005
+      ],
+      "source": "osm:node/12078082748",
+      "confidence": "verified",
+      "address": "MES Bus Stop",
+      "placeName": "MES Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "MES",
+        "matchedValue": "MES Bus Stop",
+        "osmType": "node",
+        "osmId": 12078082748
+      }
+    },
+    {
+      "labels": [
+        "Mill Gate",
+        "Mill Gate (মিল গেট)",
+        "মিল গেট"
+      ],
+      "coordinates": [
+        23.8960141,
+        90.3993768
+      ],
+      "source": "osm:node/5203607953",
+      "confidence": "verified",
+      "address": "Mill Gate Bus Stop মিল গেট বাস স্টপ",
+      "placeName": "Mill Gate Bus Stop মিল গেট বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Mill Gate",
+        "matchedValue": "Mill Gate Bus Stop মিল গেট বাস স্টপ",
+        "osmType": "node",
+        "osmId": 5203607953
+      }
+    },
+    {
+      "labels": [
+        "Mirpur 1",
+        "Mirpur 1 (মিরপুর ১)",
+        "মিরপুর ১"
+      ],
+      "coordinates": [
+        23.7983759,
+        90.353468
+      ],
+      "source": "osm:node/13260951321",
+      "confidence": "verified",
+      "address": "Mirpur 1 Bus Stop, Bus station",
+      "placeName": "Mirpur 1 Bus Stop, Bus station",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Mirpur 1",
+        "matchedValue": "Mirpur 1 Bus Stop, Bus station",
+        "osmType": "node",
+        "osmId": 13260951321
+      }
+    },
+    {
+      "labels": [
+        "Mirpur 10",
+        "Mirpur 10 (মিরপুর ১০)",
+        "মিরপুর ১০"
+      ],
+      "coordinates": [
+        23.8083683,
+        90.3682791
+      ],
+      "source": "osm:node/10294007260",
+      "confidence": "verified",
+      "address": "মিরপুর ১০",
+      "placeName": "মিরপুর ১০",
+      "review": {
+        "status": "approved",
+        "score": 109,
+        "matchedLabel": "Mirpur 10",
+        "matchedValue": "Mirpur 10",
+        "osmType": "node",
+        "osmId": 10294007260
+      }
+    },
+    {
+      "labels": [
+        "Mirpur 11",
+        "Mirpur 11 (মিরপুর ১১)",
+        "মিরপুর ১১"
+      ],
+      "coordinates": [
+        23.819103,
+        90.3653075
+      ],
+      "source": "osm:node/10294007263",
+      "confidence": "verified",
+      "address": "মিরপুর ১১",
+      "placeName": "মিরপুর ১১",
+      "review": {
+        "status": "approved",
+        "score": 109,
+        "matchedLabel": "Mirpur 11",
+        "matchedValue": "Mirpur 11",
+        "osmType": "node",
+        "osmId": 10294007263
+      }
+    },
+    {
+      "labels": [
+        "Mirpur 13",
+        "Mirpur 13 (মিরপুর ১৩)",
+        "মিরপুর ১৩"
+      ],
+      "coordinates": [
+        23.8045178,
+        90.376564
+      ],
+      "source": "osm:node/13264873575",
+      "confidence": "verified",
+      "address": "Mirpur 13, Bus stop",
+      "placeName": "Mirpur 13, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Mirpur 13",
+        "matchedValue": "Mirpur 13, Bus stop",
+        "osmType": "node",
+        "osmId": 13264873575
+      }
+    },
+    {
+      "labels": [
+        "Mirpur 14",
+        "Mirpur 14 (মিরপুর ১৪)",
+        "মিরপুর ১৪"
+      ],
+      "coordinates": [
+        23.7987123,
+        90.3867674
+      ],
+      "source": "osm:node/13266854319",
+      "confidence": "verified",
+      "address": "Mirpur 14 Bus stop",
+      "placeName": "Mirpur 14 Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Mirpur 14",
+        "matchedValue": "Mirpur 14 Bus stop",
+        "osmType": "node",
+        "osmId": 13266854319
+      }
+    },
+    {
+      "labels": [
+        "Mirpur 2",
+        "Mirpur 2 (মিরপুর ২)",
+        "মিরপুর ২"
+      ],
+      "coordinates": [
+        23.8050083,
+        90.3635124
+      ],
+      "source": "osm:node/3731758171",
+      "confidence": "verified",
+      "address": "মিরপুর-২",
+      "placeName": "মিরপুর-২",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "মিরপুর ২",
+        "matchedValue": "মিরপুর-২",
+        "osmType": "node",
+        "osmId": 3731758171
+      }
+    },
+    {
+      "labels": [
+        "Mogbazar",
+        "Mogbazar (মগবাজার)",
+        "মগবাজার"
+      ],
+      "coordinates": [
+        23.7488751,
+        90.4036343
+      ],
+      "source": "osm:node/3500766128",
+      "confidence": "verified",
+      "address": "মগবাজার বাস স্টপ",
+      "placeName": "মগবাজার বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "মগবাজার",
+        "matchedValue": "মগবাজার বাস স্টপ",
+        "osmType": "node",
+        "osmId": 3500766128
+      }
+    },
+    {
+      "labels": [
+        "Mohakhali",
+        "Mohakhali (মহাখালী)",
+        "মহাখালী"
+      ],
+      "coordinates": [
+        23.7808639,
+        90.399206
+      ],
+      "source": "osm:node/12006308262",
+      "confidence": "verified",
+      "address": "Mohakhali Commercial Area Bus stop",
+      "placeName": "Mohakhali Commercial Area Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Mohakhali",
+        "matchedValue": "Mohakhali Commercial Area Bus stop",
+        "osmType": "node",
+        "osmId": 12006308262
+      }
+    },
+    {
+      "labels": [
+        "Mohammadpur",
+        "Mohammadpur (মোহাম্মদপুর)",
+        "মোহাম্মদপুর"
+      ],
+      "coordinates": [
+        23.7572031,
+        90.3620184
+      ],
+      "source": "osm:node/12014834174",
+      "confidence": "verified",
+      "address": "Mohammadpur (BRTC) Bus stop",
+      "placeName": "Mohammadpur (BRTC) Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Mohammadpur",
+        "matchedValue": "Mohammadpur (BRTC) Bus stop",
+        "osmType": "node",
+        "osmId": 12014834174
+      }
+    },
+    {
+      "labels": [
+        "Motijheel",
+        "Motijheel (মতিঝিল)",
+        "মতিঝিল"
+      ],
+      "coordinates": [
+        23.7280387,
+        90.4190372
+      ],
+      "source": "osm:node/10293351383",
+      "confidence": "verified",
+      "address": "মতিঝিল",
+      "placeName": "মতিঝিল",
+      "review": {
+        "status": "approved",
+        "score": 109,
+        "matchedLabel": "Motijheel",
+        "matchedValue": "Motijheel",
+        "osmType": "node",
+        "osmId": 10293351383
+      }
+    },
+    {
+      "labels": [
+        "Mouchak",
+        "Mouchak (মৌচাক)",
+        "মৌচাক"
+      ],
+      "coordinates": [
+        24.0229567,
+        90.2940262
+      ],
+      "source": "osm:node/12169756255",
+      "confidence": "verified",
+      "address": "Mouchak",
+      "placeName": "Mouchak",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Mouchak",
+        "matchedValue": "Mouchak",
+        "osmType": "node",
+        "osmId": 12169756255
+      }
+    },
+    {
+      "labels": [
+        "Mugdapara",
+        "Mugdapara (মুগদাপাড়া)",
+        "মুগদাপাড়া"
+      ],
+      "coordinates": [
+        23.7311981,
+        90.4285295
+      ],
+      "source": "osm:node/12052350731",
+      "confidence": "verified",
+      "address": "Mugdapara Bus stop",
+      "placeName": "Mugdapara Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Mugdapara",
+        "matchedValue": "Mugdapara Bus stop",
+        "osmType": "node",
+        "osmId": 12052350731
+      }
+    },
+    {
+      "labels": [
+        "Naya Bazar",
+        "Naya Bazar (নয়া বাজার)",
+        "নয়া বাজার"
+      ],
+      "coordinates": [
+        23.7146123,
+        90.408536
+      ],
+      "source": "osm:node/11765688975",
+      "confidence": "verified",
+      "address": "Naya Bazar Bus Stop, Nawab Eusuf Rd, Dhaka",
+      "placeName": "Naya Bazar Bus Stop, Nawab Eusuf Rd, Dhaka",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Naya Bazar",
+        "matchedValue": "Naya Bazar Bus Stop, Nawab Eusuf Rd, Dhaka",
+        "osmType": "node",
+        "osmId": 11765688975
+      }
+    },
+    {
+      "labels": [
+        "New Market",
+        "New Market (নিউ মার্কেট)",
+        "নিউ মার্কেট"
+      ],
+      "coordinates": [
+        23.7342234,
+        90.3844723
+      ],
+      "source": "osm:node/11821919116",
+      "confidence": "verified",
+      "address": "New Market Bus stop, Mirpur Rd, Dhaka",
+      "placeName": "New Market Bus stop, Mirpur Rd, Dhaka",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "New Market",
+        "matchedValue": "New Market Bus stop, Mirpur Rd, Dhaka",
+        "osmType": "node",
+        "osmId": 11821919116
+      }
+    },
+    {
+      "labels": [
+        "Nilkhet",
+        "Nilkhet (নীলক্ষেত)",
+        "নীলক্ষেত"
+      ],
+      "coordinates": [
+        23.731901,
+        90.3850854
+      ],
+      "source": "osm:node/3560263193",
+      "confidence": "verified",
+      "address": "নীলক্ষেত বাস স্টপ",
+      "placeName": "নীলক্ষেত বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Nilkhet",
+        "matchedValue": "Nilkhet Bus Stop",
+        "osmType": "node",
+        "osmId": 3560263193
+      }
+    },
+    {
+      "labels": [
+        "Nimtola",
+        "Nimtola (নিমতলা)",
+        "নিমতলা"
+      ],
+      "coordinates": [
+        23.6158023,
+        90.3320661
+      ],
+      "source": "osm:node/11637201816",
+      "confidence": "verified",
+      "address": "Nimtola Bus stop, Dhaka - Mawa Hwy, Solepur",
+      "placeName": "Nimtola Bus stop, Dhaka - Mawa Hwy, Solepur",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Nimtola",
+        "matchedValue": "Nimtola Bus stop, Dhaka - Mawa Hwy, Solepur",
+        "osmType": "node",
+        "osmId": 11637201816
+      }
+    },
+    {
+      "labels": [
+        "Nobinagar",
+        "Nobinagar (নবীনগর)",
+        "নবীনগর"
+      ],
+      "coordinates": [
+        23.915482,
+        90.259228
+      ],
+      "source": "osm:node/12169756306",
+      "confidence": "verified",
+      "address": "Nobinagar",
+      "placeName": "Nobinagar",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Nobinagar",
+        "matchedValue": "Nobinagar",
+        "osmType": "node",
+        "osmId": 12169756306
+      }
+    },
+    {
+      "labels": [
+        "Notun Bazar",
+        "Notun Bazar (নতুন বাজার)",
+        "নতুন বাজার"
+      ],
+      "coordinates": [
+        23.7969059,
+        90.4237478
+      ],
+      "source": "osm:node/2994771585",
+      "confidence": "verified",
+      "address": "Notun Bazar Bus Stop",
+      "placeName": "Notun Bazar Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Notun Bazar",
+        "matchedValue": "Notun Bazar Bus Stop",
+        "osmType": "node",
+        "osmId": 2994771585
+      }
+    },
+    {
+      "labels": [
+        "Old Airport",
+        "Old Airport (পুরাতন বিমানবন্দর)",
+        "পুরাতন বিমানবন্দর"
+      ],
+      "coordinates": [
+        23.7721895,
+        90.3901269
+      ],
+      "source": "osm:node/11936848443",
+      "confidence": "verified",
+      "address": "Old Airport Bus stop",
+      "placeName": "Old Airport Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 116,
+        "matchedLabel": "Old Airport",
+        "matchedValue": "Old Airport Bus stop",
+        "osmType": "node",
+        "osmId": 11936848443
+      }
+    },
+    {
+      "labels": [
+        "Pallabi",
+        "Pallabi (পল্লবী)",
+        "পল্লবী"
+      ],
+      "coordinates": [
+        23.8261574,
+        90.3642123
+      ],
+      "source": "osm:node/10294007266",
+      "confidence": "verified",
+      "address": "পল্লবী",
+      "placeName": "পল্লবী",
+      "review": {
+        "status": "approved",
+        "score": 109,
+        "matchedLabel": "Pallabi",
+        "matchedValue": "Pallabi",
+        "osmType": "node",
+        "osmId": 10294007266
+      }
+    },
+    {
+      "labels": [
+        "Palli Bidyut",
+        "Palli Bidyut (পল্লী বিদ্যুৎ)",
+        "পল্লী বিদ্যুৎ"
+      ],
+      "coordinates": [
+        23.924306,
+        90.263235
+      ],
+      "source": "osm:node/12169756302",
+      "confidence": "verified",
+      "address": "Palli Bidyut",
+      "placeName": "Palli Bidyut",
+      "review": {
+        "status": "approved",
+        "score": 133,
+        "matchedLabel": "Palli Bidyut",
+        "matchedValue": "Palli Bidyut",
+        "osmType": "node",
+        "osmId": 12169756302
+      }
+    },
+    {
+      "labels": [
+        "Paltan",
+        "Paltan (পল্টন)",
+        "পল্টন"
+      ],
+      "coordinates": [
+        23.7303048,
+        90.4098134
+      ],
+      "source": "osm:node/12002685205",
+      "confidence": "verified",
+      "address": "Paltan Bus stop",
+      "placeName": "Paltan Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Paltan",
+        "matchedValue": "Paltan Bus stop",
+        "osmType": "node",
+        "osmId": 12002685205
+      }
+    },
+    {
+      "labels": [
+        "Police Plaza",
+        "Police Plaza (পুলিস প্লাজা)",
+        "পুলিস প্লাজা"
+      ],
+      "coordinates": [
+        23.7723049,
+        90.4157346
+      ],
+      "source": "osm:node/5738472955",
+      "confidence": "verified",
+      "address": "পুলিশ প্লাজা",
+      "placeName": "পুলিশ প্লাজা",
+      "review": {
+        "status": "approved",
+        "score": 120,
+        "matchedLabel": "Police Plaza",
+        "matchedValue": "Police Plaza",
+        "osmType": "node",
+        "osmId": 5738472955
+      }
+    },
+    {
+      "labels": [
+        "Postogola",
+        "Postogola (পোস্তগোলা)",
+        "পোস্তগোলা"
+      ],
+      "coordinates": [
+        23.692447,
+        90.4331965
+      ],
+      "source": "osm:node/5183263269",
+      "confidence": "verified",
+      "address": "পোস্তগোলা বাস স্টপ",
+      "placeName": "পোস্তগোলা বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "পোস্তগোলা",
+        "matchedValue": "পোস্তগোলা বাস স্টপ",
+        "osmType": "node",
+        "osmId": 5183263269
+      }
+    },
+    {
+      "labels": [
+        "Press Club",
+        "Press Club (প্রেস ক্লাব)",
+        "প্রেস ক্লাব"
+      ],
+      "coordinates": [
+        23.7301359,
+        90.4073461
+      ],
+      "source": "osm:node/12002689142",
+      "confidence": "verified",
+      "address": "Press Club Bus stop",
+      "placeName": "Press Club Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Press Club",
+        "matchedValue": "Press Club Bus stop",
+        "osmType": "node",
+        "osmId": 12002689142
+      }
+    },
+    {
+      "labels": [
+        "Rajlakshmi",
+        "Rajlakshmi (রাজলক্ষ্মী)",
+        "রাজলক্ষ্মী"
+      ],
+      "coordinates": [
+        23.8643282,
+        90.3999441
+      ],
+      "source": "osm:node/4737734028",
+      "confidence": "verified",
+      "address": "Rajlakshmi Bus Stopage, Uttara",
+      "placeName": "Rajlakshmi Bus Stopage, Uttara",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Rajlakshmi",
+        "matchedValue": "Rajlakshmi Bus Stopage, Uttara",
+        "osmType": "node",
+        "osmId": 4737734028
+      }
+    },
+    {
+      "labels": [
+        "Rampura Bridge",
+        "Rampura Bridge (রামপুরা ব্রিজ)",
+        "রামপুরা ব্রিজ"
+      ],
+      "coordinates": [
+        23.7679175,
+        90.4231695
+      ],
+      "source": "osm:node/3500679440",
+      "confidence": "verified",
+      "address": "Rampura Bridge Bus Stop",
+      "placeName": "Rampura Bridge Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Rampura Bridge",
+        "matchedValue": "Rampura Bridge Bus Stop",
+        "osmType": "node",
+        "osmId": 3500679440
+      }
+    },
+    {
+      "labels": [
+        "Rayerbag",
+        "Rayerbag (রায়েরবাগ)",
+        "রায়েরবাগ"
+      ],
+      "coordinates": [
+        23.699431,
+        90.457022
+      ],
+      "source": "osm:node/3522834139",
+      "confidence": "verified",
+      "address": "Rayerbag bus stop",
+      "placeName": "Rayerbag bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Rayerbag",
+        "matchedValue": "Rayerbag bus stop",
+        "osmType": "node",
+        "osmId": 3522834139
+      }
+    },
+    {
+      "labels": [
+        "Rupnagar",
+        "Rupnagar (রূপনগর)",
+        "রূপনগর"
+      ],
+      "coordinates": [
+        23.827317,
+        90.3453653
+      ],
+      "source": "osm:node/13245710257",
+      "confidence": "verified",
+      "address": "Rupnagar Bus Stop, Bus stop",
+      "placeName": "Rupnagar Bus Stop, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Rupnagar",
+        "matchedValue": "Rupnagar Bus Stop, Bus stop",
+        "osmType": "node",
+        "osmId": 13245710257
+      }
+    },
+    {
+      "labels": [
+        "Sainik Club",
+        "Sainik Club (সৈনিক ক্লাব)",
+        "সৈনিক ক্লাব"
+      ],
+      "coordinates": [
+        23.7905261,
+        90.3999734
+      ],
+      "source": "osm:node/6904997971",
+      "confidence": "verified",
+      "address": "সৈনিক ক্লাব",
+      "placeName": "সৈনিক ক্লাব",
+      "review": {
+        "status": "approved",
+        "score": 133,
+        "matchedLabel": "সৈনিক ক্লাব",
+        "matchedValue": "সৈনিক ক্লাব",
+        "osmType": "node",
+        "osmId": 6904997971
+      }
+    },
+    {
+      "labels": [
+        "Sanarpar",
+        "Sanarpar (সানারপাড়)",
+        "সানারপাড়"
+      ],
+      "coordinates": [
+        23.6949106,
+        90.4902493
+      ],
+      "source": "osm:node/3518348924",
+      "confidence": "verified",
+      "address": "sanarpar bus stop",
+      "placeName": "sanarpar bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Sanarpar",
+        "matchedValue": "sanarpar bus stop",
+        "osmType": "node",
+        "osmId": 3518348924
+      }
+    },
+    {
+      "labels": [
+        "Saudi Colony",
+        "Saudi Colony (সৌদি কলোনি)",
+        "সৌদি কলোনি"
+      ],
+      "coordinates": [
+        23.7783443,
+        90.3893653
+      ],
+      "source": "osm:node/5880031445",
+      "confidence": "verified",
+      "address": "Saudi Colony Bus Stop",
+      "placeName": "Saudi Colony Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Saudi Colony",
+        "matchedValue": "Saudi Colony Bus Stop",
+        "osmType": "node",
+        "osmId": 5880031445
+      }
+    },
+    {
+      "labels": [
+        "Savar",
+        "Savar (সাভার)",
+        "সাভার"
+      ],
+      "coordinates": [
+        23.847126,
+        90.2571752
+      ],
+      "source": "osm:node/640446972",
+      "confidence": "verified",
+      "address": "Savar Bazar Bus Stand",
+      "placeName": "Savar Bazar Bus Stand",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Savar",
+        "matchedValue": "Savar Bazar Bus Stand",
+        "osmType": "node",
+        "osmId": 640446972
+      }
+    },
+    {
+      "labels": [
+        "Savar Cantonment",
+        "Savar Cantonment (সাভার ক্যান্টনমেন্ট)",
+        "সাভার ক্যান্টনমেন্ট"
+      ],
+      "coordinates": [
+        23.917256,
+        90.2603874
+      ],
+      "source": "osm:node/12169756307",
+      "confidence": "verified",
+      "address": "Savar Cantonment",
+      "placeName": "Savar Cantonment",
+      "review": {
+        "status": "approved",
+        "score": 133,
+        "matchedLabel": "Savar Cantonment",
+        "matchedValue": "Savar Cantonment",
+        "osmType": "node",
+        "osmId": 12169756307
+      }
+    },
+    {
+      "labels": [
+        "Science Lab",
+        "Science Lab (বিজ্ঞান গবেষণা প্রযুক্তি)",
+        "বিজ্ঞান গবেষণা প্রযুক্তি"
+      ],
+      "coordinates": [
+        23.7391036,
+        90.3833174
+      ],
+      "source": "osm:node/11821930860",
+      "confidence": "verified",
+      "address": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+      "placeName": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Science Lab",
+        "matchedValue": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+        "osmType": "node",
+        "osmId": 11821930860
+      }
+    },
+    {
+      "labels": [
+        "Shahbag",
+        "Shahbag (শাহবাগ)",
+        "শাহবাগ"
+      ],
+      "coordinates": [
+        23.7400629,
+        90.3961024
+      ],
+      "source": "osm:node/10294576120",
+      "confidence": "verified",
+      "address": "শাহবাগ",
+      "placeName": "শাহবাগ",
+      "review": {
+        "status": "approved",
+        "score": 109,
+        "matchedLabel": "শাহবাগ",
+        "matchedValue": "শাহবাগ",
+        "osmType": "node",
+        "osmId": 10294576120
+      }
+    },
+    {
+      "labels": [
+        "Shahjadpur",
+        "Shahjadpur (শাহজাদপুর)",
+        "শাহজাদপুর"
+      ],
+      "coordinates": [
+        23.7920887,
+        90.4245009
+      ],
+      "source": "osm:node/5449694922",
+      "confidence": "verified",
+      "address": "Shahjadpur Bus Stop",
+      "placeName": "Shahjadpur Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Shahjadpur",
+        "matchedValue": "Shahjadpur Bus Stop",
+        "osmType": "node",
+        "osmId": 5449694922
+      }
+    },
+    {
+      "labels": [
+        "Shantinagar",
+        "Shantinagar (শান্তিনগর)",
+        "শান্তিনগর"
+      ],
+      "coordinates": [
+        23.7417164,
+        90.4117893
+      ],
+      "source": "osm:node/5890252685",
+      "confidence": "verified",
+      "address": "Shantinagar",
+      "placeName": "Shantinagar",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Shantinagar",
+        "matchedValue": "Shantinagar",
+        "osmType": "node",
+        "osmId": 5890252685
+      }
+    },
+    {
+      "labels": [
+        "Shewra",
+        "Shewra (শেওড়া)",
+        "শেওড়া"
+      ],
+      "coordinates": [
+        23.8190439,
+        90.4155151
+      ],
+      "source": "osm:node/12078093554",
+      "confidence": "verified",
+      "address": "Shewra Bus stop",
+      "placeName": "Shewra Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Shewra",
+        "matchedValue": "Shewra Bus stop",
+        "osmType": "node",
+        "osmId": 12078093554
+      }
+    },
+    {
+      "labels": [
+        "Shewrapara",
+        "Shewrapara (শেওড়াপাড়া)",
+        "শেওড়াপাড়া"
+      ],
+      "coordinates": [
+        23.7904911,
+        90.3755519
+      ],
+      "source": "osm:node/3941231699",
+      "confidence": "verified",
+      "address": "Shewrapara",
+      "placeName": "Shewrapara",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Shewrapara",
+        "matchedValue": "Shewrapara",
+        "osmType": "node",
+        "osmId": 3941231699
+      }
+    },
+    {
+      "labels": [
+        "Shibu Market",
+        "Shibu Market (শিবু মার্কেট)",
+        "শিবু মার্কেট"
+      ],
+      "coordinates": [
+        23.6447516,
+        90.4933956
+      ],
+      "source": "osm:node/5185563693",
+      "confidence": "verified",
+      "address": "Sibu Market BRTC AC Bus Stop শিবু মার্কেট বি আর টি সি এসি বাস স্টপ",
+      "placeName": "Sibu Market BRTC AC Bus Stop শিবু মার্কেট বি আর টি সি এসি বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 108,
+        "matchedLabel": "শিবু মার্কেট",
+        "matchedValue": "Sibu Market BRTC AC Bus Stop শিবু মার্কেট বি আর টি সি এসি বাস স্টপ",
+        "osmType": "node",
+        "osmId": 5185563693
+      }
+    },
+    {
+      "labels": [
+        "Shimultola",
+        "Shimultola (সিমুলতলা)",
+        "সিমুলতলা"
+      ],
+      "coordinates": [
+        23.9374033,
+        90.2857143
+      ],
+      "source": "osm:node/12169756319",
+      "confidence": "verified",
+      "address": "Shimultola Bus Stand",
+      "placeName": "Shimultola Bus Stand",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Shimultola",
+        "matchedValue": "Shimultola Bus Stand",
+        "osmType": "node",
+        "osmId": 12169756319
+      }
+    },
+    {
+      "labels": [
+        "Shishu Mela",
+        "Shishu Mela (শিশু মেলা)",
+        "শিশু মেলা"
+      ],
+      "coordinates": [
+        23.7729988,
+        90.3674856
+      ],
+      "source": "osm:node/12514058864",
+      "confidence": "verified",
+      "address": "Shishu Mela Bus Stop, Bus station",
+      "placeName": "Shishu Mela Bus Stop, Bus station",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Shishu Mela",
+        "matchedValue": "Shishu Mela Bus Stop, Bus station",
+        "osmType": "node",
+        "osmId": 12514058864
+      }
+    },
+    {
+      "labels": [
+        "Shiyal Bari",
+        "Shiyal Bari (শিয়াল বাড়ি)",
+        "শিয়াল বাড়ি"
+      ],
+      "coordinates": [
+        23.8081946,
+        90.3580172
+      ],
+      "source": "osm:node/3016712240",
+      "confidence": "verified",
+      "address": "Shiyal Bari Mor Bus Stop",
+      "placeName": "Shiyal Bari Mor Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Shiyal Bari",
+        "matchedValue": "Shiyal Bari Mor Bus Stop",
+        "osmType": "node",
+        "osmId": 3016712240
+      }
+    },
+    {
+      "labels": [
+        "Shonir Akhra",
+        "Shonir Akhra (শনির আখরা)",
+        "শনির আখরা"
+      ],
+      "coordinates": [
+        23.7028732,
+        90.4504061
+      ],
+      "source": "osm:node/3522844764",
+      "confidence": "verified",
+      "address": "শনির-আখরা বাস স্টপ",
+      "placeName": "শনির-আখরা বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "শনির আখরা",
+        "matchedValue": "শনির-আখরা বাস স্টপ",
+        "osmType": "node",
+        "osmId": 3522844764
+      }
+    },
+    {
+      "labels": [
+        "Showari Ghat",
+        "Showari Ghat (শোয়ারী ঘাট)",
+        "শোয়ারী ঘাট"
+      ],
+      "coordinates": [
+        23.7114366,
+        90.3943348
+      ],
+      "source": "osm:node/12028983349",
+      "confidence": "verified",
+      "address": "Showari Ghat Bus stop",
+      "placeName": "Showari Ghat Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Showari Ghat",
+        "matchedValue": "Showari Ghat Bus stop",
+        "osmType": "node",
+        "osmId": 12028983349
+      }
+    },
+    {
+      "labels": [
+        "Shukrabad",
+        "Shukrabad (শুক্রাবাদ)",
+        "শুক্রাবাদ"
+      ],
+      "coordinates": [
+        23.7524661,
+        90.377664
+      ],
+      "source": "osm:node/5298932621",
+      "confidence": "verified",
+      "address": "Shukrabad Bus Stopage",
+      "placeName": "Shukrabad Bus Stopage",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Shukrabad",
+        "matchedValue": "Shukrabad Bus Stopage",
+        "osmType": "node",
+        "osmId": 5298932621
+      }
+    },
+    {
+      "labels": [
+        "Shyamoli",
+        "Shyamoli (শ্যামলী)",
+        "শ্যামলী"
+      ],
+      "coordinates": [
+        23.8088054,
+        90.4214847
+      ],
+      "source": "osm:node/3803653181",
+      "confidence": "verified",
+      "address": "Shyamoli Bus Station",
+      "placeName": "Shyamoli Bus Station",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Shyamoli",
+        "matchedValue": "Shyamoli Bus Station",
+        "osmType": "node",
+        "osmId": 3803653181
+      }
+    },
+    {
+      "labels": [
+        "Sign Board",
+        "Sign Board (সাইন বোর্ড)",
+        "সাইন বোর্ড"
+      ],
+      "coordinates": [
+        23.953868,
+        90.3812834
+      ],
+      "source": "osm:node/12121815642",
+      "confidence": "verified",
+      "address": "Sign Board Bus stop",
+      "placeName": "Sign Board Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Sign Board",
+        "matchedValue": "Sign Board Bus stop",
+        "osmType": "node",
+        "osmId": 12121815642
+      }
+    },
+    {
+      "labels": [
+        "Staff Road",
+        "Staff Road (স্টাফ রোড)",
+        "স্টাফ রোড"
+      ],
+      "coordinates": [
+        23.8116965,
+        90.4036888
+      ],
+      "source": "osm:node/12078089898",
+      "confidence": "verified",
+      "address": "Staff Road Bus Station Bus station",
+      "placeName": "Staff Road Bus Station Bus station",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Staff Road",
+        "matchedValue": "Staff Road Bus Station Bus station",
+        "osmType": "node",
+        "osmId": 12078089898
+      }
+    },
+    {
+      "labels": [
+        "Star Kabab",
+        "Star Kabab (স্টার কাবাব)",
+        "স্টার কাবাব"
+      ],
+      "coordinates": [
+        23.7474471,
+        90.3707129
+      ],
+      "source": "osm:node/12012251129",
+      "confidence": "verified",
+      "address": "Star Kabab Bus Stop",
+      "placeName": "Star Kabab Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Star Kabab",
+        "matchedValue": "Star Kabab Bus Stop",
+        "osmType": "node",
+        "osmId": 12012251129
+      }
+    },
+    {
+      "labels": [
+        "Station Road",
+        "Station Road (স্টেশন রোড)",
+        "স্টেশন রোড"
+      ],
+      "coordinates": [
+        23.8916685,
+        90.4019931
+      ],
+      "source": "osm:node/12104097622",
+      "confidence": "verified",
+      "address": "Station Road Bus Counter",
+      "placeName": "Station Road Bus Counter",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Station Road",
+        "matchedValue": "Station Road Bus Counter",
+        "osmType": "node",
+        "osmId": 12104097622
+      }
+    },
+    {
+      "labels": [
+        "Taltola",
+        "Taltola (তালতলা)",
+        "তালতলা"
+      ],
+      "coordinates": [
+        23.7832966,
+        90.3785274
+      ],
+      "source": "osm:node/3739984012",
+      "confidence": "verified",
+      "address": "Taltola",
+      "placeName": "Taltola",
+      "review": {
+        "status": "approved",
+        "score": 119,
+        "matchedLabel": "Taltola",
+        "matchedValue": "Taltola",
+        "osmType": "node",
+        "osmId": 3739984012
+      }
+    },
+    {
+      "labels": [
+        "Technical",
+        "Technical (টেকনিক্যাল)",
+        "টেকনিক্যাল"
+      ],
+      "coordinates": [
+        23.7818634,
+        90.3513823
+      ],
+      "source": "osm:node/12518138812",
+      "confidence": "verified",
+      "address": "Technical Mor Bus stop, Bus stop",
+      "placeName": "Technical Mor Bus stop, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Technical",
+        "matchedValue": "Technical Mor Bus stop, Bus stop",
+        "osmType": "node",
+        "osmId": 12518138812
+      }
+    },
+    {
+      "labels": [
+        "Tikatuli",
+        "Tikatuli (টিকাটুলি)",
+        "টিকাটুলি"
+      ],
+      "coordinates": [
+        23.7176288,
+        90.4196726
+      ],
+      "source": "osm:node/11782397304",
+      "confidence": "verified",
+      "address": "Tikatuli Bus Stop",
+      "placeName": "Tikatuli Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Tikatuli",
+        "matchedValue": "Tikatuli Bus Stop",
+        "osmType": "node",
+        "osmId": 11782397304
+      }
+    },
+    {
+      "labels": [
+        "Tolarbag",
+        "Tolarbag (টোলারবাগ)",
+        "টোলারবাগ"
+      ],
+      "coordinates": [
+        23.7871935,
+        90.353776
+      ],
+      "source": "osm:node/13257966516",
+      "confidence": "verified",
+      "address": "Tolarbag Bus Stop, Bus stop",
+      "placeName": "Tolarbag Bus Stop, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Tolarbag",
+        "matchedValue": "Tolarbag Bus Stop, Bus stop",
+        "osmType": "node",
+        "osmId": 13257966516
+      }
+    },
+    {
+      "labels": [
+        "Tongi",
+        "Tongi (টঙ্গী)",
+        "টঙ্গী"
+      ],
+      "coordinates": [
+        23.8841892,
+        90.4006454
+      ],
+      "source": "osm:node/5201764964",
+      "confidence": "verified",
+      "address": "Tongi Bazar Bus Stop টঙ্গী বাজার বাস স্টপ",
+      "placeName": "Tongi Bazar Bus Stop টঙ্গী বাজার বাস স্টপ",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Tongi",
+        "matchedValue": "Tongi Bazar Bus Stop টঙ্গী বাজার বাস স্টপ",
+        "osmType": "node",
+        "osmId": 5201764964
+      }
+    },
+    {
+      "labels": [
+        "Uttar Badda",
+        "Uttar Badda (উত্তর বাড্ডা)",
+        "উত্তর বাড্ডা"
+      ],
+      "coordinates": [
+        23.7857042,
+        90.4256113
+      ],
+      "source": "osm:node/3176485406",
+      "confidence": "verified",
+      "address": "Uttar Badda Bus Stop",
+      "placeName": "Uttar Badda Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 121,
+        "matchedLabel": "Uttar Badda",
+        "matchedValue": "Uttar Badda Bus Stop",
+        "osmType": "node",
+        "osmId": 3176485406
+      }
+    },
+    {
+      "labels": [
+        "Uttara",
+        "Uttara (উত্তরা)",
+        "উত্তরা"
+      ],
+      "coordinates": [
+        23.872149,
+        90.4008005
+      ],
+      "source": "osm:node/3842610041",
+      "confidence": "verified",
+      "address": "Uttara BRTC bus counter",
+      "placeName": "Uttara BRTC bus counter",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Uttara",
+        "matchedValue": "Uttara BRTC bus counter",
+        "osmType": "node",
+        "osmId": 3842610041
+      }
+    },
+    {
+      "labels": [
+        "Wireless",
+        "Wireless (ওয়্যারলেস)",
+        "ওয়্যারলেস"
+      ],
+      "coordinates": [
+        23.7807869,
+        90.4054338
+      ],
+      "source": "osm:node/12006314403",
+      "confidence": "verified",
+      "address": "Wireless Mor Bus stop",
+      "placeName": "Wireless Mor Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Wireless",
+        "matchedValue": "Wireless Mor Bus stop",
+        "osmType": "node",
+        "osmId": 12006314403
+      }
+    },
+    {
+      "labels": [
+        "Workshop",
+        "Workshop (ওয়ার্কশপ)",
+        "ওয়ার্কশপ"
+      ],
+      "coordinates": [
+        23.7870379,
+        90.3906507
+      ],
+      "source": "osm:node/5879981786",
+      "confidence": "verified",
+      "address": "Workshop Bus Stop",
+      "placeName": "Workshop Bus Stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Workshop",
+        "matchedValue": "Workshop Bus Stop",
+        "osmType": "node",
+        "osmId": 5879981786
+      }
+    },
+    {
+      "labels": [
+        "Zirabo",
+        "Zirabo (জিরাবো)",
+        "জিরাবো"
+      ],
+      "coordinates": [
+        23.9131721,
+        90.3187806
+      ],
+      "source": "osm:node/12293505365",
+      "confidence": "verified",
+      "address": "Zirabo Bus stop, Bus stop",
+      "placeName": "Zirabo Bus stop, Bus stop",
+      "review": {
+        "status": "approved",
+        "score": 107,
+        "matchedLabel": "Zirabo",
+        "matchedValue": "Zirabo Bus stop, Bus stop",
+        "osmType": "node",
+        "osmId": 12293505365
+      }
+    },
+    {
+      "labels": [
+        "Zirani Bazar",
+        "Zirani Bazar (জিরানী বাজার)",
+        "জিরানী বাজার"
+      ],
+      "coordinates": [
+        23.9935433,
+        90.2556357
+      ],
+      "source": "osm:node/2895322471",
+      "confidence": "verified",
+      "address": "Zirani Bazar",
+      "placeName": "Zirani Bazar",
+      "review": {
+        "status": "approved",
+        "score": 133,
+        "matchedLabel": "Zirani Bazar",
+        "matchedValue": "Zirani Bazar",
+        "osmType": "node",
+        "osmId": 2895322471
+      }
+    }
+  ],
+  "unresolved": [
+    {
+      "stopId": "stop-gpo",
+      "label": "GPO (জিপিও)",
+      "labelEn": "GPO",
+      "labelBn": "জিপিও",
+      "routeCount": 55,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-kawran-bazar",
+      "label": "Kawran Bazar (কাওরান বাজার)",
+      "labelEn": "Kawran Bazar",
+      "labelBn": "কাওরান বাজার",
+      "routeCount": 45,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Babu Bazar Bus Stop, Babubazar Bridge, Dhaka",
+        "coordinates": [
+          23.7107686,
+          90.4027424
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11765673893"
+      }
+    },
+    {
+      "stopId": "stop-airport",
+      "label": "Airport (বিমানবন্দর)",
+      "labelEn": "Airport",
+      "labelBn": "বিমানবন্দর",
+      "routeCount": 44,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Old Airport Bus stop",
+        "coordinates": [
+          23.7721895,
+          90.3901269
+        ],
+        "score": 89,
+        "confidence": "candidate",
+        "source": "osm:node/11936848443"
+      }
+    },
+    {
+      "stopId": "stop-abdullahpur",
+      "label": "Abdullahpur (আব্দুল্লাহপুর)",
+      "labelEn": "Abdullahpur",
+      "labelBn": "আব্দুল্লাহপুর",
+      "routeCount": 43,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Abdullahpur Bus Stand, Dhaka - Mawa Hwy, Kalakandi",
+        "coordinates": [
+          23.6602934,
+          90.3592901
+        ],
+        "score": 107,
+        "confidence": "strong_candidate",
+        "source": "osm:node/5182898720"
+      }
+    },
+    {
+      "stopId": "stop-jashimuddin-uttara",
+      "label": "Jashimuddin (Uttara) (জসিমউদ্দিন - উত্তরা)",
+      "labelEn": "Jashimuddin (Uttara)",
+      "labelBn": "জসিমউদ্দিন - উত্তরা",
+      "routeCount": 38,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Jashimuddin Bus Stopage, Uttara",
+        "coordinates": [
+          23.8608599,
+          90.4000486
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/4737734589"
+      }
+    },
+    {
+      "stopId": "stop-jatrabari",
+      "label": "Jatrabari (যাত্রাবাড়ি)",
+      "labelEn": "Jatrabari",
+      "labelBn": "যাত্রাবাড়ি",
+      "routeCount": 34,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Jatrabari bus stop to Shariatpur, Dhaka - Barisal Highway, Dhaka",
+        "coordinates": [
+          23.7093864,
+          90.4347814
+        ],
+        "score": 107,
+        "confidence": "strong_candidate",
+        "source": "osm:node/11740555202"
+      }
+    },
+    {
+      "stopId": "stop-purobi",
+      "label": "Purobi (পুরবী)",
+      "labelEn": "Purobi",
+      "labelBn": "পুরবী",
+      "routeCount": 33,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Sare 11",
+        "coordinates": [
+          23.8190612,
+          90.3652321
+        ],
+        "score": 94,
+        "confidence": "strong_candidate",
+        "source": "osm:node/4380106699"
+      }
+    },
+    {
+      "stopId": "stop-sayapabad",
+      "label": "Sayapabad (সায়াপাবাদ)",
+      "labelEn": "Sayapabad",
+      "labelBn": "সায়াপাবাদ",
+      "routeCount": 31,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-sony-cinema-hall",
+      "label": "Sony Cinema Hall (সনি সিনেমা হল)",
+      "labelEn": "Sony Cinema Hall",
+      "labelBn": "সনি সিনেমা হল",
+      "routeCount": 28,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Sony Hall / Mirpur 1, Bus stop",
+        "coordinates": [
+          23.7997041,
+          90.3548493
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/13266827014"
+      }
+    },
+    {
+      "stopId": "stop-amin-bazar",
+      "label": "Amin Bazar (আমিন বাজার)",
+      "labelEn": "Amin Bazar",
+      "labelBn": "আমিন বাজার",
+      "routeCount": 27,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "আমিন বাজার ট্রাক স্ট্যান্ড",
+        "coordinates": [
+          23.785039,
+          90.3314387
+        ],
+        "score": 121,
+        "confidence": "strong_candidate",
+        "source": "osm:node/5238788504"
+      }
+    },
+    {
+      "stopId": "stop-jamuna-future-park",
+      "label": "Jamuna Future Park (যমুনা ফিউচার পার্ক)",
+      "labelEn": "Jamuna Future Park",
+      "labelBn": "যমুনা ফিউচার পার্ক",
+      "routeCount": 25,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Nandan Theme Park",
+        "coordinates": [
+          24.031199,
+          90.241882
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12169756331"
+      }
+    },
+    {
+      "stopId": "stop-nadda",
+      "label": "Nadda (নদ্দা)",
+      "labelEn": "Nadda",
+      "labelBn": "নদ্দা",
+      "routeCount": 25,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-golap-shah-mazar",
+      "label": "Golap Shah Mazar (গোলাপ শাহ মাজার)",
+      "labelEn": "Golap Shah Mazar",
+      "labelBn": "গোলাপ শাহ মাজার",
+      "routeCount": 23,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Mazar Road Konabari, Bus stop",
+        "coordinates": [
+          23.7950254,
+          90.3486124
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/13252006190"
+      }
+    },
+    {
+      "stopId": "stop-kalshi",
+      "label": "Kalshi (কালশী)",
+      "labelEn": "Kalshi",
+      "labelBn": "কালশী",
+      "routeCount": 21,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-rampura-bazar",
+      "label": "Rampura Bazar (রামপুরা বাজার)",
+      "labelEn": "Rampura Bazar",
+      "labelBn": "রামপুরা বাজার",
+      "routeCount": 21,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "রামপুরা",
+        "coordinates": [
+          23.7683221,
+          90.4219638
+        ],
+        "score": 61,
+        "confidence": "weak_candidate",
+        "source": "osm:node/5738418237"
+      }
+    },
+    {
+      "stopId": "stop-mirpur-12",
+      "label": "Mirpur 12 (মিরপুর ১২)",
+      "labelEn": "Mirpur 12",
+      "labelBn": "মিরপুর ১২",
+      "routeCount": 20,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dhaka College Bus stop, Mirpur Rd, Dhaka",
+        "coordinates": [
+          23.7360491,
+          90.3839557
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11821941384"
+      }
+    },
+    {
+      "stopId": "stop-badda",
+      "label": "Badda (বাড্ডা)",
+      "labelEn": "Badda",
+      "labelBn": "বাড্ডা",
+      "routeCount": 19,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Merul Badda Bus Stand",
+        "coordinates": [
+          23.7716566,
+          90.4253879
+        ],
+        "score": 94,
+        "confidence": "strong_candidate",
+        "source": "osm:node/3653698097"
+      }
+    },
+    {
+      "stopId": "stop-ecb-square",
+      "label": "ECB Square (ইসিবি স্কয়ার)",
+      "labelEn": "ECB Square",
+      "labelBn": "ইসিবি স্কয়ার",
+      "routeCount": 19,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "ECB Chottor Bus Stopage",
+        "coordinates": [
+          23.822575,
+          90.3936169
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/5185269590"
+      }
+    },
+    {
+      "stopId": "stop-kakali",
+      "label": "Kakali (কাকলী)",
+      "labelEn": "Kakali",
+      "labelBn": "কাকলী",
+      "routeCount": 19,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-jigatola",
+      "label": "Jigatola (জিগাতোলা)",
+      "labelEn": "Jigatola",
+      "labelBn": "জিগাতোলা",
+      "routeCount": 16,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-hazipara",
+      "label": "Hazipara (হাজীপাড়া)",
+      "labelEn": "Hazipara",
+      "labelBn": "হাজীপাড়া",
+      "routeCount": 15,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-banasree",
+      "label": "Banasree (বনশ্রী)",
+      "labelEn": "Banasree",
+      "labelBn": "বনশ্রী",
+      "routeCount": 13,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-nandan-park",
+      "label": "Nandan Park (নন্দন পার্ক)",
+      "labelEn": "Nandan Park",
+      "labelBn": "নন্দন পার্ক",
+      "routeCount": 13,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Nandan Theme Park",
+        "coordinates": [
+          24.031199,
+          90.241882
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12169756331"
+      }
+    },
+    {
+      "stopId": "stop-shankar",
+      "label": "Shankar (শঙ্কর)",
+      "labelEn": "Shankar",
+      "labelBn": "শঙ্কর",
+      "routeCount": 13,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-chiriyakhana",
+      "label": "Chiriyakhana (চিরিয়াখানা)",
+      "labelEn": "Chiriyakhana",
+      "labelBn": "চিরিয়াখানা",
+      "routeCount": 12,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-badda-link-road",
+      "label": "Badda Link Road (বাড্ডা লিংক রোড)",
+      "labelEn": "Badda Link Road",
+      "labelBn": "বাড্ডা লিংক রোড",
+      "routeCount": 11,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "লিংক রোড বাস স্টেশন",
+        "coordinates": [
+          23.7806196,
+          90.4247517
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/3500462886"
+      }
+    },
+    {
+      "stopId": "stop-gazipur-chourasta",
+      "label": "Gazipur Chourasta (গাজীপুর চৌরাস্তা)",
+      "labelEn": "Gazipur Chourasta",
+      "labelBn": "গাজীপুর চৌরাস্তা",
+      "routeCount": 11,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chowrasta Bus Stop",
+        "coordinates": [
+          23.9891057,
+          90.3815747
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/5209548509"
+      }
+    },
+    {
+      "stopId": "stop-gulshan-1",
+      "label": "Gulshan 1 (গুলশান ১)",
+      "labelEn": "Gulshan 1",
+      "labelBn": "গুলশান ১",
+      "routeCount": 11,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Gulshan Bridge Bus Stop",
+        "coordinates": [
+          23.780372,
+          90.4129214
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12006324895"
+      }
+    },
+    {
+      "stopId": "stop-babubazar",
+      "label": "Babubazar (বাবুবাজার)",
+      "labelEn": "Babubazar",
+      "labelBn": "বাবুবাজার",
+      "routeCount": 10,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Babu Bazaar Bridge Bus stop, Babu Bazaar Bridge, Babubazar Bridge, Dhaka",
+        "coordinates": [
+          23.7106991,
+          90.4029699
+        ],
+        "score": 94,
+        "confidence": "strong_candidate",
+        "source": "osm:node/11749910390"
+      }
+    },
+    {
+      "stopId": "stop-janapoth-moor",
+      "label": "Janapoth Moor (জনপথ মোড়)",
+      "labelEn": "Janapoth Moor",
+      "labelBn": "জনপথ মোড়",
+      "routeCount": 10,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chandra Moor",
+        "coordinates": [
+          24.0476042,
+          90.2389996
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/6797150706"
+      }
+    },
+    {
+      "stopId": "stop-nabisco",
+      "label": "Nabisco (নাবিস্কো)",
+      "labelEn": "Nabisco",
+      "labelBn": "নাবিস্কো",
+      "routeCount": 10,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Nabisco Bus Stop, Bus station",
+        "coordinates": [
+          23.7696456,
+          90.4008637
+        ],
+        "score": 102,
+        "confidence": "strong_candidate",
+        "source": "osm:node/11939446956"
+      }
+    },
+    {
+      "stopId": "stop-sadarghat",
+      "label": "Sadarghat (সদরঘাট)",
+      "labelEn": "Sadarghat",
+      "labelBn": "সদরঘাট",
+      "routeCount": 10,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "সদরঘাট",
+        "coordinates": [
+          23.70588,
+          90.4092438
+        ],
+        "score": 106,
+        "confidence": "strong_candidate",
+        "source": "osm:way/332507445"
+      }
+    },
+    {
+      "stopId": "stop-keraniganj",
+      "label": "Keraniganj (কেরাণীগঞ্জ)",
+      "labelEn": "Keraniganj",
+      "labelBn": "কেরাণীগঞ্জ",
+      "routeCount": 9,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Chunkutiya Bus stop, Chunkutia, Dhaka Keranigonj, Keraniganj",
+        "coordinates": [
+          23.695502,
+          90.3985875
+        ],
+        "score": 94,
+        "confidence": "strong_candidate",
+        "source": "osm:node/11671465384"
+      }
+    },
+    {
+      "stopId": "stop-ray-saheb-bazar",
+      "label": "Ray Saheb Bazar (রায় সাহেব বাজার)",
+      "labelEn": "Ray Saheb Bazar",
+      "labelBn": "রায় সাহেব বাজার",
+      "routeCount": 9,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Ray Saheb Bazaar Bus stop, Dholaikhal Rd, Dhaka",
+        "coordinates": [
+          23.7136059,
+          90.4117751
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11757458203"
+      }
+    },
+    {
+      "stopId": "stop-dainik-bangla-moor",
+      "label": "Dainik Bangla Moor (দৈনিক বাংলা মোড়)",
+      "labelEn": "Dainik Bangla Moor",
+      "labelBn": "দৈনিক বাংলা মোড়",
+      "routeCount": 8,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dainik Bangla Bus stop",
+        "coordinates": [
+          23.7300264,
+          90.4155071
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12033280100"
+      }
+    },
+    {
+      "stopId": "stop-madhya-badda",
+      "label": "Madhya Badda (মধ্য বাড্ডা)",
+      "labelEn": "Madhya Badda",
+      "labelBn": "মধ্য বাড্ডা",
+      "routeCount": 8,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Merul Badda Bus Stand",
+        "coordinates": [
+          23.7716566,
+          90.4253879
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/3653698097"
+      }
+    },
+    {
+      "stopId": "stop-fulbaria",
+      "label": "Fulbaria (ফুলবাড়িয়া)",
+      "labelEn": "Fulbaria",
+      "labelBn": "ফুলবাড়িয়া",
+      "routeCount": 6,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Fulbaria",
+        "coordinates": [
+          23.8129,
+          90.25717
+        ],
+        "score": 119,
+        "confidence": "strong_candidate",
+        "source": "osm:node/12169756209"
+      }
+    },
+    {
+      "stopId": "stop-gazipur-bypass",
+      "label": "Gazipur Bypass (গাজীপুর বাইপাস)",
+      "labelEn": "Gazipur Bypass",
+      "labelBn": "গাজীপুর বাইপাস",
+      "routeCount": 6,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chowrasta Bus Stop",
+        "coordinates": [
+          23.9891057,
+          90.3815747
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/5209548509"
+      }
+    },
+    {
+      "stopId": "stop-bangla-college",
+      "label": "Bangla College (বাংলা কলেজ)",
+      "labelEn": "Bangla College",
+      "labelBn": "বাংলা কলেজ",
+      "routeCount": 5,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bangladesh University College Gate, Bus stop",
+        "coordinates": [
+          23.7672954,
+          90.346063
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12497992278"
+      }
+    },
+    {
+      "stopId": "stop-fantasy-kingdom",
+      "label": "Fantasy Kingdom (ফ্যান্টাসি কিংডম)",
+      "labelEn": "Fantasy Kingdom",
+      "labelBn": "ফ্যান্টাসি কিংডম",
+      "routeCount": 5,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-gulshan-2",
+      "label": "Gulshan 2 (গুলশান ২)",
+      "labelEn": "Gulshan 2",
+      "labelBn": "গুলশান ২",
+      "routeCount": 5,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Gulshan Bridge Bus Stop",
+        "coordinates": [
+          23.780372,
+          90.4129214
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12006324895"
+      }
+    },
+    {
+      "stopId": "stop-zia-uddyan",
+      "label": "Zia Uddyan (জিয়া উদ্যান)",
+      "labelEn": "Zia Uddyan",
+      "labelBn": "জিয়া উদ্যান",
+      "routeCount": 5,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chashara Zia Hall Bus Stop চাষাড়া জিয়া হল বাস স্ট্যান্ড",
+        "coordinates": [
+          23.6241011,
+          90.4994518
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/5187663364"
+      }
+    },
+    {
+      "stopId": "stop-dayagonj",
+      "label": "Dayagonj (দয়াগঞ্জ)",
+      "labelEn": "Dayagonj",
+      "labelBn": "দয়াগঞ্জ",
+      "routeCount": 4,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-japan-garden-city",
+      "label": "Japan Garden City (জাপান গার্ডেন সিটি)",
+      "labelEn": "Japan Garden City",
+      "labelBn": "জাপান গার্ডেন সিটি",
+      "routeCount": 4,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Basnhundhara City South Bus Stop, Panthapath, Dhaka",
+        "coordinates": [
+          23.7499345,
+          90.3923405
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11834735843"
+      }
+    },
+    {
+      "stopId": "stop-rajarbag",
+      "label": "Rajarbag (রাজারবাগ)",
+      "labelEn": "Rajarbag",
+      "labelBn": "রাজারবাগ",
+      "routeCount": 4,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Rajarbagh Bus stop",
+        "coordinates": [
+          23.7401997,
+          90.4198651
+        ],
+        "score": 93,
+        "confidence": "strong_candidate",
+        "source": "osm:node/12039813877"
+      }
+    },
+    {
+      "stopId": "stop-sat-rasta",
+      "label": "Sat rasta (সাত রাস্তা)",
+      "labelEn": "Sat rasta",
+      "labelBn": "সাত রাস্তা",
+      "routeCount": 4,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-shia-masjid",
+      "label": "Shia Masjid (শিয়া মসজিদ)",
+      "labelEn": "Shia Masjid",
+      "labelBn": "শিয়া মসজিদ",
+      "routeCount": 4,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-adamjee-school",
+      "label": "Adamjee School (আদমজী স্কুল)",
+      "labelEn": "Adamjee School",
+      "labelBn": "আদমজী স্কুল",
+      "routeCount": 3,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Adamjee Bus Stop",
+        "coordinates": [
+          23.7951081,
+          90.3929531
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/2847739318"
+      }
+    },
+    {
+      "stopId": "stop-dhamrai",
+      "label": "Dhamrai (ধামরাই)",
+      "labelEn": "Dhamrai",
+      "labelBn": "ধামরাই",
+      "routeCount": 3,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-eden-college",
+      "label": "Eden College (ইডেন কলেজ)",
+      "labelEn": "Eden College",
+      "labelBn": "ইডেন কলেজ",
+      "routeCount": 3,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Eden Mohila College Bus stop, Azimpur Rd, Dhaka",
+        "coordinates": [
+          23.72925,
+          90.3860741
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11818534607"
+      }
+    },
+    {
+      "stopId": "stop-garrison-cantonment",
+      "label": "Garrison (Cantonment) (গ্যারিসন - ক্যান্টনমেন্ট)",
+      "labelEn": "Garrison (Cantonment)",
+      "labelBn": "গ্যারিসন - ক্যান্টনমেন্ট",
+      "routeCount": 3,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Garrison Bus Stop",
+        "coordinates": [
+          23.8024127,
+          90.395533
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/2847739316"
+      }
+    },
+    {
+      "stopId": "stop-ghatar-char",
+      "label": "Ghatar Char (ঘাটার চর)",
+      "labelEn": "Ghatar Char",
+      "labelBn": "ঘাটার চর",
+      "routeCount": 3,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-golshan-1",
+      "label": "Golshan 1 (গুলশান ১)",
+      "labelEn": "Golshan 1",
+      "labelBn": "গুলশান ১",
+      "routeCount": 3,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-kadamtali",
+      "label": "Kadamtali (কদমতলী)",
+      "labelEn": "Kadamtali",
+      "labelBn": "কদমতলী",
+      "routeCount": 3,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-khilgaon-flyover",
+      "label": "Khilgaon flyover (খিলগাঁও ফ্লাইওভার)",
+      "labelEn": "Khilgaon flyover",
+      "labelBn": "খিলগাঁও ফ্লাইওভার",
+      "routeCount": 3,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dolaipar Toll plaza- Mayor Hanif Flyover, Toll booth, Dhaka - Mawa Hwy, Dhaka",
+        "coordinates": [
+          23.704558,
+          90.4352399
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11740539317"
+      }
+    },
+    {
+      "stopId": "stop-kuril-chourasta",
+      "label": "Kuril Chourasta (কুড়িল চৌরাস্তা)",
+      "labelEn": "Kuril Chourasta",
+      "labelBn": "কুড়িল চৌরাস্তা",
+      "routeCount": 3,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Kuril Bishwa Road, Bus stop",
+        "coordinates": [
+          23.8207235,
+          90.417603
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12078090950"
+      }
+    },
+    {
+      "stopId": "stop-madanpur",
+      "label": "Madanpur (মদনপুর)",
+      "labelEn": "Madanpur",
+      "labelBn": "মদনপুর",
+      "routeCount": 3,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Modonpur Bus Stop মদনপুর বাস স্টপ",
+        "coordinates": [
+          23.6904798,
+          90.5468875
+        ],
+        "score": 94,
+        "confidence": "strong_candidate",
+        "source": "osm:node/5115216384"
+      }
+    },
+    {
+      "stopId": "stop-maowa",
+      "label": "Maowa (মাওয়া)",
+      "labelEn": "Maowa",
+      "labelBn": "মাওয়া",
+      "routeCount": 3,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-ring-road",
+      "label": "Ring Road (রিং রোড)",
+      "labelEn": "Ring Road",
+      "labelBn": "রিং রোড",
+      "routeCount": 3,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bishaw Estema Road Bus Stop",
+        "coordinates": [
+          23.8912957,
+          90.3889116
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12281652893"
+      }
+    },
+    {
+      "stopId": "stop-balughat",
+      "label": "Balughat (বালুঘাট)",
+      "labelEn": "Balughat",
+      "labelBn": "বালুঘাট",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-beribadh-tin-rastar-moor",
+      "label": "Beribadh Tin Rastar Moor (বেড়িবাঁধ তিন রাস্তার মোড়)",
+      "labelEn": "Beribadh Tin Rastar Moor",
+      "labelBn": "বেড়িবাঁধ তিন রাস্তার মোড়",
+      "routeCount": 2,
+      "status": "needs_manual_review",
+      "reviewReason": "Manual review required: medium-confidence OSM match.",
+      "topCandidate": {
+        "name": "Beribadh Tin Rastar Mor Bus Stop, Bus stop",
+        "coordinates": [
+          23.7566448,
+          90.3562044
+        ],
+        "score": 67,
+        "confidence": "candidate",
+        "source": "osm:node/12497979607"
+      }
+    },
+    {
+      "stopId": "stop-dhanmondi",
+      "label": "Dhanmondi (ধানমন্ডি)",
+      "labelEn": "Dhanmondi",
+      "labelBn": "ধানমন্ডি",
+      "routeCount": 2,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Dhanmondi 15 Bus stop",
+        "coordinates": [
+          23.7443576,
+          90.3728855
+        ],
+        "score": 107,
+        "confidence": "strong_candidate",
+        "source": "osm:node/12012285851"
+      }
+    },
+    {
+      "stopId": "stop-dia-bari",
+      "label": "Dia Bari (দিয়া বাড়ি)",
+      "labelEn": "Dia Bari",
+      "labelBn": "দিয়া বাড়ি",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Boro Bari Bus stop",
+        "coordinates": [
+          23.9345733,
+          90.3867803
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12118265682"
+      }
+    },
+    {
+      "stopId": "stop-hazaribag",
+      "label": "Hazaribag (হাজারিবাগ)",
+      "labelEn": "Hazaribag",
+      "labelBn": "হাজারিবাগ",
+      "routeCount": 2,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Hazaribagh Bus stop",
+        "coordinates": [
+          23.7323936,
+          90.3628446
+        ],
+        "score": 93,
+        "confidence": "strong_candidate",
+        "source": "osm:node/12025574279"
+      }
+    },
+    {
+      "stopId": "stop-idb",
+      "label": "IDB (আইডিবি)",
+      "labelEn": "IDB",
+      "labelBn": "আইডিবি",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-ittefaq-moor",
+      "label": "Ittefaq Moor (ইত্তেফাক মোড়)",
+      "labelEn": "Ittefaq Moor",
+      "labelBn": "ইত্তেফাক মোড়",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chandra Moor",
+        "coordinates": [
+          24.0476042,
+          90.2389996
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/6797150706"
+      }
+    },
+    {
+      "stopId": "stop-jamgora",
+      "label": "Jamgora (জামগড়া)",
+      "labelEn": "Jamgora",
+      "labelBn": "জামগড়া",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-jarun",
+      "label": "Jarun (যারুন)",
+      "labelEn": "Jarun",
+      "labelBn": "যারুন",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-manikganj",
+      "label": "Manikganj (মানিকগঞ্জ)",
+      "labelEn": "Manikganj",
+      "labelBn": "মানিকগঞ্জ",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-mirpur-dohs",
+      "label": "Mirpur (DOHS) (মিরপুর - ডিওএইচএস)",
+      "labelEn": "Mirpur (DOHS)",
+      "labelBn": "মিরপুর - ডিওএইচএস",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dhaka College Bus stop, Mirpur Rd, Dhaka",
+        "coordinates": [
+          23.7360491,
+          90.3839557
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11821941384"
+      }
+    },
+    {
+      "stopId": "stop-narsinghapur",
+      "label": "Narsinghapur (নরসিংহপুর)",
+      "labelEn": "Narsinghapur",
+      "labelBn": "নরসিংহপুর",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-panthopoth",
+      "label": "Panthopoth (পান্থপথ)",
+      "labelEn": "Panthopoth",
+      "labelBn": "পান্থপথ",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-proshika-moor",
+      "label": "Proshika Moor (প্রশিকা মোড়)",
+      "labelEn": "Proshika Moor",
+      "labelBn": "প্রশিকা মোড়",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chandra Moor",
+        "coordinates": [
+          24.0476042,
+          90.2389996
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/6797150706"
+      }
+    },
+    {
+      "stopId": "stop-rajendrapur",
+      "label": "Rajendrapur (রাজেন্দ্রপুর)",
+      "labelEn": "Rajendrapur",
+      "labelBn": "রাজেন্দ্রপুর",
+      "routeCount": 2,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Rajendrapur Bus Stand, Dhaka - Mawa Hwy, Ekuria",
+        "coordinates": [
+          23.6663171,
+          90.3943209
+        ],
+        "score": 107,
+        "confidence": "strong_candidate",
+        "source": "osm:node/11662154112"
+      }
+    },
+    {
+      "stopId": "stop-rayer-bazar",
+      "label": "Rayer Bazar (রায়ের বাজার)",
+      "labelEn": "Rayer Bazar",
+      "labelBn": "রায়ের বাজার",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Babu Bazar Bus Stop, Babubazar Bridge, Dhaka",
+        "coordinates": [
+          23.7107686,
+          90.4027424
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11765673893"
+      }
+    },
+    {
+      "stopId": "stop-rupnagar-abashik",
+      "label": "Rupnagar Abashik (রূপনগর আবাসিক)",
+      "labelEn": "Rupnagar Abashik",
+      "labelBn": "রূপনগর আবাসিক",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Abashik Mor",
+        "coordinates": [
+          23.8166417,
+          90.3560896
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/2919828430"
+      }
+    },
+    {
+      "stopId": "stop-shib-bari",
+      "label": "Shib Bari (শিব বাড়ি)",
+      "labelEn": "Shib Bari",
+      "labelBn": "শিব বাড়ি",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Boro Bari Bus stop",
+        "coordinates": [
+          23.9345733,
+          90.3867803
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12118265682"
+      }
+    },
+    {
+      "stopId": "stop-sikder-medical-college",
+      "label": "Sikder Medical College (সিকদার মেডিকেল কলেজ)",
+      "labelEn": "Sikder Medical College",
+      "labelBn": "সিকদার মেডিকেল কলেজ",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dhaka Medical College Hospital Bus stop, Bokshebazar, LaneDhaka, Dhaka",
+        "coordinates": [
+          23.7244232,
+          90.3977264
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11821756863"
+      }
+    },
+    {
+      "stopId": "stop-surabari",
+      "label": "Surabari (সুরাবাড়ী)",
+      "labelEn": "Surabari",
+      "labelBn": "সুরাবাড়ী",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-tajmahal-road",
+      "label": "Tajmahal Road (তাজমহল রোড)",
+      "labelEn": "Tajmahal Road",
+      "labelBn": "তাজমহল রোড",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bishaw Estema Road Bus Stop",
+        "coordinates": [
+          23.8912957,
+          90.3889116
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12281652893"
+      }
+    },
+    {
+      "stopId": "stop-vashantek",
+      "label": "Vashantek (ভাসানটেক)",
+      "labelEn": "Vashantek",
+      "labelBn": "ভাসানটেক",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-vulta",
+      "label": "Vulta (ভুলতা)",
+      "labelEn": "Vulta",
+      "labelBn": "ভুলতা",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-300-feet",
+      "label": "300 Feet (৩০০ ফুট)",
+      "labelEn": "300 Feet",
+      "labelBn": "৩০০ ফুট",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-arambagh-notre-dame-college",
+      "label": "Arambagh Notre Dame College (আরামবাগ নটর ডেম কলেজ)",
+      "labelEn": "Arambagh Notre Dame College",
+      "labelBn": "আরামবাগ নটর ডেম কলেজ",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Arambagh Bus stop",
+        "coordinates": [
+          23.7308424,
+          90.4212047
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12002685206"
+      }
+    },
+    {
+      "stopId": "stop-asulia-bazar",
+      "label": "Asulia Bazar (আশুলিয়া বাজার)",
+      "labelEn": "Asulia Bazar",
+      "labelBn": "আশুলিয়া বাজার",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Babu Bazar Bus Stop, Babubazar Bridge, Dhaka",
+        "coordinates": [
+          23.7107686,
+          90.4027424
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11765673893"
+      }
+    },
+    {
+      "stopId": "stop-baitul-mukarram",
+      "label": "Baitul Mukarram (বায়তুল মোকাররম)",
+      "labelEn": "Baitul Mukarram",
+      "labelBn": "বায়তুল মোকাররম",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-bangladesh-bank",
+      "label": "Bangladesh Bank (বাংলাদেশ ব্যাংক)",
+      "labelEn": "Bangladesh Bank",
+      "labelBn": "বাংলাদেশ ব্যাংক",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bangladesh University College Gate, Bus stop",
+        "coordinates": [
+          23.7672954,
+          90.346063
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12497992278"
+      }
+    },
+    {
+      "stopId": "stop-barmi",
+      "label": "Barmi (বরমী)",
+      "labelEn": "Barmi",
+      "labelBn": "বরমী",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-bashundhara-300-feet-gate",
+      "label": "Bashundhara (300 Feet Gate) (বসুন্ধরা - ৩০০ ফিট গেট)",
+      "labelEn": "Bashundhara (300 Feet Gate)",
+      "labelBn": "বসুন্ধরা - ৩০০ ফিট গেট",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Agricultural University 2nd Gate",
+        "coordinates": [
+          23.7732187,
+          90.3815327
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/2989567770"
+      }
+    },
+    {
+      "stopId": "stop-cantonment",
+      "label": "Cantonment (ক্যান্টনমেন্ট)",
+      "labelEn": "Cantonment",
+      "labelBn": "ক্যান্টনমেন্ট",
+      "routeCount": 1,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Kochukhet - Cantonment Circle, Bus stop",
+        "coordinates": [
+          23.7908874,
+          90.387795
+        ],
+        "score": 94,
+        "confidence": "strong_candidate",
+        "source": "osm:node/13264888608"
+      }
+    },
+    {
+      "stopId": "stop-chalantika-mor",
+      "label": "Chalantika Mor (চালানটিকা মোড়)",
+      "labelEn": "Chalantika Mor",
+      "labelBn": "চালানটিকা মোড়",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Abashik Mor",
+        "coordinates": [
+          23.8166417,
+          90.3560896
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/2919828430"
+      }
+    },
+    {
+      "stopId": "stop-cmh",
+      "label": "CMH (সিএমএইচ)",
+      "labelEn": "CMH",
+      "labelBn": "সিএমএইচ",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-dhupkhola",
+      "label": "Dhupkhola (ধুপখোলা)",
+      "labelEn": "Dhupkhola",
+      "labelBn": "ধুপখোলা",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-duairipara",
+      "label": "Duairipara (দুয়াইরিপাড়া)",
+      "labelEn": "Duairipara",
+      "labelBn": "দুয়াইরিপাড়া",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-elevated-express-way",
+      "label": "Elevated Express Way (এলিভেটেড এক্সপ্রেস ওয়ে)",
+      "labelEn": "Elevated Express Way",
+      "labelBn": "এলিভেটেড এক্সপ্রেস ওয়ে",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "BRTC Elevated express bus counter",
+        "coordinates": [
+          23.8589704,
+          90.4018938
+        ],
+        "score": 48,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12082608483"
+      }
+    },
+    {
+      "stopId": "stop-fakirapul",
+      "label": "Fakirapul (ফকিরাপুল)",
+      "labelEn": "Fakirapul",
+      "labelBn": "ফকিরাপুল",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-gandaria",
+      "label": "Gandaria (গেন্ডারিয়া)",
+      "labelEn": "Gandaria",
+      "labelBn": "গেন্ডারিয়া",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-jakir-hossain-road",
+      "label": "Jakir Hossain Road (জাকির হোসেন রোড)",
+      "labelEn": "Jakir Hossain Road",
+      "labelBn": "জাকির হোসেন রোড",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bishaw Estema Road Bus Stop",
+        "coordinates": [
+          23.8912957,
+          90.3889116
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12281652893"
+      }
+    },
+    {
+      "stopId": "stop-joydebpur",
+      "label": "Joydebpur (জয়দেবপুর)",
+      "labelEn": "Joydebpur",
+      "labelBn": "জয়দেবপুর",
+      "routeCount": 1,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "জয়দেবপুর জংশন",
+        "coordinates": [
+          23.9980388,
+          90.420312
+        ],
+        "score": 94,
+        "confidence": "strong_candidate",
+        "source": "osm:node/1472696992"
+      }
+    },
+    {
+      "stopId": "stop-kanchan-bridge",
+      "label": "Kanchan Bridge (কাঞ্চন ব্রিজ)",
+      "labelEn": "Kanchan Bridge",
+      "labelBn": "কাঞ্চন ব্রিজ",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Babu Bazaar Bridge Bus stop, Babu Bazaar Bridge, Babubazar Bridge, Dhaka",
+        "coordinates": [
+          23.7106991,
+          90.4029699
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11749910390"
+      }
+    },
+    {
+      "stopId": "stop-kawlar",
+      "label": "Kawlar (কাওলার)",
+      "labelEn": "Kawlar",
+      "labelBn": "কাওলার",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-khilgaon-khidmah-hospital",
+      "label": "Khilgaon Khidmah Hospital (খিলগাঁও খিদমাহ হাসপাতাল)",
+      "labelEn": "Khilgaon Khidmah Hospital",
+      "labelBn": "খিলগাঁও খিদমাহ হাসপাতাল",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Anwar Khan Modern Hospital Bus stop",
+        "coordinates": [
+          23.7454689,
+          90.3815274
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12012314402"
+      }
+    },
+    {
+      "stopId": "stop-kuchimura",
+      "label": "Kuchimura (কুচিমুড়া)",
+      "labelEn": "Kuchimura",
+      "labelBn": "কুচিমুড়া",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-kuril-flyover",
+      "label": "Kuril Flyover (কুড়িল ফ্লাইওভার)",
+      "labelEn": "Kuril Flyover",
+      "labelBn": "কুড়িল ফ্লাইওভার",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dolaipar Toll plaza- Mayor Hanif Flyover, Toll booth, Dhaka - Mawa Hwy, Dhaka",
+        "coordinates": [
+          23.704558,
+          90.4352399
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11740539317"
+      }
+    },
+    {
+      "stopId": "stop-kurmitola",
+      "label": "Kurmitola (কুর্মিটোলা)",
+      "labelEn": "Kurmitola",
+      "labelBn": "কুর্মিটোলা",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-manik-mia-avenue",
+      "label": "Manik Mia Avenue (মানিক মিয়া এভিনিউ)",
+      "labelEn": "Manik Mia Avenue",
+      "labelBn": "মানিক মিয়া এভিনিউ",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Manik Mian Avenue West Bus Stop",
+        "coordinates": [
+          23.7585473,
+          90.3757037
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12009465955"
+      }
+    },
+    {
+      "stopId": "stop-metro-hall",
+      "label": "Metro Hall (মেট্রো হল)",
+      "labelEn": "Metro Hall",
+      "labelBn": "মেট্রো হল",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chashara Zia Hall Bus Stop চাষাড়া জিয়া হল বাস স্ট্যান্ড",
+        "coordinates": [
+          23.6241011,
+          90.4994518
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/5187663364"
+      }
+    },
+    {
+      "stopId": "stop-mirpur-6",
+      "label": "Mirpur 6 (মিরপুর ৬)",
+      "labelEn": "Mirpur 6",
+      "labelBn": "মিরপুর ৬",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dhaka College Bus stop, Mirpur Rd, Dhaka",
+        "coordinates": [
+          23.7360491,
+          90.3839557
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11821941384"
+      }
+    },
+    {
+      "stopId": "stop-nila-market",
+      "label": "Nila Market (নীলা মার্কেট)",
+      "labelEn": "Nila Market",
+      "labelBn": "নীলা মার্কেট",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chinese Moniruddin Market, Bus stop",
+        "coordinates": [
+          23.7945918,
+          90.3533085
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/13258005773"
+      }
+    },
+    {
+      "stopId": "stop-palashi",
+      "label": "Palashi (পলাশী)",
+      "labelEn": "Palashi",
+      "labelBn": "পলাশী",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-paturia",
+      "label": "Paturia (পাটুরিয়া)",
+      "labelEn": "Paturia",
+      "labelBn": "পাটুরিয়া",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-salimullah-road",
+      "label": "Salimullah Road (সালিমুল্লাহ রোড)",
+      "labelEn": "Salimullah Road",
+      "labelBn": "সালিমুল্লাহ রোড",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bishaw Estema Road Bus Stop",
+        "coordinates": [
+          23.8912957,
+          90.3889116
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12281652893"
+      }
+    },
+    {
+      "stopId": "stop-shonbari-sreenagar",
+      "label": "Shonbari Sreenagar (শনবাড়ি শ্রীনগর)",
+      "labelEn": "Shonbari Sreenagar",
+      "labelBn": "শনবাড়ি শ্রীনগর",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Hasara Bus Stand শ্রীনগর বাসস্ট্যান্ড",
+        "coordinates": [
+          23.587072,
+          90.3094299
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/5181490139"
+      }
+    },
+    {
+      "stopId": "stop-signal",
+      "label": "Signal (সিগন্যাল)",
+      "labelEn": "Signal",
+      "labelBn": "সিগন্যাল",
+      "routeCount": 1,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Bata Signal Bus Stop",
+        "coordinates": [
+          23.7389887,
+          90.388255
+        ],
+        "score": 94,
+        "confidence": "strong_candidate",
+        "source": "osm:node/3345602131"
+      }
+    },
+    {
+      "stopId": "stop-sonargao",
+      "label": "Sonargao (সোনারগাঁও)",
+      "labelEn": "Sonargao",
+      "labelBn": "সোনারগাঁও",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-songsod-bhaban",
+      "label": "Songsod Bhaban (সংসদ ভবন)",
+      "labelEn": "Songsod Bhaban",
+      "labelBn": "সংসদ ভবন",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Matshya Bhaban Bus stop",
+        "coordinates": [
+          23.7338366,
+          90.4035885
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11953675288"
+      }
+    },
+    {
+      "stopId": "stop-south-banasree",
+      "label": "South Banasree (দক্ষিণ বনশ্রী)",
+      "labelEn": "South Banasree",
+      "labelBn": "দক্ষিণ বনশ্রী",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Banani South Bus stop",
+        "coordinates": [
+          23.7933421,
+          90.4006905
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12078102815"
+      }
+    },
+    {
+      "stopId": "stop-sreepur",
+      "label": "Sreepur (শ্রীপুর)",
+      "labelEn": "Sreepur",
+      "labelBn": "শ্রীপুর",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-tarabo",
+      "label": "Tarabo (তারাবো)",
+      "labelEn": "Tarabo",
+      "labelBn": "তারাবো",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null
+    },
+    {
+      "stopId": "stop-tejgaon-college-farmgate",
+      "label": "Tejgaon College (Farmgate) (তেজগাঁও কলেজ - ফার্মগেট)",
+      "labelEn": "Tejgaon College (Farmgate)",
+      "labelBn": "তেজগাঁও কলেজ - ফার্মগেট",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "ফার্মগেট",
+        "coordinates": [
+          23.7590206,
+          90.387124
+        ],
+        "score": 64,
+        "confidence": "weak_candidate",
+        "source": "osm:node/10294553595"
+      }
+    },
+    {
+      "stopId": "stop-tt-para",
+      "label": "TT Para (টিটি পাড়া)",
+      "labelEn": "TT Para",
+      "labelBn": "টিটি পাড়া",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dari Para",
+        "coordinates": [
+          23.9318048,
+          90.5213834
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/5230072828"
+      }
+    },
+    {
+      "stopId": "stop-victoria-park",
+      "label": "Victoria Park (ভিক্টোরিয়া পার্ক)",
+      "labelEn": "Victoria Park",
+      "labelBn": "ভিক্টোরিয়া পার্ক",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Nandan Theme Park",
+        "coordinates": [
+          24.031199,
+          90.241882
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12169756331"
+      }
+    }
+  ]
+}

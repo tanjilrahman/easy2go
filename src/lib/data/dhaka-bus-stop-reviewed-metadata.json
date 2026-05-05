@@ -1,0 +1,2132 @@
+[
+  {
+    "labels": [
+      "Adabor",
+      "Adabor (আদাবর)",
+      "আদাবর"
+    ],
+    "placeName": "আদাবর বাস স্টপ",
+    "address": "আদাবর বাস স্টপ",
+    "coordinates": [
+      23.773753,
+      90.3617377
+    ],
+    "source": "osm:node/3010862225",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Agargaon",
+      "Agargaon (আগারগাঁও)",
+      "আগারগাঁও"
+    ],
+    "placeName": "আগারগাঁও",
+    "address": "আগারগাঁও",
+    "coordinates": [
+      23.7784483,
+      90.3801611
+    ],
+    "source": "osm:node/10294007250",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Ansar Camp",
+      "Ansar Camp (আনসার ক্যাম্প)",
+      "আনসার ক্যাম্প"
+    ],
+    "placeName": "আনসার ক্যাম্প",
+    "address": "আনসার ক্যাম্প",
+    "coordinates": [
+      23.7910955,
+      90.353924
+    ],
+    "source": "osm:node/3016326145",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Arambagh",
+      "Arambagh (আরামবাগ)",
+      "আরামবাগ"
+    ],
+    "placeName": "Arambagh Bus stop",
+    "address": "Arambagh Bus stop",
+    "coordinates": [
+      23.7308424,
+      90.4212047
+    ],
+    "source": "osm:node/12002685206",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Asad Gate",
+      "Asad Gate (আসাদ গেট)",
+      "আসাদ গেট"
+    ],
+    "placeName": "Asad Gate Bus Stand",
+    "address": "Asad Gate Bus Stand",
+    "coordinates": [
+      23.7604615,
+      90.3727226
+    ],
+    "source": "osm:node/12014798660",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Ashulia",
+      "Ashulia (আশুলিয়া)",
+      "আশুলিয়া"
+    ],
+    "placeName": "Ashulia - Beribadh Mor Bus stop",
+    "address": "Ashulia - Beribadh Mor Bus stop",
+    "coordinates": [
+      23.8923998,
+      90.3614806
+    ],
+    "source": "osm:node/12285190759",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Azampur",
+      "Azampur (আজমপুর)",
+      "আজমপুর"
+    ],
+    "placeName": "Azampur",
+    "address": "Azampur",
+    "coordinates": [
+      23.867992,
+      90.4001848
+    ],
+    "source": "osm:node/4737732166",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Azimpur",
+      "Azimpur (আজিমপুর)",
+      "আজিমপুর"
+    ],
+    "placeName": "Azimpur Bus stop, Azimpur Rd, Dhaka",
+    "address": "Azimpur Bus stop, Azimpur Rd, Dhaka",
+    "coordinates": [
+      23.7274628,
+      90.3864092
+    ],
+    "source": "osm:node/11818528202",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Baipayl",
+      "Baipayl (বাইপাইল)",
+      "বাইপাইল"
+    ],
+    "placeName": "Baipayl",
+    "address": "Baipayl",
+    "coordinates": [
+      23.9380015,
+      90.270064
+    ],
+    "source": "osm:node/2895146942",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Bakshi Bazar",
+      "Bakshi Bazar (বকশী বাজার)",
+      "বকশী বাজার"
+    ],
+    "placeName": "Bokshi Bazaar Bus stop, Bakshi Bazar Road, Dhaka",
+    "address": "Bokshi Bazaar Bus stop, Bakshi Bazar Road, Dhaka",
+    "coordinates": [
+      23.7225591,
+      90.3955594
+    ],
+    "source": "osm:node/11818501325",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Banani",
+      "Banani (বনানী)",
+      "বনানী"
+    ],
+    "placeName": "Banani Bus stop",
+    "address": "Banani Bus stop",
+    "coordinates": [
+      23.7952569,
+      90.4013241
+    ],
+    "source": "osm:node/12073098779",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Bangla Motor",
+      "Bangla Motor (বাংলা মোটর)",
+      "বাংলা মোটর"
+    ],
+    "placeName": "বাংলা মোটর বাস স্টপ",
+    "address": "বাংলা মোটর বাস স্টপ",
+    "coordinates": [
+      23.7453479,
+      90.3950094
+    ],
+    "source": "osm:node/3501236944",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Bashabo",
+      "Bashabo (বাসাবো)",
+      "বাসাবো"
+    ],
+    "placeName": "বাসাবো উত্তর",
+    "address": "বাসাবো উত্তর",
+    "coordinates": [
+      23.7392397,
+      90.4279048
+    ],
+    "source": "osm:node/6387076020",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Bashtola",
+      "Bashtola (বাঁশতলা)",
+      "বাঁশতলা"
+    ],
+    "placeName": "Bashtola Bus Stand",
+    "address": "Bashtola Bus Stand",
+    "coordinates": [
+      23.7943849,
+      90.4240761
+    ],
+    "source": "osm:node/2994114617",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Bashundhara",
+      "Bashundhara (বসুন্ধরা)",
+      "বসুন্ধরা"
+    ],
+    "placeName": "বসুন্ধরা বাস স্টপ",
+    "address": "বসুন্ধরা বাস স্টপ",
+    "coordinates": [
+      23.8118974,
+      90.4211787
+    ],
+    "source": "osm:node/3443268627",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Bata Signal",
+      "Bata Signal (বাটা সিগন্যাল)",
+      "বাটা সিগন্যাল"
+    ],
+    "placeName": "Bata Signal Bus Stop",
+    "address": "Bata Signal Bus Stop",
+    "coordinates": [
+      23.7389887,
+      90.388255
+    ],
+    "source": "osm:node/3345602131",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Beribadh",
+      "Beribadh (বেড়িবাঁধ)",
+      "বেড়িবাঁধ"
+    ],
+    "placeName": "Beribadh Tin Rastar Mor Bus Stop, Bus stop",
+    "address": "Beribadh Tin Rastar Mor Bus Stop, Bus stop",
+    "coordinates": [
+      23.7566448,
+      90.3562044
+    ],
+    "source": "osm:node/12497979607",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Bijoy Sarani",
+      "Bijoy Sarani (বিজয় সারাণী)",
+      "বিজয় সারাণী"
+    ],
+    "placeName": "বিজয় সরণি মেট্রো স্টেশন",
+    "address": "বিজয় সরণি মেট্রো স্টেশন",
+    "coordinates": [
+      23.7665451,
+      90.3831114
+    ],
+    "source": "osm:way/1125773738",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Birulia",
+      "Birulia (বিরুলিয়া)",
+      "বিরুলিয়া"
+    ],
+    "placeName": "Birulia Bridge Bus stop",
+    "address": "Birulia Bridge Bus stop",
+    "coordinates": [
+      23.8505948,
+      90.3409259
+    ],
+    "source": "osm:node/13245641794",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Board Bazar",
+      "Board Bazar (বোর্ড বাজার)",
+      "বোর্ড বাজার"
+    ],
+    "placeName": "Board Bazar Bus Stop বোর্ড বাজার বাস স্টপ",
+    "address": "Board Bazar Bus Stop বোর্ড বাজার বাস স্টপ",
+    "coordinates": [
+      23.9452769,
+      90.3827366
+    ],
+    "source": "osm:node/5205634293",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Bosila",
+      "Bosila (বসিলা)",
+      "বসিলা"
+    ],
+    "placeName": "Bosila Bus Stop",
+    "address": "Bosila Bus Stop",
+    "coordinates": [
+      23.7450945,
+      90.3475527
+    ],
+    "source": "osm:node/5123958187",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Bot tola",
+      "Bot tola (বট তলা)",
+      "বট তলা"
+    ],
+    "placeName": "Bot Tola Mor Diabari Bus stop, Bus stop",
+    "address": "Bot Tola Mor Diabari Bus stop, Bus stop",
+    "coordinates": [
+      23.7987187,
+      90.3436027
+    ],
+    "source": "osm:node/13251980762",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Chairman Bari",
+      "Chairman Bari (চেয়ারম্যান বাড়ী)",
+      "চেয়ারম্যান বাড়ী"
+    ],
+    "placeName": "Chairman Bari Bus",
+    "address": "Chairman Bari Bus",
+    "coordinates": [
+      23.7887799,
+      90.4002171
+    ],
+    "source": "osm:node/12073086780",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Chandra",
+      "Chandra (চন্দ্রা)",
+      "চন্দ্রা"
+    ],
+    "placeName": "Chandra",
+    "address": "Chandra",
+    "coordinates": [
+      24.047862,
+      90.239023
+    ],
+    "source": "osm:node/12169756263",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Chankhar Pul",
+      "Chankhar Pul (চাঁকহার পুল)",
+      "চাঁকহার পুল"
+    ],
+    "placeName": "Chankhar Pul Bus Stop, Zahir Raihan Rd, Dhaka",
+    "address": "Chankhar Pul Bus Stop, Zahir Raihan Rd, Dhaka",
+    "coordinates": [
+      23.7238334,
+      90.4003441
+    ],
+    "source": "osm:node/11801293500",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Chasara",
+      "Chasara (চাষারা)",
+      "চাষারা"
+    ],
+    "placeName": "Chasara Bus Stop",
+    "address": "Chasara Bus Stop",
+    "coordinates": [
+      23.6237322,
+      90.4994847
+    ],
+    "source": "osm:node/819614162",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Chittagong Road",
+      "Chittagong Road (চট্টগ্রাম রোড)",
+      "চট্টগ্রাম রোড"
+    ],
+    "placeName": "চিটাগং রোড বাস স্টেশন",
+    "address": "চিটাগং রোড বাস স্টেশন",
+    "coordinates": [
+      23.6977454,
+      90.5092521
+    ],
+    "source": "osm:node/10308611782",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "City College",
+      "City College (সিটি কলেজ)",
+      "সিটি কলেজ"
+    ],
+    "placeName": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+    "address": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+    "coordinates": [
+      23.7391036,
+      90.3833174
+    ],
+    "source": "osm:node/11821930860",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "College Gate",
+      "College Gate (কলেজ গেট)",
+      "কলেজ গেট"
+    ],
+    "placeName": "College Gate Bus Stop কলেজ গেট বাস স্টপ",
+    "address": "College Gate Bus Stop কলেজ গেট বাস স্টপ",
+    "coordinates": [
+      23.9085927,
+      90.3979778
+    ],
+    "source": "osm:node/5203887931",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Darussalam",
+      "Darussalam (দারুস্সালাম)",
+      "দারুস্সালাম"
+    ],
+    "placeName": "Darussalam Bus stop, Bus stop",
+    "address": "Darussalam Bus stop, Bus stop",
+    "coordinates": [
+      23.7800468,
+      90.3542107
+    ],
+    "source": "osm:node/12500493275",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Demra Staff Quarter",
+      "Demra Staff Quarter (ডেমরা স্টাফ কোয়ার্টার)",
+      "ডেমরা স্টাফ কোয়ার্টার"
+    ],
+    "placeName": "Demra staff quarter",
+    "address": "Demra staff quarter",
+    "coordinates": [
+      23.7197292,
+      90.4905289
+    ],
+    "source": "osm:node/4832053622",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Dhakeshwari",
+      "Dhakeshwari (ঢাকেশ্বরী)",
+      "ঢাকেশ্বরী"
+    ],
+    "placeName": "Dhakeshwari Mandir Bus stop, Azad Staff Quarter Dhakeshwari Rd, Dhaka",
+    "address": "Dhakeshwari Mandir Bus stop, Azad Staff Quarter Dhakeshwari Rd, Dhaka",
+    "coordinates": [
+      23.7224743,
+      90.3897214
+    ],
+    "source": "osm:node/11818488152",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Dhanmondi 15",
+      "Dhanmondi 15 (ধানমন্ডি ১৫)",
+      "ধানমন্ডি ১৫"
+    ],
+    "placeName": "Dhanmondi 15 Bus stop",
+    "address": "Dhanmondi 15 Bus stop",
+    "coordinates": [
+      23.7443576,
+      90.3728855
+    ],
+    "source": "osm:node/12012285851",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Dhanmondi 27",
+      "Dhanmondi 27 (ধানমন্ডি ২৭)",
+      "ধানমন্ডি ২৭"
+    ],
+    "placeName": "Dhanmondi 27 Bus stop",
+    "address": "Dhanmondi 27 Bus stop",
+    "coordinates": [
+      23.7560325,
+      90.3757211
+    ],
+    "source": "osm:node/12009447484",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Dhanmondi 32",
+      "Dhanmondi 32 (ধানমন্ডি ৩২)",
+      "ধানমন্ডি ৩২"
+    ],
+    "placeName": "Dhanmondi 32 Bus Stp",
+    "address": "Dhanmondi 32 Bus Stp",
+    "coordinates": [
+      23.7516016,
+      90.3779467
+    ],
+    "source": "osm:node/4836072721",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Dholairpar",
+      "Dholairpar (ধলাইড়পাড়)",
+      "ধলাইড়পাড়"
+    ],
+    "placeName": "Dholairpar Bus Stop",
+    "address": "Dholairpar Bus Stop",
+    "coordinates": [
+      23.702791,
+      90.4351668
+    ],
+    "source": "osm:node/5185127957",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Dhour",
+      "Dhour (ঢাউর)",
+      "ঢাউর"
+    ],
+    "placeName": "Dhour Bus Stopage",
+    "address": "Dhour Bus Stopage",
+    "coordinates": [
+      23.8933082,
+      90.3666085
+    ],
+    "source": "osm:node/2895200402",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Farmgate",
+      "Farmgate (ফার্মগেট)",
+      "ফার্মগেট"
+    ],
+    "placeName": "ফার্মগেট",
+    "address": "ফার্মগেট",
+    "coordinates": [
+      23.7590206,
+      90.387124
+    ],
+    "source": "osm:node/10294553595",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Gabtoli",
+      "Gabtoli (গাবতলি)",
+      "গাবতলি"
+    ],
+    "placeName": "Gabtoli / Parbat Bus stop, Bus stop",
+    "address": "Gabtoli / Parbat Bus stop, Bus stop",
+    "coordinates": [
+      23.7824951,
+      90.3393413
+    ],
+    "source": "osm:node/12500494396",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Golapbagh Chowrasta",
+      "Golapbagh Chowrasta (গোলাপবাগ চৌরাস্তা)",
+      "গোলাপবাগ চৌরাস্তা"
+    ],
+    "placeName": "Golapbagh Chowrasta Bus stop",
+    "address": "Golapbagh Chowrasta Bus stop",
+    "coordinates": [
+      23.7176698,
+      90.4293125
+    ],
+    "source": "osm:node/12057002356",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Gulistan",
+      "Gulistan (গুলিস্তান)",
+      "গুলিস্তান"
+    ],
+    "placeName": "Gulistan Bus Stop",
+    "address": "Gulistan Bus Stop",
+    "coordinates": [
+      23.7245952,
+      90.4119248
+    ],
+    "source": "osm:node/11818535608",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Gulshan Bridge",
+      "Gulshan Bridge (গুলশান ব্রিজ)",
+      "গুলশান ব্রিজ"
+    ],
+    "placeName": "Gulshan Bridge Bus Stop",
+    "address": "Gulshan Bridge Bus Stop",
+    "coordinates": [
+      23.780372,
+      90.4129214
+    ],
+    "source": "osm:node/12006324895",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Hasnabad",
+      "Hasnabad (হাসনাবাদ)",
+      "হাসনাবাদ"
+    ],
+    "placeName": "Hasnabad Bus Stop",
+    "address": "Hasnabad Bus Stop",
+    "coordinates": [
+      23.6831264,
+      90.4226066
+    ],
+    "source": "osm:node/12440860422",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Hemayetpur",
+      "Hemayetpur (হেমায়েতপুর)",
+      "হেমায়েতপুর"
+    ],
+    "placeName": "Hemayetpur",
+    "address": "Hemayetpur",
+    "coordinates": [
+      23.793063,
+      90.271944
+    ],
+    "source": "osm:node/12169756197",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "High Court",
+      "High Court (উচ্চ আদালত)",
+      "উচ্চ আদালত"
+    ],
+    "placeName": "High Court Bus stop",
+    "address": "High Court Bus stop",
+    "coordinates": [
+      23.731685,
+      90.4048858
+    ],
+    "source": "osm:node/12002690741",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "House Building",
+      "House Building (হাউজ বিল্ডিং)",
+      "হাউজ বিল্ডিং"
+    ],
+    "placeName": "House Building",
+    "address": "House Building",
+    "coordinates": [
+      23.8748268,
+      90.4006897
+    ],
+    "source": "osm:node/4737689211",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Jahangir Gate",
+      "Jahangir Gate (জাহাঙ্গীর গেট)",
+      "জাহাঙ্গীর গেট"
+    ],
+    "placeName": "Jahangir Gate Bus stop",
+    "address": "Jahangir Gate Bus stop",
+    "coordinates": [
+      23.7752606,
+      90.3897653
+    ],
+    "source": "osm:node/12009429417",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Jalkuri",
+      "Jalkuri (জলকুড়ি)",
+      "জলকুড়ি"
+    ],
+    "placeName": "Jalkuri BRTC AC Bus Stop জালকুরী বি আর টি সি এসি বাস স্টপ",
+    "address": "Jalkuri BRTC AC Bus Stop জালকুরী বি আর টি সি এসি বাস স্টপ",
+    "coordinates": [
+      23.6632342,
+      90.486848
+    ],
+    "source": "osm:node/5185377210",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Jashimuddin",
+      "Jashimuddin (জসিমউদ্দিন)",
+      "জসিমউদ্দিন"
+    ],
+    "placeName": "Jashimuddin Bus stop",
+    "address": "Jashimuddin Bus stop",
+    "coordinates": [
+      23.8592618,
+      90.4015608
+    ],
+    "source": "osm:node/12082598792",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Jurain",
+      "Jurain (জুরাইন)",
+      "জুরাইন"
+    ],
+    "placeName": "জুরাইন রেল গেট বাস স্টপ",
+    "address": "জুরাইন রেল গেট বাস স্টপ",
+    "coordinates": [
+      23.6938194,
+      90.4346128
+    ],
+    "source": "osm:node/5183327535",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kakrail",
+      "Kakrail (কাকরাইল)",
+      "কাকরাইল"
+    ],
+    "placeName": "Kakrail Bus stop",
+    "address": "Kakrail Bus stop",
+    "coordinates": [
+      23.7376473,
+      90.4083108
+    ],
+    "source": "osm:node/12028981747",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kalabagan",
+      "Kalabagan (কলাবাগান)",
+      "কলাবাগান"
+    ],
+    "placeName": "Kalabagan Bus Stand",
+    "address": "Kalabagan Bus Stand",
+    "coordinates": [
+      23.7474966,
+      90.3801973
+    ],
+    "source": "osm:node/6179302589",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kallyanpur",
+      "Kallyanpur (কল্যাণপুর)",
+      "কল্যাণপুর"
+    ],
+    "placeName": "Kallyanpur Bus Stop",
+    "address": "Kallyanpur Bus Stop",
+    "coordinates": [
+      23.7777584,
+      90.3610369
+    ],
+    "source": "osm:node/6632582785",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kamalapur",
+      "Kamalapur (কমলাপুর)",
+      "কমলাপুর"
+    ],
+    "placeName": "Kamalapur Railway Station Bus stop",
+    "address": "Kamalapur Railway Station Bus stop",
+    "coordinates": [
+      23.7317162,
+      90.4254731
+    ],
+    "source": "osm:node/12043393435",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kamarpara",
+      "Kamarpara (কামারপাড়া)",
+      "কামারপাড়া"
+    ],
+    "placeName": "Kamarpara Bus stop",
+    "address": "Kamarpara Bus stop",
+    "coordinates": [
+      23.8916243,
+      90.3885659
+    ],
+    "source": "osm:node/12285149081",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kamrangirchar",
+      "Kamrangirchar (কামরাঙ্গীরচর)",
+      "কামরাঙ্গীরচর"
+    ],
+    "placeName": "Kamrangirchar Bus Stop",
+    "address": "Kamrangirchar Bus Stop",
+    "coordinates": [
+      23.7145473,
+      90.3813578
+    ],
+    "source": "osm:node/12028963991",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kanchpur",
+      "Kanchpur (কাঁচপুর)",
+      "কাঁচপুর"
+    ],
+    "placeName": "কাঁচপুর বাস স্টপ",
+    "address": "কাঁচপুর বাস স্টপ",
+    "coordinates": [
+      23.700464,
+      90.5204289
+    ],
+    "source": "osm:node/5116388691",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Katabon",
+      "Katabon (কাটাবন)",
+      "কাটাবন"
+    ],
+    "placeName": "Katabon Bus stop, Shahbagh Rd, Dhaka",
+    "address": "Katabon Bus stop, Shahbagh Rd, Dhaka",
+    "coordinates": [
+      23.7386356,
+      90.3914195
+    ],
+    "source": "osm:node/11824661595",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kazipara",
+      "Kazipara (কাজীপাড়া)",
+      "কাজীপাড়া"
+    ],
+    "placeName": "কাজীপাড়া",
+    "address": "কাজীপাড়া",
+    "coordinates": [
+      23.7992485,
+      90.3720193
+    ],
+    "source": "osm:node/10294007256",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kazla",
+      "Kazla (কাজলা)",
+      "কাজলা"
+    ],
+    "placeName": "কাজলা বাস স্টপ",
+    "address": "কাজলা বাস স্টপ",
+    "coordinates": [
+      23.7105652,
+      90.4413783
+    ],
+    "source": "osm:node/3522838183",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Khamar Bari",
+      "Khamar Bari (খামার বাড়ি)",
+      "খামার বাড়ি"
+    ],
+    "placeName": "Khamar Bari Bus stop",
+    "address": "Khamar Bari Bus stop",
+    "coordinates": [
+      23.7591274,
+      90.383882
+    ],
+    "source": "osm:node/11928193364",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Khejur Bagan",
+      "Khejur Bagan (খেজুর বাগান)",
+      "খেজুর বাগান"
+    ],
+    "placeName": "Khejur Bagan Bus Stop",
+    "address": "Khejur Bagan Bus Stop",
+    "coordinates": [
+      23.8898191,
+      90.3219224
+    ],
+    "source": "osm:node/12169756237",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Khilgaon",
+      "Khilgaon (খিলগাঁও)",
+      "খিলগাঁও"
+    ],
+    "placeName": "Khilgaon Bus Stop",
+    "address": "Khilgaon Bus Stop",
+    "coordinates": [
+      23.7481057,
+      90.4236954
+    ],
+    "source": "osm:node/12045859740",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Khilkhet",
+      "Khilkhet (খিলক্ষেত)",
+      "খিলক্ষেত"
+    ],
+    "placeName": "Khilkhet Bus stop, Bus stop",
+    "address": "Khilkhet Bus stop, Bus stop",
+    "coordinates": [
+      23.8294051,
+      90.4200925
+    ],
+    "source": "osm:node/12079833328",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kochukhet",
+      "Kochukhet (কচুক্ষেত)",
+      "কচুক্ষেত"
+    ],
+    "placeName": "Kochukhet - Cantonment Circle, Bus stop",
+    "address": "Kochukhet - Cantonment Circle, Bus stop",
+    "coordinates": [
+      23.7908874,
+      90.387795
+    ],
+    "source": "osm:node/13264888608",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Konabari",
+      "Konabari (কোনাবাড়ী)",
+      "কোনাবাড়ী"
+    ],
+    "placeName": "Konabari",
+    "address": "Konabari",
+    "coordinates": [
+      24.010895,
+      90.321578
+    ],
+    "source": "osm:node/12169756249",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Konabari",
+      "Konabari (কোনাবাড়ি)",
+      "কোনাবাড়ি"
+    ],
+    "placeName": "Konabari",
+    "address": "Konabari",
+    "coordinates": [
+      24.010895,
+      90.321578
+    ],
+    "source": "osm:node/12169756249",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kuril Bishwa Road",
+      "Kuril Bishwa Road (কুড়িল বিশ্ব রোড)",
+      "কুড়িল বিশ্ব রোড"
+    ],
+    "placeName": "Kuril Bishwa Road, Bus stop",
+    "address": "Kuril Bishwa Road, Bus stop",
+    "coordinates": [
+      23.8207235,
+      90.417603
+    ],
+    "source": "osm:node/12078090950",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Malibaag Moor",
+      "Malibaag Moor (মালিবাগ মোড়)",
+      "মালিবাগ মোড়"
+    ],
+    "placeName": "মালিবাগ মোড়",
+    "address": "মালিবাগ মোড়",
+    "coordinates": [
+      23.7442587,
+      90.4142449
+    ],
+    "source": "osm:node/5890252086",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Malibagh",
+      "Malibagh (মালিবাগ)",
+      "মালিবাগ"
+    ],
+    "placeName": "Malibagh Rail Gate",
+    "address": "Malibagh Rail Gate",
+    "coordinates": [
+      23.7499107,
+      90.4132552
+    ],
+    "source": "osm:node/6796984913",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Malibagh Railgate",
+      "Malibagh Railgate (মালিবাগ রেলগেট)",
+      "মালিবাগ রেলগেট"
+    ],
+    "placeName": "Malibagh Railgate South Bus Stop",
+    "address": "Malibagh Railgate South Bus Stop",
+    "coordinates": [
+      23.7496972,
+      90.4126346
+    ],
+    "source": "osm:node/12045952220",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Manik Nagar",
+      "Manik Nagar (মানিক নগর)",
+      "মানিক নগর"
+    ],
+    "placeName": "Manik Nagar Bus stop",
+    "address": "Manik Nagar Bus stop",
+    "coordinates": [
+      23.7224852,
+      90.4289394
+    ],
+    "source": "osm:node/12057056990",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Matsya Bhaban",
+      "Matsya Bhaban (মৎস্য ভবন)",
+      "মৎস্য ভবন"
+    ],
+    "placeName": "মৎস্য ভবন মোড়",
+    "address": "মৎস্য ভবন মোড়",
+    "coordinates": [
+      23.7337607,
+      90.4029274
+    ],
+    "source": "osm:node/6858475735",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Matuail",
+      "Matuail (মাতুয়াইল)",
+      "মাতুয়াইল"
+    ],
+    "placeName": "Matuail medical bus stop",
+    "address": "Matuail medical bus stop",
+    "coordinates": [
+      23.6949652,
+      90.4663909
+    ],
+    "source": "osm:node/3522842672",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mazar Road",
+      "Mazar Road (মাজার রোড)",
+      "মাজার রোড"
+    ],
+    "placeName": "Mazar Road Konabari, Bus stop",
+    "address": "Mazar Road Konabari, Bus stop",
+    "coordinates": [
+      23.7950254,
+      90.3486124
+    ],
+    "source": "osm:node/13252006190",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Meghna Ghat",
+      "Meghna Ghat (মেঘনা ঘাট)",
+      "মেঘনা ঘাট"
+    ],
+    "placeName": "Meghna Ghat Bus Stop মেঘনা ঘাট বাস স্টপ",
+    "address": "Meghna Ghat Bus Stop মেঘনা ঘাট বাস স্টপ",
+    "coordinates": [
+      23.6184552,
+      90.6096763
+    ],
+    "source": "osm:way/526351654",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Merul Badda",
+      "Merul Badda (মেরুল বাড্ডা)",
+      "মেরুল বাড্ডা"
+    ],
+    "placeName": "Merul Badda Bus Stand",
+    "address": "Merul Badda Bus Stand",
+    "coordinates": [
+      23.7716566,
+      90.4253879
+    ],
+    "source": "osm:node/3653698097",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "MES",
+      "MES (এমইএস)",
+      "এমইএস"
+    ],
+    "placeName": "MES Bus Stop",
+    "address": "MES Bus Stop",
+    "coordinates": [
+      23.8161374,
+      90.4054005
+    ],
+    "source": "osm:node/12078082748",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mill Gate",
+      "Mill Gate (মিল গেট)",
+      "মিল গেট"
+    ],
+    "placeName": "Mill Gate Bus Stop মিল গেট বাস স্টপ",
+    "address": "Mill Gate Bus Stop মিল গেট বাস স্টপ",
+    "coordinates": [
+      23.8960141,
+      90.3993768
+    ],
+    "source": "osm:node/5203607953",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mirpur 1",
+      "Mirpur 1 (মিরপুর ১)",
+      "মিরপুর ১"
+    ],
+    "placeName": "Mirpur 1 Bus Stop, Bus station",
+    "address": "Mirpur 1 Bus Stop, Bus station",
+    "coordinates": [
+      23.7983759,
+      90.353468
+    ],
+    "source": "osm:node/13260951321",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mirpur 10",
+      "Mirpur 10 (মিরপুর ১০)",
+      "মিরপুর ১০"
+    ],
+    "placeName": "মিরপুর ১০",
+    "address": "মিরপুর ১০",
+    "coordinates": [
+      23.8083683,
+      90.3682791
+    ],
+    "source": "osm:node/10294007260",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mirpur 11",
+      "Mirpur 11 (মিরপুর ১১)",
+      "মিরপুর ১১"
+    ],
+    "placeName": "মিরপুর ১১",
+    "address": "মিরপুর ১১",
+    "coordinates": [
+      23.819103,
+      90.3653075
+    ],
+    "source": "osm:node/10294007263",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mirpur 13",
+      "Mirpur 13 (মিরপুর ১৩)",
+      "মিরপুর ১৩"
+    ],
+    "placeName": "Mirpur 13, Bus stop",
+    "address": "Mirpur 13, Bus stop",
+    "coordinates": [
+      23.8045178,
+      90.376564
+    ],
+    "source": "osm:node/13264873575",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mirpur 14",
+      "Mirpur 14 (মিরপুর ১৪)",
+      "মিরপুর ১৪"
+    ],
+    "placeName": "Mirpur 14 Bus stop",
+    "address": "Mirpur 14 Bus stop",
+    "coordinates": [
+      23.7987123,
+      90.3867674
+    ],
+    "source": "osm:node/13266854319",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mirpur 2",
+      "Mirpur 2 (মিরপুর ২)",
+      "মিরপুর ২"
+    ],
+    "placeName": "মিরপুর-২",
+    "address": "মিরপুর-২",
+    "coordinates": [
+      23.8050083,
+      90.3635124
+    ],
+    "source": "osm:node/3731758171",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mogbazar",
+      "Mogbazar (মগবাজার)",
+      "মগবাজার"
+    ],
+    "placeName": "মগবাজার বাস স্টপ",
+    "address": "মগবাজার বাস স্টপ",
+    "coordinates": [
+      23.7488751,
+      90.4036343
+    ],
+    "source": "osm:node/3500766128",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mohakhali",
+      "Mohakhali (মহাখালী)",
+      "মহাখালী"
+    ],
+    "placeName": "Mohakhali Commercial Area Bus stop",
+    "address": "Mohakhali Commercial Area Bus stop",
+    "coordinates": [
+      23.7808639,
+      90.399206
+    ],
+    "source": "osm:node/12006308262",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mohammadpur",
+      "Mohammadpur (মোহাম্মদপুর)",
+      "মোহাম্মদপুর"
+    ],
+    "placeName": "Mohammadpur (BRTC) Bus stop",
+    "address": "Mohammadpur (BRTC) Bus stop",
+    "coordinates": [
+      23.7572031,
+      90.3620184
+    ],
+    "source": "osm:node/12014834174",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Motijheel",
+      "Motijheel (মতিঝিল)",
+      "মতিঝিল"
+    ],
+    "placeName": "মতিঝিল",
+    "address": "মতিঝিল",
+    "coordinates": [
+      23.7280387,
+      90.4190372
+    ],
+    "source": "osm:node/10293351383",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mouchak",
+      "Mouchak (মৌচাক)",
+      "মৌচাক"
+    ],
+    "placeName": "Mouchak",
+    "address": "Mouchak",
+    "coordinates": [
+      24.0229567,
+      90.2940262
+    ],
+    "source": "osm:node/12169756255",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Mugdapara",
+      "Mugdapara (মুগদাপাড়া)",
+      "মুগদাপাড়া"
+    ],
+    "placeName": "Mugdapara Bus stop",
+    "address": "Mugdapara Bus stop",
+    "coordinates": [
+      23.7311981,
+      90.4285295
+    ],
+    "source": "osm:node/12052350731",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Naya Bazar",
+      "Naya Bazar (নয়া বাজার)",
+      "নয়া বাজার"
+    ],
+    "placeName": "Naya Bazar Bus Stop, Nawab Eusuf Rd, Dhaka",
+    "address": "Naya Bazar Bus Stop, Nawab Eusuf Rd, Dhaka",
+    "coordinates": [
+      23.7146123,
+      90.408536
+    ],
+    "source": "osm:node/11765688975",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "New Market",
+      "New Market (নিউ মার্কেট)",
+      "নিউ মার্কেট"
+    ],
+    "placeName": "New Market Bus stop, Mirpur Rd, Dhaka",
+    "address": "New Market Bus stop, Mirpur Rd, Dhaka",
+    "coordinates": [
+      23.7342234,
+      90.3844723
+    ],
+    "source": "osm:node/11821919116",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Nilkhet",
+      "Nilkhet (নীলক্ষেত)",
+      "নীলক্ষেত"
+    ],
+    "placeName": "নীলক্ষেত বাস স্টপ",
+    "address": "নীলক্ষেত বাস স্টপ",
+    "coordinates": [
+      23.731901,
+      90.3850854
+    ],
+    "source": "osm:node/3560263193",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Nimtola",
+      "Nimtola (নিমতলা)",
+      "নিমতলা"
+    ],
+    "placeName": "Nimtola Bus stop, Dhaka - Mawa Hwy, Solepur",
+    "address": "Nimtola Bus stop, Dhaka - Mawa Hwy, Solepur",
+    "coordinates": [
+      23.6158023,
+      90.3320661
+    ],
+    "source": "osm:node/11637201816",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Nobinagar",
+      "Nobinagar (নবীনগর)",
+      "নবীনগর"
+    ],
+    "placeName": "Nobinagar",
+    "address": "Nobinagar",
+    "coordinates": [
+      23.915482,
+      90.259228
+    ],
+    "source": "osm:node/12169756306",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Notun Bazar",
+      "Notun Bazar (নতুন বাজার)",
+      "নতুন বাজার"
+    ],
+    "placeName": "Notun Bazar Bus Stop",
+    "address": "Notun Bazar Bus Stop",
+    "coordinates": [
+      23.7969059,
+      90.4237478
+    ],
+    "source": "osm:node/2994771585",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Old Airport",
+      "Old Airport (পুরাতন বিমানবন্দর)",
+      "পুরাতন বিমানবন্দর"
+    ],
+    "placeName": "Old Airport Bus stop",
+    "address": "Old Airport Bus stop",
+    "coordinates": [
+      23.7721895,
+      90.3901269
+    ],
+    "source": "osm:node/11936848443",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Pallabi",
+      "Pallabi (পল্লবী)",
+      "পল্লবী"
+    ],
+    "placeName": "পল্লবী",
+    "address": "পল্লবী",
+    "coordinates": [
+      23.8261574,
+      90.3642123
+    ],
+    "source": "osm:node/10294007266",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Palli Bidyut",
+      "Palli Bidyut (পল্লী বিদ্যুৎ)",
+      "পল্লী বিদ্যুৎ"
+    ],
+    "placeName": "Palli Bidyut",
+    "address": "Palli Bidyut",
+    "coordinates": [
+      23.924306,
+      90.263235
+    ],
+    "source": "osm:node/12169756302",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Paltan",
+      "Paltan (পল্টন)",
+      "পল্টন"
+    ],
+    "placeName": "Paltan Bus stop",
+    "address": "Paltan Bus stop",
+    "coordinates": [
+      23.7303048,
+      90.4098134
+    ],
+    "source": "osm:node/12002685205",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Police Plaza",
+      "Police Plaza (পুলিস প্লাজা)",
+      "পুলিস প্লাজা"
+    ],
+    "placeName": "পুলিশ প্লাজা",
+    "address": "পুলিশ প্লাজা",
+    "coordinates": [
+      23.7723049,
+      90.4157346
+    ],
+    "source": "osm:node/5738472955",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Postogola",
+      "Postogola (পোস্তগোলা)",
+      "পোস্তগোলা"
+    ],
+    "placeName": "পোস্তগোলা বাস স্টপ",
+    "address": "পোস্তগোলা বাস স্টপ",
+    "coordinates": [
+      23.692447,
+      90.4331965
+    ],
+    "source": "osm:node/5183263269",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Press Club",
+      "Press Club (প্রেস ক্লাব)",
+      "প্রেস ক্লাব"
+    ],
+    "placeName": "Press Club Bus stop",
+    "address": "Press Club Bus stop",
+    "coordinates": [
+      23.7301359,
+      90.4073461
+    ],
+    "source": "osm:node/12002689142",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Rajlakshmi",
+      "Rajlakshmi (রাজলক্ষ্মী)",
+      "রাজলক্ষ্মী"
+    ],
+    "placeName": "Rajlakshmi Bus Stopage, Uttara",
+    "address": "Rajlakshmi Bus Stopage, Uttara",
+    "coordinates": [
+      23.8643282,
+      90.3999441
+    ],
+    "source": "osm:node/4737734028",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Rampura Bridge",
+      "Rampura Bridge (রামপুরা ব্রিজ)",
+      "রামপুরা ব্রিজ"
+    ],
+    "placeName": "Rampura Bridge Bus Stop",
+    "address": "Rampura Bridge Bus Stop",
+    "coordinates": [
+      23.7679175,
+      90.4231695
+    ],
+    "source": "osm:node/3500679440",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Rayerbag",
+      "Rayerbag (রায়েরবাগ)",
+      "রায়েরবাগ"
+    ],
+    "placeName": "Rayerbag bus stop",
+    "address": "Rayerbag bus stop",
+    "coordinates": [
+      23.699431,
+      90.457022
+    ],
+    "source": "osm:node/3522834139",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Rupnagar",
+      "Rupnagar (রূপনগর)",
+      "রূপনগর"
+    ],
+    "placeName": "Rupnagar Bus Stop, Bus stop",
+    "address": "Rupnagar Bus Stop, Bus stop",
+    "coordinates": [
+      23.827317,
+      90.3453653
+    ],
+    "source": "osm:node/13245710257",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Sainik Club",
+      "Sainik Club (সৈনিক ক্লাব)",
+      "সৈনিক ক্লাব"
+    ],
+    "placeName": "সৈনিক ক্লাব",
+    "address": "সৈনিক ক্লাব",
+    "coordinates": [
+      23.7905261,
+      90.3999734
+    ],
+    "source": "osm:node/6904997971",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Sanarpar",
+      "Sanarpar (সানারপাড়)",
+      "সানারপাড়"
+    ],
+    "placeName": "sanarpar bus stop",
+    "address": "sanarpar bus stop",
+    "coordinates": [
+      23.6949106,
+      90.4902493
+    ],
+    "source": "osm:node/3518348924",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Saudi Colony",
+      "Saudi Colony (সৌদি কলোনি)",
+      "সৌদি কলোনি"
+    ],
+    "placeName": "Saudi Colony Bus Stop",
+    "address": "Saudi Colony Bus Stop",
+    "coordinates": [
+      23.7783443,
+      90.3893653
+    ],
+    "source": "osm:node/5880031445",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Savar",
+      "Savar (সাভার)",
+      "সাভার"
+    ],
+    "placeName": "Savar Bazar Bus Stand",
+    "address": "Savar Bazar Bus Stand",
+    "coordinates": [
+      23.847126,
+      90.2571752
+    ],
+    "source": "osm:node/640446972",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Savar Cantonment",
+      "Savar Cantonment (সাভার ক্যান্টনমেন্ট)",
+      "সাভার ক্যান্টনমেন্ট"
+    ],
+    "placeName": "Savar Cantonment",
+    "address": "Savar Cantonment",
+    "coordinates": [
+      23.917256,
+      90.2603874
+    ],
+    "source": "osm:node/12169756307",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Science Lab",
+      "Science Lab (বিজ্ঞান গবেষণা প্রযুক্তি)",
+      "বিজ্ঞান গবেষণা প্রযুক্তি"
+    ],
+    "placeName": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+    "address": "Science Lab / City College Bus stop, Mirpur Rd, Dhaka",
+    "coordinates": [
+      23.7391036,
+      90.3833174
+    ],
+    "source": "osm:node/11821930860",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shahbag",
+      "Shahbag (শাহবাগ)",
+      "শাহবাগ"
+    ],
+    "placeName": "শাহবাগ",
+    "address": "শাহবাগ",
+    "coordinates": [
+      23.7400629,
+      90.3961024
+    ],
+    "source": "osm:node/10294576120",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shahjadpur",
+      "Shahjadpur (শাহজাদপুর)",
+      "শাহজাদপুর"
+    ],
+    "placeName": "Shahjadpur Bus Stop",
+    "address": "Shahjadpur Bus Stop",
+    "coordinates": [
+      23.7920887,
+      90.4245009
+    ],
+    "source": "osm:node/5449694922",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shantinagar",
+      "Shantinagar (শান্তিনগর)",
+      "শান্তিনগর"
+    ],
+    "placeName": "Shantinagar",
+    "address": "Shantinagar",
+    "coordinates": [
+      23.7417164,
+      90.4117893
+    ],
+    "source": "osm:node/5890252685",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shewra",
+      "Shewra (শেওড়া)",
+      "শেওড়া"
+    ],
+    "placeName": "Shewra Bus stop",
+    "address": "Shewra Bus stop",
+    "coordinates": [
+      23.8190439,
+      90.4155151
+    ],
+    "source": "osm:node/12078093554",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shewrapara",
+      "Shewrapara (শেওড়াপাড়া)",
+      "শেওড়াপাড়া"
+    ],
+    "placeName": "Shewrapara",
+    "address": "Shewrapara",
+    "coordinates": [
+      23.7904911,
+      90.3755519
+    ],
+    "source": "osm:node/3941231699",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shibu Market",
+      "Shibu Market (শিবু মার্কেট)",
+      "শিবু মার্কেট"
+    ],
+    "placeName": "Sibu Market BRTC AC Bus Stop শিবু মার্কেট বি আর টি সি এসি বাস স্টপ",
+    "address": "Sibu Market BRTC AC Bus Stop শিবু মার্কেট বি আর টি সি এসি বাস স্টপ",
+    "coordinates": [
+      23.6447516,
+      90.4933956
+    ],
+    "source": "osm:node/5185563693",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shimultola",
+      "Shimultola (সিমুলতলা)",
+      "সিমুলতলা"
+    ],
+    "placeName": "Shimultola Bus Stand",
+    "address": "Shimultola Bus Stand",
+    "coordinates": [
+      23.9374033,
+      90.2857143
+    ],
+    "source": "osm:node/12169756319",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shishu Mela",
+      "Shishu Mela (শিশু মেলা)",
+      "শিশু মেলা"
+    ],
+    "placeName": "Shishu Mela Bus Stop, Bus station",
+    "address": "Shishu Mela Bus Stop, Bus station",
+    "coordinates": [
+      23.7729988,
+      90.3674856
+    ],
+    "source": "osm:node/12514058864",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shiyal Bari",
+      "Shiyal Bari (শিয়াল বাড়ি)",
+      "শিয়াল বাড়ি"
+    ],
+    "placeName": "Shiyal Bari Mor Bus Stop",
+    "address": "Shiyal Bari Mor Bus Stop",
+    "coordinates": [
+      23.8081946,
+      90.3580172
+    ],
+    "source": "osm:node/3016712240",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shonir Akhra",
+      "Shonir Akhra (শনির আখরা)",
+      "শনির আখরা"
+    ],
+    "placeName": "শনির-আখরা বাস স্টপ",
+    "address": "শনির-আখরা বাস স্টপ",
+    "coordinates": [
+      23.7028732,
+      90.4504061
+    ],
+    "source": "osm:node/3522844764",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Showari Ghat",
+      "Showari Ghat (শোয়ারী ঘাট)",
+      "শোয়ারী ঘাট"
+    ],
+    "placeName": "Showari Ghat Bus stop",
+    "address": "Showari Ghat Bus stop",
+    "coordinates": [
+      23.7114366,
+      90.3943348
+    ],
+    "source": "osm:node/12028983349",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shukrabad",
+      "Shukrabad (শুক্রাবাদ)",
+      "শুক্রাবাদ"
+    ],
+    "placeName": "Shukrabad Bus Stopage",
+    "address": "Shukrabad Bus Stopage",
+    "coordinates": [
+      23.7524661,
+      90.377664
+    ],
+    "source": "osm:node/5298932621",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shyamoli",
+      "Shyamoli (শ্যামলী)",
+      "শ্যামলী"
+    ],
+    "placeName": "Shyamoli Bus Station",
+    "address": "Shyamoli Bus Station",
+    "coordinates": [
+      23.8088054,
+      90.4214847
+    ],
+    "source": "osm:node/3803653181",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Sign Board",
+      "Sign Board (সাইন বোর্ড)",
+      "সাইন বোর্ড"
+    ],
+    "placeName": "Sign Board Bus stop",
+    "address": "Sign Board Bus stop",
+    "coordinates": [
+      23.953868,
+      90.3812834
+    ],
+    "source": "osm:node/12121815642",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Staff Road",
+      "Staff Road (স্টাফ রোড)",
+      "স্টাফ রোড"
+    ],
+    "placeName": "Staff Road Bus Station Bus station",
+    "address": "Staff Road Bus Station Bus station",
+    "coordinates": [
+      23.8116965,
+      90.4036888
+    ],
+    "source": "osm:node/12078089898",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Star Kabab",
+      "Star Kabab (স্টার কাবাব)",
+      "স্টার কাবাব"
+    ],
+    "placeName": "Star Kabab Bus Stop",
+    "address": "Star Kabab Bus Stop",
+    "coordinates": [
+      23.7474471,
+      90.3707129
+    ],
+    "source": "osm:node/12012251129",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Station Road",
+      "Station Road (স্টেশন রোড)",
+      "স্টেশন রোড"
+    ],
+    "placeName": "Station Road Bus Counter",
+    "address": "Station Road Bus Counter",
+    "coordinates": [
+      23.8916685,
+      90.4019931
+    ],
+    "source": "osm:node/12104097622",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Taltola",
+      "Taltola (তালতলা)",
+      "তালতলা"
+    ],
+    "placeName": "Taltola",
+    "address": "Taltola",
+    "coordinates": [
+      23.7832966,
+      90.3785274
+    ],
+    "source": "osm:node/3739984012",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Technical",
+      "Technical (টেকনিক্যাল)",
+      "টেকনিক্যাল"
+    ],
+    "placeName": "Technical Mor Bus stop, Bus stop",
+    "address": "Technical Mor Bus stop, Bus stop",
+    "coordinates": [
+      23.7818634,
+      90.3513823
+    ],
+    "source": "osm:node/12518138812",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Tikatuli",
+      "Tikatuli (টিকাটুলি)",
+      "টিকাটুলি"
+    ],
+    "placeName": "Tikatuli Bus Stop",
+    "address": "Tikatuli Bus Stop",
+    "coordinates": [
+      23.7176288,
+      90.4196726
+    ],
+    "source": "osm:node/11782397304",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Tolarbag",
+      "Tolarbag (টোলারবাগ)",
+      "টোলারবাগ"
+    ],
+    "placeName": "Tolarbag Bus Stop, Bus stop",
+    "address": "Tolarbag Bus Stop, Bus stop",
+    "coordinates": [
+      23.7871935,
+      90.353776
+    ],
+    "source": "osm:node/13257966516",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Tongi",
+      "Tongi (টঙ্গী)",
+      "টঙ্গী"
+    ],
+    "placeName": "Tongi Bazar Bus Stop টঙ্গী বাজার বাস স্টপ",
+    "address": "Tongi Bazar Bus Stop টঙ্গী বাজার বাস স্টপ",
+    "coordinates": [
+      23.8841892,
+      90.4006454
+    ],
+    "source": "osm:node/5201764964",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Uttar Badda",
+      "Uttar Badda (উত্তর বাড্ডা)",
+      "উত্তর বাড্ডা"
+    ],
+    "placeName": "Uttar Badda Bus Stop",
+    "address": "Uttar Badda Bus Stop",
+    "coordinates": [
+      23.7857042,
+      90.4256113
+    ],
+    "source": "osm:node/3176485406",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Uttara",
+      "Uttara (উত্তরা)",
+      "উত্তরা"
+    ],
+    "placeName": "Uttara BRTC bus counter",
+    "address": "Uttara BRTC bus counter",
+    "coordinates": [
+      23.872149,
+      90.4008005
+    ],
+    "source": "osm:node/3842610041",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Wireless",
+      "Wireless (ওয়্যারলেস)",
+      "ওয়্যারলেস"
+    ],
+    "placeName": "Wireless Mor Bus stop",
+    "address": "Wireless Mor Bus stop",
+    "coordinates": [
+      23.7807869,
+      90.4054338
+    ],
+    "source": "osm:node/12006314403",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Workshop",
+      "Workshop (ওয়ার্কশপ)",
+      "ওয়ার্কশপ"
+    ],
+    "placeName": "Workshop Bus Stop",
+    "address": "Workshop Bus Stop",
+    "coordinates": [
+      23.7870379,
+      90.3906507
+    ],
+    "source": "osm:node/5879981786",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Zirabo",
+      "Zirabo (জিরাবো)",
+      "জিরাবো"
+    ],
+    "placeName": "Zirabo Bus stop, Bus stop",
+    "address": "Zirabo Bus stop, Bus stop",
+    "coordinates": [
+      23.9131721,
+      90.3187806
+    ],
+    "source": "osm:node/12293505365",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Zirani Bazar",
+      "Zirani Bazar (জিরানী বাজার)",
+      "জিরানী বাজার"
+    ],
+    "placeName": "Zirani Bazar",
+    "address": "Zirani Bazar",
+    "coordinates": [
+      23.9935433,
+      90.2556357
+    ],
+    "source": "osm:node/2895322471",
+    "confidence": "verified"
+  }
+]

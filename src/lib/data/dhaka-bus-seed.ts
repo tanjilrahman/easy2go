@@ -1,6 +1,5 @@
 import dhakaBusSeedJson from "./dhaka-bus-seed.json";
-import dhakaBusStopMetadataJson from "./dhaka-bus-stop-metadata.json";
-import dhakaBusStopVariantsJson from "./dhaka-bus-stop-variants.json";
+import dhakaBusStopReviewedMetadataJson from "./dhaka-bus-stop-reviewed-metadata.json";
 
 export type DhakaBusStopCoordinateConfidence = "exact" | "verified" | "approximate";
 
@@ -10,6 +9,7 @@ export interface DhakaBusStopMetadataEntry {
   address?: string;
   coordinates?: [number, number];
   source?: string;
+  confidence?: DhakaBusStopCoordinateConfidence;
 }
 
 export interface DhakaBusStopVariant {
@@ -18,11 +18,6 @@ export interface DhakaBusStopVariant {
   address?: string;
   coordinates: [number, number];
   source?: string;
-}
-
-export interface DhakaBusStopVariantEntry {
-  labels: string[];
-  variants: DhakaBusStopVariant[];
 }
 
 export interface DhakaBusSeedSource {
@@ -97,15 +92,13 @@ export interface DhakaBusSeedDataset {
 
 const rawDhakaBusSeedDataset = dhakaBusSeedJson as unknown as DhakaBusSeedDataset;
 export const dhakaBusStopMetadataEntries =
-  dhakaBusStopMetadataJson as unknown as DhakaBusStopMetadataEntry[];
-export const dhakaBusStopVariantEntries =
-  dhakaBusStopVariantsJson as unknown as DhakaBusStopVariantEntry[];
+  dhakaBusStopReviewedMetadataJson as unknown as DhakaBusStopMetadataEntry[];
 
 function normalizeBusStopLabel(value: string) {
   return value
     .normalize("NFKC")
     .toLowerCase()
-    .replace(/[^\p{L}\p{N}]+/gu, " ")
+    .replace(/[^\p{L}\p{M}\p{N}]+/gu, " ")
     .trim();
 }
 
@@ -114,14 +107,8 @@ const busStopMetadataLookup = new Map(
     entry.labels.map((label) => [normalizeBusStopLabel(label), entry] as const),
   ),
 );
-const busStopVariantLookup = new Map(
-  dhakaBusStopVariantEntries.flatMap((entry) =>
-    entry.labels.map((label) => [normalizeBusStopLabel(label), entry.variants] as const),
-  ),
-);
-
 function applyStopMetadata(stop: DhakaBusSeedStop): DhakaBusSeedStop {
-  if (stop.coordinates && stop.address && stop.placeName && stop.variants?.length) {
+  if (stop.coordinates && stop.address && stop.placeName) {
     return stop;
   }
 
@@ -133,39 +120,16 @@ function applyStopMetadata(stop: DhakaBusSeedStop): DhakaBusSeedStop {
       : undefined);
 
   if (!metadata) {
-    const variants =
-      busStopVariantLookup.get(normalizeBusStopLabel(stop.label)) ??
-      busStopVariantLookup.get(normalizeBusStopLabel(stop.labelEn)) ??
-      (stop.labelBn
-        ? busStopVariantLookup.get(normalizeBusStopLabel(stop.labelBn))
-        : undefined);
-
-    return variants
-      ? {
-          ...stop,
-          placeName: stop.placeName ?? variants[0]?.placeName,
-          address: stop.address ?? variants[0]?.address,
-          coordinates: stop.coordinates ?? variants[0]?.coordinates,
-          coordinateSource: stop.coordinateSource ?? variants[0]?.source,
-          variants,
-        }
-      : stop;
+    return stop;
   }
-
-  const variants =
-    busStopVariantLookup.get(normalizeBusStopLabel(stop.label)) ??
-    busStopVariantLookup.get(normalizeBusStopLabel(stop.labelEn)) ??
-    (stop.labelBn
-      ? busStopVariantLookup.get(normalizeBusStopLabel(stop.labelBn))
-      : undefined);
 
   return {
     ...stop,
     placeName: stop.placeName ?? metadata.placeName,
     address: stop.address ?? metadata.address,
     coordinates: stop.coordinates ?? metadata.coordinates,
-    variants: stop.variants ?? variants,
     coordinateSource: stop.coordinateSource ?? metadata.source,
+    coordinateConfidence: stop.coordinateConfidence ?? metadata.confidence,
   };
 }
 
