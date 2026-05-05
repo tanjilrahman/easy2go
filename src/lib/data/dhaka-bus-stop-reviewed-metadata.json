@@ -1,6 +1,21 @@
 [
   {
     "labels": [
+      "Abdullahpur",
+      "Abdullahpur (আব্দুল্লাহপুর)",
+      "আব্দুল্লাহপুর"
+    ],
+    "placeName": "Abdullahpur",
+    "address": "Abdullahpur, Uttara, Dhaka",
+    "coordinates": [
+      23.879433,
+      90.401226
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Adabor",
       "Adabor (আদাবর)",
       "আদাবর"
@@ -16,6 +31,21 @@
   },
   {
     "labels": [
+      "Adamjee School",
+      "Adamjee School (আদমজী স্কুল)",
+      "আদমজী স্কুল"
+    ],
+    "placeName": "Adamjee Bus Stop",
+    "address": "Adamjee Cantonment School area, Dhaka",
+    "coordinates": [
+      23.7951081,
+      90.3929531
+    ],
+    "source": "osm:node/2847739318",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Agargaon",
       "Agargaon (আগারগাঁও)",
       "আগারগাঁও"
@@ -28,6 +58,36 @@
     ],
     "source": "osm:node/10294007250",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Airport",
+      "Airport (বিমানবন্দর)",
+      "বিমানবন্দর"
+    ],
+    "placeName": "Airport Bus Stop",
+    "address": "Airport Road, Dhaka",
+    "coordinates": [
+      23.851306,
+      90.407742
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Amin Bazar",
+      "Amin Bazar (আমিন বাজার)",
+      "আমিন বাজার"
+    ],
+    "placeName": "Amin Bazar Truck Stand",
+    "address": "Amin Bazar, Dhaka-Aricha Highway",
+    "coordinates": [
+      23.785039,
+      90.3314387
+    ],
+    "source": "osm:node/5238788504",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -61,6 +121,21 @@
   },
   {
     "labels": [
+      "Arambagh Notre Dame College",
+      "Arambagh Notre Dame College (আরামবাগ নটর ডেম কলেজ)",
+      "আরামবাগ নটর ডেম কলেজ"
+    ],
+    "placeName": "Arambagh Bus Stop",
+    "address": "Arambagh / Notre Dame College, Dhaka",
+    "coordinates": [
+      23.7308424,
+      90.4212047
+    ],
+    "source": "osm:node/12002685206",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Asad Gate",
       "Asad Gate (আসাদ গেট)",
       "আসাদ গেট"
@@ -87,6 +162,21 @@
       90.3614806
     ],
     "source": "osm:node/12285190759",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Asulia Bazar",
+      "Asulia Bazar (আশুলিয়া বাজার)",
+      "আশুলিয়া বাজার"
+    ],
+    "placeName": "Ashulia Bazar Bus Stop",
+    "address": "Ashulia Bazar",
+    "coordinates": [
+      23.897829813857815,
+      90.33098662258226
+    ],
+    "source": "manual",
     "confidence": "verified"
   },
   {
@@ -118,6 +208,51 @@
     ],
     "source": "osm:node/11818528202",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Babubazar",
+      "Babubazar (বাবুবাজার)",
+      "বাবুবাজার"
+    ],
+    "placeName": "Babu Bazaar Bridge Bus Stop",
+    "address": "Babubazar Bridge, Dhaka",
+    "coordinates": [
+      23.7106991,
+      90.4029699
+    ],
+    "source": "osm:node/11749910390",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Badda",
+      "Badda (বাড্ডা)",
+      "বাড্ডা"
+    ],
+    "placeName": "Merul Badda Bus Stand",
+    "address": "Badda, Dhaka",
+    "coordinates": [
+      23.7716566,
+      90.4253879
+    ],
+    "source": "manual",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Badda Link Road",
+      "Badda Link Road (বাড্ডা লিংক রোড)",
+      "বাড্ডা লিংক রোড"
+    ],
+    "placeName": "Badda Link Road Bus Station",
+    "address": "Badda Link Road, Dhaka",
+    "coordinates": [
+      23.7806196,
+      90.4247517
+    ],
+    "source": "osm:node/3500462886",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -163,6 +298,36 @@
     ],
     "source": "osm:node/12073098779",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Banasree",
+      "Banasree (বনশ্রী)",
+      "বনশ্রী"
+    ],
+    "placeName": "Banasree",
+    "address": "Banasree, Dhaka",
+    "coordinates": [
+      23.762923,
+      90.431524
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Bangla College",
+      "Bangla College (বাংলা কলেজ)",
+      "বাংলা কলেজ"
+    ],
+    "placeName": "Government Bangla College",
+    "address": "Government Bangla College, Mirpur, Dhaka",
+    "coordinates": [
+      23.780731,
+      90.353052
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -256,6 +421,21 @@
   },
   {
     "labels": [
+      "Beribadh Tin Rastar Moor",
+      "Beribadh Tin Rastar Moor (বেড়িবাঁধ তিন রাস্তার মোড়)",
+      "বেড়িবাঁধ তিন রাস্তার মোড়"
+    ],
+    "placeName": "Beribadh Tin Rastar Mor Bus Stop",
+    "address": "Beribadh Tin Rastar Mor, Dhaka",
+    "coordinates": [
+      23.7566448,
+      90.3562044
+    ],
+    "source": "osm:node/12497979607",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Bijoy Sarani",
       "Bijoy Sarani (বিজয় সারাণী)",
       "বিজয় সারাণী"
@@ -331,6 +511,21 @@
   },
   {
     "labels": [
+      "Cantonment",
+      "Cantonment (ক্যান্টনমেন্ট)",
+      "ক্যান্টনমেন্ট"
+    ],
+    "placeName": "Kochukhet - Cantonment Circle Bus Stop",
+    "address": "Cantonment Circle, Dhaka",
+    "coordinates": [
+      23.7908874,
+      90.387795
+    ],
+    "source": "osm:node/13264888608",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Chairman Bari",
       "Chairman Bari (চেয়ারম্যান বাড়ী)",
       "চেয়ারম্যান বাড়ী"
@@ -391,6 +586,21 @@
   },
   {
     "labels": [
+      "Chiriyakhana",
+      "Chiriyakhana (চিরিয়াখানা)",
+      "চিরিয়াখানা"
+    ],
+    "placeName": "Chiriyakhana",
+    "address": "National Zoo, Mirpur, Dhaka",
+    "coordinates": [
+      23.812272,
+      90.344615
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Chittagong Road",
       "Chittagong Road (চট্টগ্রাম রোড)",
       "চট্টগ্রাম রোড"
@@ -436,6 +646,21 @@
   },
   {
     "labels": [
+      "Dainik Bangla Moor",
+      "Dainik Bangla Moor (দৈনিক বাংলা মোড়)",
+      "দৈনিক বাংলা মোড়"
+    ],
+    "placeName": "Dainik Bangla Bus Stop",
+    "address": "Dainik Bangla Moor, Motijheel, Dhaka",
+    "coordinates": [
+      23.7300264,
+      90.4155071
+    ],
+    "source": "osm:node/12033280100",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Darussalam",
       "Darussalam (দারুস্সালাম)",
       "দারুস্সালাম"
@@ -448,6 +673,21 @@
     ],
     "source": "osm:node/12500493275",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Dayagonj",
+      "Dayagonj (দয়াগঞ্জ)",
+      "দয়াগঞ্জ"
+    ],
+    "placeName": "Dayagonj",
+    "address": "Dayagonj, Dhaka",
+    "coordinates": [
+      23.712967,
+      90.421191
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -477,6 +717,36 @@
       90.3897214
     ],
     "source": "osm:node/11818488152",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Dhamrai",
+      "Dhamrai (ধামরাই)",
+      "ধামরাই"
+    ],
+    "placeName": "Dhamrai",
+    "address": "Dhamrai, Dhaka District",
+    "coordinates": [
+      23.916775,
+      90.214252
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Dhanmondi",
+      "Dhanmondi (ধানমন্ডি)",
+      "ধানমন্ডি"
+    ],
+    "placeName": "Dhanmondi 15 Bus stop",
+    "address": "Dhanmondi, Dhaka",
+    "coordinates": [
+      23.7443576,
+      90.3728855
+    ],
+    "source": "manual",
     "confidence": "verified"
   },
   {
@@ -556,6 +826,66 @@
   },
   {
     "labels": [
+      "Dia Bari",
+      "Dia Bari (দিয়া বাড়ি)",
+      "দিয়া বাড়ি"
+    ],
+    "placeName": "Bot Tola Mor Diabari",
+    "address": "Dia Bari, Dhaka",
+    "coordinates": [
+      23.799018242199676,
+      90.34347965180028
+    ],
+    "source": "manual",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "ECB Square",
+      "ECB Square (ইসিবি স্কয়ার)",
+      "ইসিবি স্কয়ার"
+    ],
+    "placeName": "ECB Chottor Bus Stopage",
+    "address": "ECB Square, Dhaka Cantonment",
+    "coordinates": [
+      23.822575,
+      90.3936169
+    ],
+    "source": "osm:node/5185269590",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Eden College",
+      "Eden College (ইডেন কলেজ)",
+      "ইডেন কলেজ"
+    ],
+    "placeName": "Eden Mohila College Bus Stop",
+    "address": "Eden College, Azimpur, Dhaka",
+    "coordinates": [
+      23.72925,
+      90.3860741
+    ],
+    "source": "osm:node/11818534607",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Fantasy Kingdom",
+      "Fantasy Kingdom (ফ্যান্টাসি কিংডম)",
+      "ফ্যান্টাসি কিংডম"
+    ],
+    "placeName": "Fantasy Kingdom",
+    "address": "Fantasy Kingdom, Ashulia",
+    "coordinates": [
+      23.936572,
+      90.269803
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Farmgate",
       "Farmgate (ফার্মগেট)",
       "ফার্মগেট"
@@ -568,6 +898,21 @@
     ],
     "source": "osm:node/10294553595",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Fulbaria",
+      "Fulbaria (ফুলবাড়িয়া)",
+      "ফুলবাড়িয়া"
+    ],
+    "placeName": "Fulbaria Bus Stand",
+    "address": "Fulbaria, Gulistan, Dhaka",
+    "coordinates": [
+      23.725994,
+      90.413972
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -586,6 +931,66 @@
   },
   {
     "labels": [
+      "Garrison (Cantonment)",
+      "Garrison (Cantonment) (গ্যারিসন - ক্যান্টনমেন্ট)",
+      "গ্যারিসন - ক্যান্টনমেন্ট"
+    ],
+    "placeName": "Garrison Bus Stop",
+    "address": "Dhaka Cantonment",
+    "coordinates": [
+      23.8024127,
+      90.395533
+    ],
+    "source": "osm:node/2847739316",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Gazipur Bypass",
+      "Gazipur Bypass (গাজীপুর বাইপাস)",
+      "গাজীপুর বাইপাস"
+    ],
+    "placeName": "Chowrasta Bus Stop",
+    "address": "Gazipur Bypass, Gazipur",
+    "coordinates": [
+      23.9891057,
+      90.3815747
+    ],
+    "source": "manual",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Gazipur Chourasta",
+      "Gazipur Chourasta (গাজীপুর চৌরাস্তা)",
+      "গাজীপুর চৌরাস্তা"
+    ],
+    "placeName": "Gazipur Chowrasta Bus Stop",
+    "address": "Gazipur Chowrasta",
+    "coordinates": [
+      23.9891057,
+      90.3815747
+    ],
+    "source": "osm:node/5209548509",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Golap Shah Mazar",
+      "Golap Shah Mazar (গোলাপ শাহ মাজার)",
+      "গোলাপ শাহ মাজার"
+    ],
+    "placeName": "Golap Shah Mazar",
+    "address": "Gulistan, Dhaka",
+    "coordinates": [
+      23.725859,
+      90.411181
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Golapbagh Chowrasta",
       "Golapbagh Chowrasta (গোলাপবাগ চৌরাস্তা)",
       "গোলাপবাগ চৌরাস্তা"
@@ -601,6 +1006,36 @@
   },
   {
     "labels": [
+      "Golshan 1",
+      "Golshan 1 (গুলশান ১)",
+      "গুলশান ১"
+    ],
+    "placeName": "Gulshan 1",
+    "address": "Gulshan 1 Circle, Dhaka",
+    "coordinates": [
+      23.780583,
+      90.416982
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "GPO",
+      "GPO (জিপিও)",
+      "জিপিও"
+    ],
+    "placeName": "GPO, Gulistan",
+    "address": "GPO, Gulistan, Dhaka",
+    "coordinates": [
+      23.728018,
+      90.410711
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Gulistan",
       "Gulistan (গুলিস্তান)",
       "গুলিস্তান"
@@ -613,6 +1048,36 @@
     ],
     "source": "osm:node/11818535608",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Gulshan 1",
+      "Gulshan 1 (গুলশান ১)",
+      "গুলশান ১"
+    ],
+    "placeName": "Gulshan 1",
+    "address": "Gulshan 1 Circle, Dhaka",
+    "coordinates": [
+      23.780583,
+      90.416982
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Gulshan 2",
+      "Gulshan 2 (গুলশান ২)",
+      "গুলশান ২"
+    ],
+    "placeName": "Gulshan 2",
+    "address": "Gulshan 2 Circle, Dhaka",
+    "coordinates": [
+      23.792528,
+      90.414573
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -643,6 +1108,36 @@
     ],
     "source": "osm:node/12440860422",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Hazaribag",
+      "Hazaribag (হাজারিবাগ)",
+      "হাজারিবাগ"
+    ],
+    "placeName": "Hazaribagh Bus Stop",
+    "address": "Hazaribag, Dhaka",
+    "coordinates": [
+      23.7323936,
+      90.3628446
+    ],
+    "source": "osm:node/12025574279",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Hazipara",
+      "Hazipara (হাজীপাড়া)",
+      "হাজীপাড়া"
+    ],
+    "placeName": "Hazipara",
+    "address": "Hazipara, Rampura, Dhaka",
+    "coordinates": [
+      23.756126,
+      90.420231
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -691,6 +1186,21 @@
   },
   {
     "labels": [
+      "IDB",
+      "IDB (আইডিবি)",
+      "আইডিবি"
+    ],
+    "placeName": "Agargaon IDB Bus Stop",
+    "address": "IDB, Agargaon, Dhaka",
+    "coordinates": [
+      23.77804075706545,
+      90.38040704341945
+    ],
+    "source": "manual",
+    "confidence": "verified"
+  },
+  {
+    "labels": [
       "Jahangir Gate",
       "Jahangir Gate (জাহাঙ্গীর গেট)",
       "জাহাঙ্গীর গেট"
@@ -721,6 +1231,36 @@
   },
   {
     "labels": [
+      "Jamuna Future Park",
+      "Jamuna Future Park (যমুনা ফিউচার পার্ক)",
+      "যমুনা ফিউচার পার্ক"
+    ],
+    "placeName": "Jamuna Future Park",
+    "address": "Jamuna Future Park, Progati Sarani, Dhaka",
+    "coordinates": [
+      23.813784,
+      90.424405
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Japan Garden City",
+      "Japan Garden City (জাপান গার্ডেন সিটি)",
+      "জাপান গার্ডেন সিটি"
+    ],
+    "placeName": "Japan Garden City",
+    "address": "Japan Garden City, Mohammadpur, Dhaka",
+    "coordinates": [
+      23.766064,
+      90.358333
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Jashimuddin",
       "Jashimuddin (জসিমউদ্দিন)",
       "জসিমউদ্দিন"
@@ -736,6 +1276,66 @@
   },
   {
     "labels": [
+      "Jashimuddin (Uttara)",
+      "Jashimuddin (Uttara) (জসিমউদ্দিন - উত্তরা)",
+      "জসিমউদ্দিন - উত্তরা"
+    ],
+    "placeName": "Jashimuddin Bus Stopage, Uttara",
+    "address": "Jashimuddin, Uttara, Dhaka",
+    "coordinates": [
+      23.8608599,
+      90.4000486
+    ],
+    "source": "osm:node/4737734589",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Jatrabari",
+      "Jatrabari (যাত্রাবাড়ি)",
+      "যাত্রাবাড়ি"
+    ],
+    "placeName": "Jatrabari bus stop",
+    "address": "Jatrabari, Dhaka",
+    "coordinates": [
+      23.7093864,
+      90.4347814
+    ],
+    "source": "osm:node/11740555202",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Jigatola",
+      "Jigatola (জিগাতোলা)",
+      "জিগাতোলা"
+    ],
+    "placeName": "Jigatola",
+    "address": "Jigatola, Dhanmondi, Dhaka",
+    "coordinates": [
+      23.738269,
+      90.373072
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Joydebpur",
+      "Joydebpur (জয়দেবপুর)",
+      "জয়দেবপুর"
+    ],
+    "placeName": "Joydebpur Junction",
+    "address": "Joydebpur, Gazipur",
+    "coordinates": [
+      23.9980388,
+      90.420312
+    ],
+    "source": "osm:node/1472696992",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Jurain",
       "Jurain (জুরাইন)",
       "জুরাইন"
@@ -748,6 +1348,21 @@
     ],
     "source": "osm:node/5183327535",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kakali",
+      "Kakali (কাকলী)",
+      "কাকলী"
+    ],
+    "placeName": "Kakali",
+    "address": "Kakali, Banani, Dhaka",
+    "coordinates": [
+      23.793719,
+      90.400969
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -793,6 +1408,21 @@
     ],
     "source": "osm:node/6632582785",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Kalshi",
+      "Kalshi (কালশী)",
+      "কালশী"
+    ],
+    "placeName": "Kalshi",
+    "address": "Kalshi, Mirpur, Dhaka",
+    "coordinates": [
+      23.821064,
+      90.384022
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -871,6 +1501,21 @@
   },
   {
     "labels": [
+      "Kawran Bazar",
+      "Kawran Bazar (কাওরান বাজার)",
+      "কাওরান বাজার"
+    ],
+    "placeName": "Kawran Bazar",
+    "address": "Kawran Bazar, Dhaka",
+    "coordinates": [
+      23.751534,
+      90.393857
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Kazipara",
       "Kazipara (কাজীপাড়া)",
       "কাজীপাড়া"
@@ -898,6 +1543,21 @@
     ],
     "source": "osm:node/3522838183",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Keraniganj",
+      "Keraniganj (কেরাণীগঞ্জ)",
+      "কেরাণীগঞ্জ"
+    ],
+    "placeName": "Chunkutiya Bus Stop",
+    "address": "Chunkutia, Keraniganj",
+    "coordinates": [
+      23.695502,
+      90.3985875
+    ],
+    "source": "osm:node/11671465384",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -943,6 +1603,21 @@
     ],
     "source": "osm:node/12045859740",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Khilgaon flyover",
+      "Khilgaon flyover (খিলগাঁও ফ্লাইওভার)",
+      "খিলগাঁও ফ্লাইওভার"
+    ],
+    "placeName": "Khilgaon Flyover",
+    "address": "Khilgaon Flyover, Dhaka",
+    "coordinates": [
+      23.749104,
+      90.424091
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -1021,6 +1696,51 @@
   },
   {
     "labels": [
+      "Kuril Chourasta",
+      "Kuril Chourasta (কুড়িল চৌরাস্তা)",
+      "কুড়িল চৌরাস্তা"
+    ],
+    "placeName": "Kuril Bishwa Road Bus Stop",
+    "address": "Kuril Chourasta, Dhaka",
+    "coordinates": [
+      23.8207235,
+      90.417603
+    ],
+    "source": "osm:node/12078090950",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Madanpur",
+      "Madanpur (মদনপুর)",
+      "মদনপুর"
+    ],
+    "placeName": "Modonpur Bus Stop",
+    "address": "Madanpur, Narayanganj",
+    "coordinates": [
+      23.6904798,
+      90.5468875
+    ],
+    "source": "osm:node/5115216384",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Madhya Badda",
+      "Madhya Badda (মধ্য বাড্ডা)",
+      "মধ্য বাড্ডা"
+    ],
+    "placeName": "Madhya Badda",
+    "address": "Madhya Badda, Dhaka",
+    "coordinates": [
+      23.775634,
+      90.425067
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Malibaag Moor",
       "Malibaag Moor (মালিবাগ মোড়)",
       "মালিবাগ মোড়"
@@ -1066,6 +1786,21 @@
   },
   {
     "labels": [
+      "Manik Mia Avenue",
+      "Manik Mia Avenue (মানিক মিয়া এভিনিউ)",
+      "মানিক মিয়া এভিনিউ"
+    ],
+    "placeName": "Manik Mian Avenue West Bus Stop",
+    "address": "Manik Mia Avenue, Dhaka",
+    "coordinates": [
+      23.7585473,
+      90.3757037
+    ],
+    "source": "osm:node/12009465955",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Manik Nagar",
       "Manik Nagar (মানিক নগর)",
       "মানিক নগর"
@@ -1078,6 +1813,21 @@
     ],
     "source": "osm:node/12057056990",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Manikganj",
+      "Manikganj (মানিকগঞ্জ)",
+      "মানিকগঞ্জ"
+    ],
+    "placeName": "Manikganj",
+    "address": "Manikganj Bus Stand, Manikganj",
+    "coordinates": [
+      23.861651,
+      90.000322
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -1231,6 +1981,21 @@
   },
   {
     "labels": [
+      "Mirpur 12",
+      "Mirpur 12 (মিরপুর ১২)",
+      "মিরপুর ১২"
+    ],
+    "placeName": "Mirpur 12",
+    "address": "Mirpur 12, Dhaka",
+    "coordinates": [
+      23.828601,
+      90.36489
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Mirpur 13",
       "Mirpur 13 (মিরপুর ১৩)",
       "মিরপুর ১৩"
@@ -1363,6 +2128,51 @@
     ],
     "source": "osm:node/12052350731",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Nabisco",
+      "Nabisco (নাবিস্কো)",
+      "নাবিস্কো"
+    ],
+    "placeName": "Nabisco Bus Stop",
+    "address": "Tejgaon, Dhaka",
+    "coordinates": [
+      23.7696456,
+      90.4008637
+    ],
+    "source": "osm:node/11939446956",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Nadda",
+      "Nadda (নদ্দা)",
+      "নদ্দা"
+    ],
+    "placeName": "Nadda",
+    "address": "Nadda, Progati Sarani, Dhaka",
+    "coordinates": [
+      23.800366,
+      90.423736
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Nandan Park",
+      "Nandan Park (নন্দন পার্ক)",
+      "নন্দন পার্ক"
+    ],
+    "placeName": "Nandan Theme Park",
+    "address": "Nabinagar-Chandra Highway, Savar",
+    "coordinates": [
+      24.031199,
+      90.241882
+    ],
+    "source": "osm:node/12169756331",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -1561,6 +2371,36 @@
   },
   {
     "labels": [
+      "Purobi",
+      "Purobi (পুরবী)",
+      "পুরবী"
+    ],
+    "placeName": "Purobi",
+    "address": "Purobi, Mirpur, Dhaka",
+    "coordinates": [
+      23.8190612,
+      90.3652321
+    ],
+    "source": "osm:node/4380106699",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Rajarbag",
+      "Rajarbag (রাজারবাগ)",
+      "রাজারবাগ"
+    ],
+    "placeName": "Rajarbagh Bus Stop",
+    "address": "Rajarbag, Dhaka",
+    "coordinates": [
+      23.7401997,
+      90.4198651
+    ],
+    "source": "osm:node/12039813877",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Rajlakshmi",
       "Rajlakshmi (রাজলক্ষ্মী)",
       "রাজলক্ষ্মী"
@@ -1576,6 +2416,21 @@
   },
   {
     "labels": [
+      "Rampura Bazar",
+      "Rampura Bazar (রামপুরা বাজার)",
+      "রামপুরা বাজার"
+    ],
+    "placeName": "Rampura Bazar",
+    "address": "Rampura, Dhaka",
+    "coordinates": [
+      23.7683221,
+      90.4219638
+    ],
+    "source": "osm:node/5738418237",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Rampura Bridge",
       "Rampura Bridge (রামপুরা ব্রিজ)",
       "রামপুরা ব্রিজ"
@@ -1588,6 +2443,21 @@
     ],
     "source": "osm:node/3500679440",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Ray Saheb Bazar",
+      "Ray Saheb Bazar (রায় সাহেব বাজার)",
+      "রায় সাহেব বাজার"
+    ],
+    "placeName": "Ray Saheb Bazaar Bus Stop",
+    "address": "Ray Saheb Bazar, Dhaka",
+    "coordinates": [
+      23.7136059,
+      90.4117751
+    ],
+    "source": "osm:node/11757458203",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -1621,6 +2491,36 @@
   },
   {
     "labels": [
+      "Rupnagar Abashik",
+      "Rupnagar Abashik (রূপনগর আবাসিক)",
+      "রূপনগর আবাসিক"
+    ],
+    "placeName": "Abashik Mor",
+    "address": "Rupnagar Abashik, Mirpur, Dhaka",
+    "coordinates": [
+      23.8166417,
+      90.3560896
+    ],
+    "source": "osm:node/2919828430",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Sadarghat",
+      "Sadarghat (সদরঘাট)",
+      "সদরঘাট"
+    ],
+    "placeName": "Sadarghat",
+    "address": "Sadarghat, Dhaka",
+    "coordinates": [
+      23.70588,
+      90.4092438
+    ],
+    "source": "osm:way/332507445",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Sainik Club",
       "Sainik Club (সৈনিক ক্লাব)",
       "সৈনিক ক্লাব"
@@ -1648,6 +2548,21 @@
     ],
     "source": "osm:node/3518348924",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Sat rasta",
+      "Sat rasta (সাত রাস্তা)",
+      "সাত রাস্তা"
+    ],
+    "placeName": "Sat Rasta",
+    "address": "Sat Rasta, Tejgaon, Dhaka",
+    "coordinates": [
+      23.763179,
+      90.398998
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -1696,6 +2611,21 @@
   },
   {
     "labels": [
+      "Sayapabad",
+      "Sayapabad (সায়াপাবাদ)",
+      "সায়াপাবাদ"
+    ],
+    "placeName": "Sayedabad",
+    "address": "Sayedabad, Dhaka",
+    "coordinates": [
+      23.718722,
+      90.424684
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Science Lab",
       "Science Lab (বিজ্ঞান গবেষণা প্রযুক্তি)",
       "বিজ্ঞান গবেষণা প্রযুক্তি"
@@ -1741,6 +2671,21 @@
   },
   {
     "labels": [
+      "Shankar",
+      "Shankar (শঙ্কর)",
+      "শঙ্কর"
+    ],
+    "placeName": "Shankar",
+    "address": "Shankar, Dhanmondi, Dhaka",
+    "coordinates": [
+      23.751239,
+      90.369393
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Shantinagar",
       "Shantinagar (শান্তিনগর)",
       "শান্তিনগর"
@@ -1783,6 +2728,21 @@
     ],
     "source": "osm:node/3941231699",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Shia Masjid",
+      "Shia Masjid (শিয়া মসজিদ)",
+      "শিয়া মসজিদ"
+    ],
+    "placeName": "Shia Masjid",
+    "address": "Shia Masjid, Mohammadpur, Dhaka",
+    "coordinates": [
+      23.764994,
+      90.358883
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -1921,6 +2881,36 @@
   },
   {
     "labels": [
+      "Signal",
+      "Signal (সিগন্যাল)",
+      "সিগন্যাল"
+    ],
+    "placeName": "Bata Signal Bus Stop",
+    "address": "Bata Signal, Dhaka",
+    "coordinates": [
+      23.7389887,
+      90.388255
+    ],
+    "source": "osm:node/3345602131",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
+      "Sony Cinema Hall",
+      "Sony Cinema Hall (সনি সিনেমা হল)",
+      "সনি সিনেমা হল"
+    ],
+    "placeName": "Sony Hall / Mirpur 1 Bus Stop",
+    "address": "Sony Cinema Hall, Mirpur 1, Dhaka",
+    "coordinates": [
+      23.7997041,
+      90.3548493
+    ],
+    "source": "osm:node/13266827014",
+    "confidence": "manual_verified"
+  },
+  {
+    "labels": [
       "Staff Road",
       "Staff Road (স্টাফ রোড)",
       "স্টাফ রোড"
@@ -1993,6 +2983,21 @@
     ],
     "source": "osm:node/12518138812",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Tejgaon College (Farmgate)",
+      "Tejgaon College (Farmgate) (তেজগাঁও কলেজ - ফার্মগেট)",
+      "তেজগাঁও কলেজ - ফার্মগেট"
+    ],
+    "placeName": "Farmgate",
+    "address": "Farmgate / Tejgaon College, Dhaka",
+    "coordinates": [
+      23.7590206,
+      90.387124
+    ],
+    "source": "osm:node/10294553595",
+    "confidence": "manual_verified"
   },
   {
     "labels": [
@@ -2098,6 +3103,21 @@
     ],
     "source": "osm:node/5879981786",
     "confidence": "verified"
+  },
+  {
+    "labels": [
+      "Zia Uddyan",
+      "Zia Uddyan (জিয়া উদ্যান)",
+      "জিয়া উদ্যান"
+    ],
+    "placeName": "Zia Uddyan",
+    "address": "Chandrima Udyan, Sher-e-Bangla Nagar, Dhaka",
+    "coordinates": [
+      23.766671,
+      90.380226
+    ],
+    "source": "manual:route-context",
+    "confidence": "manual_verified"
   },
   {
     "labels": [

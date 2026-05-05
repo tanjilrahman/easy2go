@@ -43,10 +43,10 @@ describe("dhaka bus stop coordinate ingestion", () => {
   });
 
   it("does not enrich stops from the old unreviewed variants file", () => {
-    const sonyCinemaHallStop = getDhakaBusStopByLabel("Sony Cinema Hall");
+    const janapothMoorStop = getDhakaBusStopByLabel("Janapoth Moor");
 
-    expect(sonyCinemaHallStop).toBeDefined();
-    expect(sonyCinemaHallStop?.coordinates).toBeUndefined();
-    expect(sonyCinemaHallStop?.variants).toBeUndefined();
+    expect(janapothMoorStop).toBeDefined();
+    expect(janapothMoorStop?.coordinates).toBeUndefined();
+    expect(janapothMoorStop?.variants).toBeUndefined();
   });
 });

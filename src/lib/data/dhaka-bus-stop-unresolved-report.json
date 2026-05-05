@@ -1,0 +1,1603 @@
+{
+  "generatedAt": "2026-05-05T12:56:20.839Z",
+  "sourceReview": "src/lib/data/dhaka-bus-stop-coordinate-review.json",
+  "sourceApproved": "src/lib/data/dhaka-bus-stop-approved-coordinates.json",
+  "sourceManual": "src/lib/data/dhaka-bus-stop-manual-coordinates.json",
+  "summary": {
+    "unresolved": 54,
+    "reported": 40,
+    "manualApproved": 68,
+    "byStatus": {
+      "rejected_weak_match": 26,
+      "needs_source": 27,
+      "needs_manual_review": 1
+    }
+  },
+  "stops": [
+    {
+      "stopId": "stop-janapoth-moor",
+      "label": "Janapoth Moor (জনপথ মোড়)",
+      "labelEn": "Janapoth Moor",
+      "labelBn": "জনপথ মোড়",
+      "routeCount": 10,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chandra Moor",
+        "coordinates": [
+          24.0476042,
+          90.2389996
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/6797150706"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-ftcl-mohammadpur-to-chittagong-road-69",
+          "busLabelEn": "FTCL",
+          "previousResolved": {
+            "stopId": "stop-sayapabad",
+            "label": "Sayapabad (সায়াপাবাদ)",
+            "labelEn": "Sayapabad",
+            "candidateDistanceKm": 41.16
+          },
+          "nextResolved": {
+            "stopId": "stop-jatrabari",
+            "label": "Jatrabari (যাত্রাবাড়ি)",
+            "labelEn": "Jatrabari",
+            "candidateDistanceKm": 42.55
+          }
+        },
+        {
+          "routeId": "route-himachal-suveccha-metro-hall-to-mirpur-12-79",
+          "busLabelEn": "Himachal Suveccha",
+          "previousResolved": {
+            "stopId": "stop-jatrabari",
+            "label": "Jatrabari (যাত্রাবাড়ি)",
+            "labelEn": "Jatrabari",
+            "candidateDistanceKm": 42.55
+          },
+          "nextResolved": {
+            "stopId": "stop-gulistan",
+            "label": "Gulistan (গুলিস্তান)",
+            "labelEn": "Gulistan",
+            "candidateDistanceKm": 39.99
+          }
+        },
+        {
+          "routeId": "route-labbayek-savar-to-sign-board-90",
+          "busLabelEn": "Labbayek(লাব্বাইক)",
+          "previousResolved": {
+            "stopId": "stop-sayapabad",
+            "label": "Sayapabad (সায়াপাবাদ)",
+            "labelEn": "Sayapabad",
+            "candidateDistanceKm": 41.16
+          },
+          "nextResolved": {
+            "stopId": "stop-jatrabari",
+            "label": "Jatrabari (যাত্রাবাড়ি)",
+            "labelEn": "Jatrabari",
+            "candidateDistanceKm": 42.55
+          }
+        },
+        {
+          "routeId": "route-mm-lovely-savar-to-sign-board-103",
+          "busLabelEn": "MM Lovely",
+          "previousResolved": {
+            "stopId": "stop-sayapabad",
+            "label": "Sayapabad (সায়াপাবাদ)",
+            "labelEn": "Sayapabad",
+            "candidateDistanceKm": 41.16
+          },
+          "nextResolved": {
+            "stopId": "stop-jatrabari",
+            "label": "Jatrabari (যাত্রাবাড়ি)",
+            "labelEn": "Jatrabari",
+            "candidateDistanceKm": 42.55
+          }
+        },
+        {
+          "routeId": "route-raida-postogola-to-dia-bari-125",
+          "busLabelEn": "Raida(রাইদা)",
+          "previousResolved": {
+            "stopId": "stop-jatrabari",
+            "label": "Jatrabari (যাত্রাবাড়ি)",
+            "labelEn": "Jatrabari",
+            "candidateDistanceKm": 42.55
+          },
+          "nextResolved": {
+            "stopId": "stop-sayapabad",
+            "label": "Sayapabad (সায়াপাবাদ)",
+            "labelEn": "Sayapabad",
+            "candidateDistanceKm": 41.16
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-ghatar-char",
+      "label": "Ghatar Char (ঘাটার চর)",
+      "labelEn": "Ghatar Char",
+      "labelBn": "ঘাটার চর",
+      "routeCount": 3,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-city-link-chittagong-road-to-ghatar-char-51",
+          "busLabelEn": "City Link",
+          "previousResolved": {
+            "stopId": "stop-bosila",
+            "label": "Bosila (বসিলা)",
+            "labelEn": "Bosila",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": null
+        },
+        {
+          "routeId": "route-kamal-plus-paribahan-chittagong-road-to-ghatar-char-86",
+          "busLabelEn": "Kamal Plus Paribahan",
+          "previousResolved": {
+            "stopId": "stop-mohammadpur",
+            "label": "Mohammadpur (মোহাম্মদপুর)",
+            "labelEn": "Mohammadpur",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": null
+        },
+        {
+          "routeId": "route-raja-city-postogola-to-ghatar-char-126",
+          "busLabelEn": "Raja City",
+          "previousResolved": {
+            "stopId": "stop-bosila",
+            "label": "Bosila (বসিলা)",
+            "labelEn": "Bosila",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": null
+        }
+      ]
+    },
+    {
+      "stopId": "stop-kadamtali",
+      "label": "Kadamtali (কদমতলী)",
+      "labelEn": "Kadamtali",
+      "labelBn": "কদমতলী",
+      "routeCount": 3,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-akash-kadamtali-to-tongi-6",
+          "busLabelEn": "Akash",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-keraniganj",
+            "label": "Keraniganj (কেরাণীগঞ্জ)",
+            "labelEn": "Keraniganj",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-runway-express-keraniganj-to-ecb-square-133",
+          "busLabelEn": "Runway Express",
+          "previousResolved": {
+            "stopId": "stop-keraniganj",
+            "label": "Keraniganj (কেরাণীগঞ্জ)",
+            "labelEn": "Keraniganj",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-babubazar",
+            "label": "Babubazar (বাবুবাজার)",
+            "labelEn": "Babubazar",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-shadhin-express-mirpur-12-to-maowa-141",
+          "busLabelEn": "Shadhin Express",
+          "previousResolved": {
+            "stopId": "stop-keraniganj",
+            "label": "Keraniganj (কেরাণীগঞ্জ)",
+            "labelEn": "Keraniganj",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": null
+        }
+      ]
+    },
+    {
+      "stopId": "stop-maowa",
+      "label": "Maowa (মাওয়া)",
+      "labelEn": "Maowa",
+      "labelBn": "মাওয়া",
+      "routeCount": 3,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-basumati-gabtoli-to-maowa-24",
+          "busLabelEn": "Basumati",
+          "previousResolved": {
+            "stopId": "stop-keraniganj",
+            "label": "Keraniganj (কেরাণীগঞ্জ)",
+            "labelEn": "Keraniganj",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": null
+        },
+        {
+          "routeId": "route-prochesta-maowa-to-abdullahpur-121",
+          "busLabelEn": "Prochesta",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-keraniganj",
+            "label": "Keraniganj (কেরাণীগঞ্জ)",
+            "labelEn": "Keraniganj",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-shadhin-express-mirpur-12-to-maowa-141",
+          "busLabelEn": "Shadhin Express",
+          "previousResolved": {
+            "stopId": "stop-keraniganj",
+            "label": "Keraniganj (কেরাণীগঞ্জ)",
+            "labelEn": "Keraniganj",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": null
+        }
+      ]
+    },
+    {
+      "stopId": "stop-ring-road",
+      "label": "Ring Road (রিং রোড)",
+      "labelEn": "Ring Road",
+      "labelBn": "রিং রোড",
+      "routeCount": 3,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bishaw Estema Road Bus Stop",
+        "coordinates": [
+          23.8912957,
+          90.3889116
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12281652893"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-alif-japan-garden-city-to-abdullahpur-13",
+          "busLabelEn": "Alif",
+          "previousResolved": {
+            "stopId": "stop-japan-garden-city",
+            "label": "Japan Garden City (জাপান গার্ডেন সিটি)",
+            "labelEn": "Japan Garden City",
+            "candidateDistanceKm": 14.27
+          },
+          "nextResolved": {
+            "stopId": "stop-adabor",
+            "label": "Adabor (আদাবর)",
+            "labelEn": "Adabor",
+            "candidateDistanceKm": 13.36
+          }
+        },
+        {
+          "routeId": "route-bhuiyan-paribahan-japan-garden-city-to-abdullahpur-28",
+          "busLabelEn": "Bhuiyan Paribahan",
+          "previousResolved": {
+            "stopId": "stop-japan-garden-city",
+            "label": "Japan Garden City (জাপান গার্ডেন সিটি)",
+            "labelEn": "Japan Garden City",
+            "candidateDistanceKm": 14.27
+          },
+          "nextResolved": {
+            "stopId": "stop-adabor",
+            "label": "Adabor (আদাবর)",
+            "labelEn": "Adabor",
+            "candidateDistanceKm": 13.36
+          }
+        },
+        {
+          "routeId": "route-tetulia-shia-masjid-to-abdullahpur-159",
+          "busLabelEn": "Tetulia",
+          "previousResolved": {
+            "stopId": "stop-japan-garden-city",
+            "label": "Japan Garden City (জাপান গার্ডেন সিটি)",
+            "labelEn": "Japan Garden City",
+            "candidateDistanceKm": 14.27
+          },
+          "nextResolved": {
+            "stopId": "stop-adabor",
+            "label": "Adabor (আদাবর)",
+            "labelEn": "Adabor",
+            "candidateDistanceKm": 13.36
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-balughat",
+      "label": "Balughat (বালুঘাট)",
+      "labelEn": "Balughat",
+      "labelBn": "বালুঘাট",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-brtc-articulated-balughat-to-motijheel-47",
+          "busLabelEn": "BRTC Articulated বি আর টিসি আরটিকুলেটেড)",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-cantonment",
+            "label": "Cantonment (ক্যান্টনমেন্ট)",
+            "labelEn": "Cantonment",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-4-no-alike-balughat-to-motijheel-175",
+          "busLabelEn": "4 No. Alike",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-signal",
+            "label": "Signal (সিগন্যাল)",
+            "labelEn": "Signal",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-ittefaq-moor",
+      "label": "Ittefaq Moor (ইত্তেফাক মোড়)",
+      "labelEn": "Ittefaq Moor",
+      "labelBn": "ইত্তেফাক মোড়",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chandra Moor",
+        "coordinates": [
+          24.0476042,
+          90.2389996
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/6797150706"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-meshkat-mohammadpur-to-chittagong-road-96",
+          "busLabelEn": "Meshkat",
+          "previousResolved": {
+            "stopId": "stop-motijheel",
+            "label": "Motijheel (মতিঝিল)",
+            "labelEn": "Motijheel",
+            "candidateDistanceKm": 39.97
+          },
+          "nextResolved": {
+            "stopId": "stop-sayapabad",
+            "label": "Sayapabad (সায়াপাবাদ)",
+            "labelEn": "Sayapabad",
+            "candidateDistanceKm": 41.16
+          }
+        },
+        {
+          "routeId": "route-shahria-enterprise-gabtoli-to-postogola-142",
+          "busLabelEn": "Shahria Enterprise",
+          "previousResolved": {
+            "stopId": "stop-motijheel",
+            "label": "Motijheel (মতিঝিল)",
+            "labelEn": "Motijheel",
+            "candidateDistanceKm": 39.97
+          },
+          "nextResolved": {
+            "stopId": "stop-tikatuli",
+            "label": "Tikatuli (টিকাটুলি)",
+            "labelEn": "Tikatuli",
+            "candidateDistanceKm": 41.03
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-jamgora",
+      "label": "Jamgora (জামগড়া)",
+      "labelEn": "Jamgora",
+      "labelBn": "জামগড়া",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-ashulia-classic-nobinagar-to-sat-rasta-17",
+          "busLabelEn": "Ashulia Classic",
+          "previousResolved": {
+            "stopId": "stop-baipayl",
+            "label": "Baipayl (বাইপাইল)",
+            "labelEn": "Baipayl",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-fantasy-kingdom",
+            "label": "Fantasy Kingdom (ফ্যান্টাসি কিংডম)",
+            "labelEn": "Fantasy Kingdom",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-siam-transport-banasree-to-nobinagar-148",
+          "busLabelEn": "Siam Transport",
+          "previousResolved": {
+            "stopId": "stop-fantasy-kingdom",
+            "label": "Fantasy Kingdom (ফ্যান্টাসি কিংডম)",
+            "labelEn": "Fantasy Kingdom",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-shimultola",
+            "label": "Shimultola (সিমুলতলা)",
+            "labelEn": "Shimultola",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-jarun",
+      "label": "Jarun (যারুন)",
+      "labelEn": "Jarun",
+      "labelBn": "যারুন",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-kironmala-paribahan-chiriyakhana-to-konabari-89",
+          "busLabelEn": "Kironmala Paribahan",
+          "previousResolved": {
+            "stopId": "stop-zirabo",
+            "label": "Zirabo (জিরাবো)",
+            "labelEn": "Zirabo",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-konabari-2",
+            "label": "Konabari (কোনাবাড়ী)",
+            "labelEn": "Konabari",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-power-paribahan-mirpur-14-to-konabari-119",
+          "busLabelEn": "Power Paribahan",
+          "previousResolved": {
+            "stopId": "stop-zirabo",
+            "label": "Zirabo (জিরাবো)",
+            "labelEn": "Zirabo",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-konabari-2",
+            "label": "Konabari (কোনাবাড়ী)",
+            "labelEn": "Konabari",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-mirpur-dohs",
+      "label": "Mirpur (DOHS) (মিরপুর - ডিওএইচএস)",
+      "labelEn": "Mirpur (DOHS)",
+      "labelBn": "মিরপুর - ডিওএইচএস",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dhaka College Bus stop, Mirpur Rd, Dhaka",
+        "coordinates": [
+          23.7360491,
+          90.3839557
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11821941384"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-trust-transport-services-mirpur-dohs-to-motijheel-166",
+          "busLabelEn": "Trust Transport Services",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-kalshi",
+            "label": "Kalshi (কালশী)",
+            "labelEn": "Kalshi",
+            "candidateDistanceKm": 9.45
+          }
+        },
+        {
+          "routeId": "route-trust-transport-services-ac-mirpur-dohs-to-kawran-bazar-167",
+          "busLabelEn": "Trust Transport Services (AC)",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-kalshi",
+            "label": "Kalshi (কালশী)",
+            "labelEn": "Kalshi",
+            "candidateDistanceKm": 9.45
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-narsinghapur",
+      "label": "Narsinghapur (নরসিংহপুর)",
+      "labelEn": "Narsinghapur",
+      "labelBn": "নরসিংহপুর",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-kironmala-paribahan-chiriyakhana-to-konabari-89",
+          "busLabelEn": "Kironmala Paribahan",
+          "previousResolved": {
+            "stopId": "stop-zirabo",
+            "label": "Zirabo (জিরাবো)",
+            "labelEn": "Zirabo",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-konabari-2",
+            "label": "Konabari (কোনাবাড়ী)",
+            "labelEn": "Konabari",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-power-paribahan-mirpur-14-to-konabari-119",
+          "busLabelEn": "Power Paribahan",
+          "previousResolved": {
+            "stopId": "stop-zirabo",
+            "label": "Zirabo (জিরাবো)",
+            "labelEn": "Zirabo",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-konabari-2",
+            "label": "Konabari (কোনাবাড়ী)",
+            "labelEn": "Konabari",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-panthopoth",
+      "label": "Panthopoth (পান্থপথ)",
+      "labelEn": "Panthopoth",
+      "labelBn": "পান্থপথ",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-dip-paribahan-azimpur-to-kuril-bishwa-road-61",
+          "busLabelEn": "Dip Paribahan",
+          "previousResolved": {
+            "stopId": "stop-kalabagan",
+            "label": "Kalabagan (কলাবাগান)",
+            "labelEn": "Kalabagan",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-kawran-bazar",
+            "label": "Kawran Bazar (কাওরান বাজার)",
+            "labelEn": "Kawran Bazar",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-winner-azimpur-to-kuril-bishwa-road-173",
+          "busLabelEn": "Winner",
+          "previousResolved": {
+            "stopId": "stop-kalabagan",
+            "label": "Kalabagan (কলাবাগান)",
+            "labelEn": "Kalabagan",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-kawran-bazar",
+            "label": "Kawran Bazar (কাওরান বাজার)",
+            "labelEn": "Kawran Bazar",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-proshika-moor",
+      "label": "Proshika Moor (প্রশিকা মোড়)",
+      "labelEn": "Proshika Moor",
+      "labelBn": "প্রশিকা মোড়",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Chandra Moor",
+        "coordinates": [
+          24.0476042,
+          90.2389996
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/6797150706"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
+          "busLabelEn": "Ashirbad Pahibahan",
+          "previousResolved": {
+            "stopId": "stop-shiyal-bari",
+            "label": "Shiyal Bari (শিয়াল বাড়ি)",
+            "labelEn": "Shiyal Bari",
+            "candidateDistanceKm": 29.24
+          },
+          "nextResolved": {
+            "stopId": "stop-mirpur-2",
+            "label": "Mirpur 2 (মিরপুর ২)",
+            "labelEn": "Mirpur 2",
+            "candidateDistanceKm": 29.8
+          }
+        },
+        {
+          "routeId": "route-9-no-college-gate-to-mirpur-12-180",
+          "busLabelEn": "9 No.",
+          "previousResolved": {
+            "stopId": "stop-mirpur-2",
+            "label": "Mirpur 2 (মিরপুর ২)",
+            "labelEn": "Mirpur 2",
+            "candidateDistanceKm": 29.8
+          },
+          "nextResolved": {
+            "stopId": "stop-pallabi",
+            "label": "Pallabi (পল্লবী)",
+            "labelEn": "Pallabi",
+            "candidateDistanceKm": 27.72
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-rajendrapur",
+      "label": "Rajendrapur (রাজেন্দ্রপুর)",
+      "labelEn": "Rajendrapur",
+      "labelBn": "রাজেন্দ্রপুর",
+      "routeCount": 2,
+      "status": "needs_manual_review",
+      "reviewReason": "Route-context review required before trusting this lower-score or ambiguous named match.",
+      "topCandidate": {
+        "name": "Rajendrapur Bus Stand, Dhaka - Mawa Hwy, Ekuria",
+        "coordinates": [
+          23.6663171,
+          90.3943209
+        ],
+        "score": 107,
+        "confidence": "strong_candidate",
+        "source": "osm:node/11662154112"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-shadhin-express-mirpur-12-to-maowa-141",
+          "busLabelEn": "Shadhin Express",
+          "previousResolved": {
+            "stopId": "stop-keraniganj",
+            "label": "Keraniganj (কেরাণীগঞ্জ)",
+            "labelEn": "Keraniganj",
+            "candidateDistanceKm": 3.27
+          },
+          "nextResolved": null
+        },
+        {
+          "routeId": "route-thikana-express-shonbari-sreenagar-to-chandra-161",
+          "busLabelEn": "Thikana Express",
+          "previousResolved": {
+            "stopId": "stop-nimtola",
+            "label": "Nimtola (নিমতলা)",
+            "labelEn": "Nimtola",
+            "candidateDistanceKm": 8.47
+          },
+          "nextResolved": {
+            "stopId": "stop-hasnabad",
+            "label": "Hasnabad (হাসনাবাদ)",
+            "labelEn": "Hasnabad",
+            "candidateDistanceKm": 3.43
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-rayer-bazar",
+      "label": "Rayer Bazar (রায়ের বাজার)",
+      "labelEn": "Rayer Bazar",
+      "labelBn": "রায়ের বাজার",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Babu Bazar Bus Stop, Babubazar Bridge, Dhaka",
+        "coordinates": [
+          23.7107686,
+          90.4027424
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11765673893"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-janjabil-gabtoli-to-babubazar-85",
+          "busLabelEn": "Janjabil",
+          "previousResolved": {
+            "stopId": "stop-beribadh-tin-rastar-moor",
+            "label": "Beribadh Tin Rastar Moor (বেড়িবাঁধ তিন রাস্তার মোড়)",
+            "labelEn": "Beribadh Tin Rastar Moor",
+            "candidateDistanceKm": 6.96
+          },
+          "nextResolved": {
+            "stopId": "stop-hazaribag",
+            "label": "Hazaribag (হাজারিবাগ)",
+            "labelEn": "Hazaribag",
+            "candidateDistanceKm": 4.72
+          }
+        },
+        {
+          "routeId": "route-prattay-gabtoli-to-babubazar-120",
+          "busLabelEn": "Prattay",
+          "previousResolved": {
+            "stopId": "stop-beribadh-tin-rastar-moor",
+            "label": "Beribadh Tin Rastar Moor (বেড়িবাঁধ তিন রাস্তার মোড়)",
+            "labelEn": "Beribadh Tin Rastar Moor",
+            "candidateDistanceKm": 6.96
+          },
+          "nextResolved": {
+            "stopId": "stop-hazaribag",
+            "label": "Hazaribag (হাজারিবাগ)",
+            "labelEn": "Hazaribag",
+            "candidateDistanceKm": 4.72
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-shib-bari",
+      "label": "Shib Bari (শিব বাড়ি)",
+      "labelEn": "Shib Bari",
+      "labelBn": "শিব বাড়ি",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Boro Bari Bus stop",
+        "coordinates": [
+          23.9345733,
+          90.3867803
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12118265682"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-dhaka-paribahan-gulistan-to-shib-bari-59",
+          "busLabelEn": "Dhaka Paribahan",
+          "previousResolved": {
+            "stopId": "stop-uttara",
+            "label": "Uttara (উত্তরা)",
+            "labelEn": "Uttara",
+            "candidateDistanceKm": 7.09
+          },
+          "nextResolved": null
+        },
+        {
+          "routeId": "route-gazipur-paribahan-motijheel-to-shib-bari-71",
+          "busLabelEn": "Gazipur Paribahan",
+          "previousResolved": {
+            "stopId": "stop-gazipur-chourasta",
+            "label": "Gazipur Chourasta (গাজীপুর চৌরাস্তা)",
+            "labelEn": "Gazipur Chourasta",
+            "candidateDistanceKm": 6.09
+          },
+          "nextResolved": null
+        }
+      ]
+    },
+    {
+      "stopId": "stop-sikder-medical-college",
+      "label": "Sikder Medical College (সিকদার মেডিকেল কলেজ)",
+      "labelEn": "Sikder Medical College",
+      "labelBn": "সিকদার মেডিকেল কলেজ",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dhaka Medical College Hospital Bus stop, Bokshebazar, LaneDhaka, Dhaka",
+        "coordinates": [
+          23.7244232,
+          90.3977264
+        ],
+        "score": 53,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11821756863"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-janjabil-gabtoli-to-babubazar-85",
+          "busLabelEn": "Janjabil",
+          "previousResolved": {
+            "stopId": "stop-beribadh-tin-rastar-moor",
+            "label": "Beribadh Tin Rastar Moor (বেড়িবাঁধ তিন রাস্তার মোড়)",
+            "labelEn": "Beribadh Tin Rastar Moor",
+            "candidateDistanceKm": 5.54
+          },
+          "nextResolved": {
+            "stopId": "stop-hazaribag",
+            "label": "Hazaribag (হাজারিবাগ)",
+            "labelEn": "Hazaribag",
+            "candidateDistanceKm": 3.66
+          }
+        },
+        {
+          "routeId": "route-prattay-gabtoli-to-babubazar-120",
+          "busLabelEn": "Prattay",
+          "previousResolved": {
+            "stopId": "stop-beribadh-tin-rastar-moor",
+            "label": "Beribadh Tin Rastar Moor (বেড়িবাঁধ তিন রাস্তার মোড়)",
+            "labelEn": "Beribadh Tin Rastar Moor",
+            "candidateDistanceKm": 5.54
+          },
+          "nextResolved": {
+            "stopId": "stop-hazaribag",
+            "label": "Hazaribag (হাজারিবাগ)",
+            "labelEn": "Hazaribag",
+            "candidateDistanceKm": 3.66
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-surabari",
+      "label": "Surabari (সুরাবাড়ী)",
+      "labelEn": "Surabari",
+      "labelBn": "সুরাবাড়ী",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-kironmala-paribahan-chiriyakhana-to-konabari-89",
+          "busLabelEn": "Kironmala Paribahan",
+          "previousResolved": {
+            "stopId": "stop-zirabo",
+            "label": "Zirabo (জিরাবো)",
+            "labelEn": "Zirabo",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-konabari-2",
+            "label": "Konabari (কোনাবাড়ী)",
+            "labelEn": "Konabari",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-power-paribahan-mirpur-14-to-konabari-119",
+          "busLabelEn": "Power Paribahan",
+          "previousResolved": {
+            "stopId": "stop-zirabo",
+            "label": "Zirabo (জিরাবো)",
+            "labelEn": "Zirabo",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-konabari-2",
+            "label": "Konabari (কোনাবাড়ী)",
+            "labelEn": "Konabari",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-tajmahal-road",
+      "label": "Tajmahal Road (তাজমহল রোড)",
+      "labelEn": "Tajmahal Road",
+      "labelBn": "তাজমহল রোড",
+      "routeCount": 2,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bishaw Estema Road Bus Stop",
+        "coordinates": [
+          23.8912957,
+          90.3889116
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12281652893"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-dipon-tajmahal-road-to-arambagh-60",
+          "busLabelEn": "Dipon",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-star-kabab",
+            "label": "Star Kabab (স্টার কাবাব)",
+            "labelEn": "Star Kabab",
+            "candidateDistanceKm": 16.1
+          }
+        },
+        {
+          "routeId": "route-deepan-tajmahal-road-to-arambagh-181",
+          "busLabelEn": "Deepan",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-shankar",
+            "label": "Shankar (শঙ্কর)",
+            "labelEn": "Shankar",
+            "candidateDistanceKm": 15.7
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-vashantek",
+      "label": "Vashantek (ভাসানটেক)",
+      "labelEn": "Vashantek",
+      "labelBn": "ভাসানটেক",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-champion-vashantek-to-gabtoli-50",
+          "busLabelEn": "Champion",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-mirpur-14",
+            "label": "Mirpur 14 (মিরপুর ১৪)",
+            "labelEn": "Mirpur 14",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-first-ten-vashantek-to-gabtoli-68",
+          "busLabelEn": "First Ten",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-mirpur-14",
+            "label": "Mirpur 14 (মিরপুর ১৪)",
+            "labelEn": "Mirpur 14",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-vulta",
+      "label": "Vulta (ভুলতা)",
+      "labelEn": "Vulta",
+      "labelBn": "ভুলতা",
+      "routeCount": 2,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-brtc-vulta-to-kuril-bishwa-road-43",
+          "busLabelEn": "BRTC",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-kuril-bishwa-road",
+            "label": "Kuril Bishwa Road (কুড়িল বিশ্ব রোড)",
+            "labelEn": "Kuril Bishwa Road",
+            "candidateDistanceKm": null
+          }
+        },
+        {
+          "routeId": "route-meghla-transport-kalabagan-to-vulta-95",
+          "busLabelEn": "Meghla Transport",
+          "previousResolved": {
+            "stopId": "stop-kanchpur",
+            "label": "Kanchpur (কাঁচপুর)",
+            "labelEn": "Kanchpur",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": null
+        }
+      ]
+    },
+    {
+      "stopId": "stop-300-feet",
+      "label": "300 Feet (৩০০ ফুট)",
+      "labelEn": "300 Feet",
+      "labelBn": "৩০০ ফুট",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-brtc-vulta-to-kuril-bishwa-road-43",
+          "busLabelEn": "BRTC",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-kuril-bishwa-road",
+            "label": "Kuril Bishwa Road (কুড়িল বিশ্ব রোড)",
+            "labelEn": "Kuril Bishwa Road",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-baitul-mukarram",
+      "label": "Baitul Mukarram (বায়তুল মোকাররম)",
+      "labelEn": "Baitul Mukarram",
+      "labelBn": "বায়তুল মোকাররম",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-dipon-tajmahal-road-to-arambagh-60",
+          "busLabelEn": "Dipon",
+          "previousResolved": {
+            "stopId": "stop-paltan",
+            "label": "Paltan (পল্টন)",
+            "labelEn": "Paltan",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-gulistan",
+            "label": "Gulistan (গুলিস্তান)",
+            "labelEn": "Gulistan",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-bangladesh-bank",
+      "label": "Bangladesh Bank (বাংলাদেশ ব্যাংক)",
+      "labelEn": "Bangladesh Bank",
+      "labelBn": "বাংলাদেশ ব্যাংক",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bangladesh University College Gate, Bus stop",
+        "coordinates": [
+          23.7672954,
+          90.346063
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12497992278"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-himalay-madanpur-to-tongi-80",
+          "busLabelEn": "Himalay",
+          "previousResolved": {
+            "stopId": "stop-jatrabari",
+            "label": "Jatrabari (যাত্রাবাড়ি)",
+            "labelEn": "Jatrabari",
+            "candidateDistanceKm": 11.09
+          },
+          "nextResolved": {
+            "stopId": "stop-mogbazar",
+            "label": "Mogbazar (মগবাজার)",
+            "labelEn": "Mogbazar",
+            "candidateDistanceKm": 6.21
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-barmi",
+      "label": "Barmi (বরমী)",
+      "labelEn": "Barmi",
+      "labelBn": "বরমী",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-provati-banasree-fulbaria-to-barmi-123",
+          "busLabelEn": "Provati Banasree",
+          "previousResolved": {
+            "stopId": "stop-joydebpur",
+            "label": "Joydebpur (জয়দেবপুর)",
+            "labelEn": "Joydebpur",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": null
+        }
+      ]
+    },
+    {
+      "stopId": "stop-bashundhara-300-feet-gate",
+      "label": "Bashundhara (300 Feet Gate) (বসুন্ধরা - ৩০০ ফিট গেট)",
+      "labelEn": "Bashundhara (300 Feet Gate)",
+      "labelBn": "বসুন্ধরা - ৩০০ ফিট গেট",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Agricultural University 2nd Gate",
+        "coordinates": [
+          23.7732187,
+          90.3815327
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/2989567770"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-brtc-vulta-to-kuril-bishwa-road-43",
+          "busLabelEn": "BRTC",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-kuril-bishwa-road",
+            "label": "Kuril Bishwa Road (কুড়িল বিশ্ব রোড)",
+            "labelEn": "Kuril Bishwa Road",
+            "candidateDistanceKm": 6.43
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-chalantika-mor",
+      "label": "Chalantika Mor (চালানটিকা মোড়)",
+      "labelEn": "Chalantika Mor",
+      "labelBn": "চালানটিকা মোড়",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Abashik Mor",
+        "coordinates": [
+          23.8166417,
+          90.3560896
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/2919828430"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-pallabi-local-service-asad-gate-to-mirpur-12-116",
+          "busLabelEn": "Pallabi Local Service",
+          "previousResolved": {
+            "stopId": "stop-mirpur-2",
+            "label": "Mirpur 2 (মিরপুর ২)",
+            "labelEn": "Mirpur 2",
+            "candidateDistanceKm": 1.5
+          },
+          "nextResolved": {
+            "stopId": "stop-mirpur-11",
+            "label": "Mirpur 11 (মিরপুর ১১)",
+            "labelEn": "Mirpur 11",
+            "candidateDistanceKm": 0.98
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-cmh",
+      "label": "CMH (সিএমএইচ)",
+      "labelEn": "CMH",
+      "labelBn": "সিএমএইচ",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-4-no-alike-balughat-to-motijheel-175",
+          "busLabelEn": "4 No. Alike",
+          "previousResolved": {
+            "stopId": "stop-signal",
+            "label": "Signal (সিগন্যাল)",
+            "labelEn": "Signal",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-garrison-cantonment",
+            "label": "Garrison (Cantonment) (গ্যারিসন - ক্যান্টনমেন্ট)",
+            "labelEn": "Garrison (Cantonment)",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-dhupkhola",
+      "label": "Dhupkhola (ধুপখোলা)",
+      "labelEn": "Dhupkhola",
+      "labelBn": "ধুপখোলা",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-malancha-mohammadpur-to-dhupkhola-93",
+          "busLabelEn": "Malancha",
+          "previousResolved": {
+            "stopId": "stop-dayagonj",
+            "label": "Dayagonj (দয়াগঞ্জ)",
+            "labelEn": "Dayagonj",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": null
+        }
+      ]
+    },
+    {
+      "stopId": "stop-duairipara",
+      "label": "Duairipara (দুয়াইরিপাড়া)",
+      "labelEn": "Duairipara",
+      "labelBn": "দুয়াইরিপাড়া",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
+          "busLabelEn": "Ashirbad Pahibahan",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-rupnagar-abashik",
+            "label": "Rupnagar Abashik (রূপনগর আবাসিক)",
+            "labelEn": "Rupnagar Abashik",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-elevated-express-way",
+      "label": "Elevated Express Way (এলিভেটেড এক্সপ্রেস ওয়ে)",
+      "labelEn": "Elevated Express Way",
+      "labelBn": "এলিভেটেড এক্সপ্রেস ওয়ে",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "BRTC Elevated express bus counter",
+        "coordinates": [
+          23.8589704,
+          90.4018938
+        ],
+        "score": 48,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12082608483"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-brtc-elevated-expressway-rajlakshmi-to-rajlakshmi-39",
+          "busLabelEn": "BRTC Elevated Expressway",
+          "previousResolved": {
+            "stopId": "stop-airport",
+            "label": "Airport (বিমানবন্দর)",
+            "labelEn": "Airport",
+            "candidateDistanceKm": 1.04
+          },
+          "nextResolved": {
+            "stopId": "stop-tejgaon-college-farmgate",
+            "label": "Tejgaon College (Farmgate) (তেজগাঁও কলেজ - ফার্মগেট)",
+            "labelEn": "Tejgaon College (Farmgate)",
+            "candidateDistanceKm": 11.22
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-fakirapul",
+      "label": "Fakirapul (ফকিরাপুল)",
+      "labelEn": "Fakirapul",
+      "labelBn": "ফকিরাপুল",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-rongdhonu-express-adabor-to-postogola-132",
+          "busLabelEn": "Rongdhonu Express",
+          "previousResolved": {
+            "stopId": "stop-kakrail",
+            "label": "Kakrail (কাকরাইল)",
+            "labelEn": "Kakrail",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-motijheel",
+            "label": "Motijheel (মতিঝিল)",
+            "labelEn": "Motijheel",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-gandaria",
+      "label": "Gandaria (গেন্ডারিয়া)",
+      "labelEn": "Gandaria",
+      "labelBn": "গেন্ডারিয়া",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-shahria-enterprise-gabtoli-to-postogola-142",
+          "busLabelEn": "Shahria Enterprise",
+          "previousResolved": {
+            "stopId": "stop-dayagonj",
+            "label": "Dayagonj (দয়াগঞ্জ)",
+            "labelEn": "Dayagonj",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-jurain",
+            "label": "Jurain (জুরাইন)",
+            "labelEn": "Jurain",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-jakir-hossain-road",
+      "label": "Jakir Hossain Road (জাকির হোসেন রোড)",
+      "labelEn": "Jakir Hossain Road",
+      "labelBn": "জাকির হোসেন রোড",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Bishaw Estema Road Bus Stop",
+        "coordinates": [
+          23.8912957,
+          90.3889116
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12281652893"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-dipon-tajmahal-road-to-arambagh-60",
+          "busLabelEn": "Dipon",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-star-kabab",
+            "label": "Star Kabab (স্টার কাবাব)",
+            "labelEn": "Star Kabab",
+            "candidateDistanceKm": 16.1
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-kanchan-bridge",
+      "label": "Kanchan Bridge (কাঞ্চন ব্রিজ)",
+      "labelEn": "Kanchan Bridge",
+      "labelBn": "কাঞ্চন ব্রিজ",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Babu Bazaar Bridge Bus stop, Babu Bazaar Bridge, Babubazar Bridge, Dhaka",
+        "coordinates": [
+          23.7106991,
+          90.4029699
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11749910390"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-brtc-vulta-to-kuril-bishwa-road-43",
+          "busLabelEn": "BRTC",
+          "previousResolved": null,
+          "nextResolved": {
+            "stopId": "stop-kuril-bishwa-road",
+            "label": "Kuril Bishwa Road (কুড়িল বিশ্ব রোড)",
+            "labelEn": "Kuril Bishwa Road",
+            "candidateDistanceKm": 12.32
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-kawlar",
+      "label": "Kawlar (কাওলার)",
+      "labelEn": "Kawlar",
+      "labelBn": "কাওলার",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-brtc-elevated-expressway-rajlakshmi-to-rajlakshmi-39",
+          "busLabelEn": "BRTC Elevated Expressway",
+          "previousResolved": {
+            "stopId": "stop-airport",
+            "label": "Airport (বিমানবন্দর)",
+            "labelEn": "Airport",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-tejgaon-college-farmgate",
+            "label": "Tejgaon College (Farmgate) (তেজগাঁও কলেজ - ফার্মগেট)",
+            "labelEn": "Tejgaon College (Farmgate)",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-khilgaon-khidmah-hospital",
+      "label": "Khilgaon Khidmah Hospital (খিলগাঁও খিদমাহ হাসপাতাল)",
+      "labelEn": "Khilgaon Khidmah Hospital",
+      "labelBn": "খিলগাঁও খিদমাহ হাসপাতাল",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Anwar Khan Modern Hospital Bus stop",
+        "coordinates": [
+          23.7454689,
+          90.3815274
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/12012314402"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-himachal-sony-cinema-hall-to-khilgaon-khidmah-hospital-78",
+          "busLabelEn": "Himachal",
+          "previousResolved": {
+            "stopId": "stop-rampura-bazar",
+            "label": "Rampura Bazar (রামপুরা বাজার)",
+            "labelEn": "Rampura Bazar",
+            "candidateDistanceKm": 4.84
+          },
+          "nextResolved": null
+        }
+      ]
+    },
+    {
+      "stopId": "stop-kuchimura",
+      "label": "Kuchimura (কুচিমুড়া)",
+      "labelEn": "Kuchimura",
+      "labelBn": "কুচিমুড়া",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-thikana-express-shonbari-sreenagar-to-chandra-161",
+          "busLabelEn": "Thikana Express",
+          "previousResolved": {
+            "stopId": "stop-nimtola",
+            "label": "Nimtola (নিমতলা)",
+            "labelEn": "Nimtola",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-hasnabad",
+            "label": "Hasnabad (হাসনাবাদ)",
+            "labelEn": "Hasnabad",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-kuril-flyover",
+      "label": "Kuril Flyover (কুড়িল ফ্লাইওভার)",
+      "labelEn": "Kuril Flyover",
+      "labelBn": "কুড়িল ফ্লাইওভার",
+      "routeCount": 1,
+      "status": "rejected_weak_match",
+      "reviewReason": "Rejected for now: weak OSM match, likely text-overlap noise or unrelated nearby transit object.",
+      "topCandidate": {
+        "name": "Dolaipar Toll plaza- Mayor Hanif Flyover, Toll booth, Dhaka - Mawa Hwy, Dhaka",
+        "coordinates": [
+          23.704558,
+          90.4352399
+        ],
+        "score": 39,
+        "confidence": "weak_candidate",
+        "source": "osm:node/11740539317"
+      },
+      "routeContexts": [
+        {
+          "routeId": "route-jabale-noor-paribahan-gabtoli-to-notun-bazar-84",
+          "busLabelEn": "Jabale Noor Paribahan",
+          "previousResolved": {
+            "stopId": "stop-kalshi",
+            "label": "Kalshi (কালশী)",
+            "labelEn": "Kalshi",
+            "candidateDistanceKm": 13.96
+          },
+          "nextResolved": {
+            "stopId": "stop-notun-bazar",
+            "label": "Notun Bazar (নতুন বাজার)",
+            "labelEn": "Notun Bazar",
+            "candidateDistanceKm": 10.34
+          }
+        }
+      ]
+    },
+    {
+      "stopId": "stop-kurmitola",
+      "label": "Kurmitola (কুর্মিটোলা)",
+      "labelEn": "Kurmitola",
+      "labelBn": "কুর্মিটোলা",
+      "routeCount": 1,
+      "status": "needs_source",
+      "reviewReason": "No OSM transit candidate matched this seed stop.",
+      "topCandidate": null,
+      "routeContexts": [
+        {
+          "routeId": "route-airport-bangabandhu-avenue-paribahan-fulbaria-to-abdullahpur-3",
+          "busLabelEn": "Airport Bangabandhu Avenue Paribahan",
+          "previousResolved": {
+            "stopId": "stop-mes",
+            "label": "MES (এমইএস)",
+            "labelEn": "MES",
+            "candidateDistanceKm": null
+          },
+          "nextResolved": {
+            "stopId": "stop-shewra",
+            "label": "Shewra (শেওড়া)",
+            "labelEn": "Shewra",
+            "candidateDistanceKm": null
+          }
+        }
+      ]
+    }
+  ]
+}
