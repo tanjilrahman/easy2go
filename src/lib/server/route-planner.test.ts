@@ -191,7 +191,7 @@ describe("calculateRoutes", () => {
       optimization: "recommended",
     });
 
-    expect(response.routes).toHaveLength(1);
+    expect(response.routes.length).toBeGreaterThan(0);
     expect(response.routes[0]?.kind).toBe("metro_direct");
     expect(response.routes[0]?.fareText).toBe("BDT 30");
     expect(response.routes[0]?.totalCost).toBe(30);

@@ -182,9 +182,9 @@ function findStrongTextMatches(name: string) {
 
 function findNearestPoints(
   coordinates: [number, number],
-  limitWithinRadius = 20,
-  minKeep = 5,
-  radiusKm = 5,
+  limitWithinRadius = 24,
+  minKeep = 8,
+  radiusKm = 7,
 ) {
   const sorted = coordinateCandidates
     .map((point) => ({

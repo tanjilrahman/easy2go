@@ -1,5 +1,6 @@
 import {
   dhakaBusSeedRoutes,
+  getDhakaBusStopByLabel,
   getDhakaBusStopCoordinatesByLabel,
   type DhakaBusSeedRoute,
 } from "@/lib/data/dhaka-bus-seed";
@@ -99,6 +100,7 @@ interface ScoreProfile {
     confidence: number;
     directBonus: number;
     metroBonus: number;
+    purposefulLongConnectorBonus: number;
   };
 }
 
@@ -113,6 +115,12 @@ const BUS_STOP_DELAY_MINUTES = 0.7;
 const METRO_STATION_DELAY_MINUTES = 0.7;
 const TRANSFER_BUFFER_MINUTES = 6;
 const BUS_FARE_PER_KM_BDT = 2.42;
+const BASE_TRANSIT_CANDIDATE_LIMIT = 4;
+const EXTENDED_TRANSIT_CANDIDATE_LIMIT = 5;
+const PURPOSEFUL_LONG_CONNECTOR_LIMIT = 1;
+const PURPOSEFUL_LONG_CONNECTOR_MIN_KM = 1.4;
+const PURPOSEFUL_LONG_CONNECTOR_MAX_KM = 8;
+const TRANSFER_SEARCH_PAIR_LIMIT = 8;
 const METRO_SERVICE_WINDOW_TEXT =
   "Weekdays & Sat/holidays: Uttara North 06:30-21:30, Motijheel 07:15-22:10 | Friday: Uttara North 15:00-21:00, Motijheel 15:20-21:40";
 
@@ -136,6 +144,7 @@ const SCORE_PROFILES = {
       confidence: 10,
       directBonus: 8,
       metroBonus: 4,
+      purposefulLongConnectorBonus: 10,
     },
   },
   fastestPractical: {
@@ -157,6 +166,7 @@ const SCORE_PROFILES = {
       confidence: 8,
       directBonus: 4,
       metroBonus: 5,
+      purposefulLongConnectorBonus: 14,
     },
   },
   lowestHassle: {
@@ -178,6 +188,7 @@ const SCORE_PROFILES = {
       confidence: 14,
       directBonus: 20,
       metroBonus: 8,
+      purposefulLongConnectorBonus: 8,
     },
   },
   lowestFare: {
@@ -199,6 +210,7 @@ const SCORE_PROFILES = {
       confidence: 8,
       directBonus: 6,
       metroBonus: 2,
+      purposefulLongConnectorBonus: 4,
     },
   },
 } satisfies Record<string, ScoreProfile>;
@@ -320,6 +332,10 @@ function profileScore(route: RouteOption, profile: ScoreProfile) {
   const walkPenalty = Math.max(0, analysis.walkDistanceKm - 0.6);
   const directBonus = route.transferCount === 0 ? profile.weights.directBonus : 0;
   const metroBonus = route.kind === "metro_direct" ? profile.weights.metroBonus : 0;
+  const purposefulLongConnectorBonus =
+    analysis.longRickshawCount > 0 && route.transferCount === 0
+      ? profile.weights.purposefulLongConnectorBonus
+      : 0;
 
   return (
     analysis.durationMinutes * profile.weights.duration +
@@ -333,7 +349,8 @@ function profileScore(route: RouteOption, profile: ScoreProfile) {
     detourPenalty * profile.weights.detour +
     analysis.confidencePenalty * profile.weights.confidence -
     directBonus -
-    metroBonus
+    metroBonus -
+    purposefulLongConnectorBonus
   );
 }
 
@@ -437,6 +454,7 @@ function annotateSurfaceRoute(route: RouteOption, profile: ScoreProfile) {
     tradeoffs: dedupeStrings([
       ...route.tradeoffs,
       burden === "high" ? "High connector burden" : "",
+      analysis.longRickshawCount > 0 ? "Long connector may work better where local shared transport is available" : "",
       burden === "medium" ? "Moderate connector burden" : "",
       analysis.detourRatio > 1.8 ? "Noticeable detour versus direct distance" : "",
       route.transferCount > 0 ? `${route.transferCount} transfer to manage` : "",
@@ -733,6 +751,80 @@ function isTransitDatasetPoint(point: TransitPoint) {
   return point.type === "bus_stop" || point.type === "metro_station";
 }
 
+function transitPointImportance(point: TransitPoint) {
+  if (point.type === "metro_station") {
+    return 12;
+  }
+
+  const routeCount = point.busStopLabels.reduce((maxRouteCount, label) => {
+    const stop = getDhakaBusStopByLabel(label);
+
+    return Math.max(maxRouteCount, stop?.routeCount ?? 0);
+  }, 0);
+
+  return Math.min(12, routeCount);
+}
+
+function dedupeTransitCandidates(candidates: TransitCandidate[]) {
+  const seen = new Set<string>();
+
+  return candidates.filter((candidate) => {
+    const key = candidate.point.id;
+
+    if (seen.has(key)) {
+      return false;
+    }
+
+    seen.add(key);
+
+    return true;
+  });
+}
+
+function buildCandidate(point: TransitPoint, resolution: ResolvedTransitInput, role: "origin" | "destination") {
+  const accessLeg = createAccessLeg(resolution, point, role);
+  const connectorScore = accessLeg ? accessLeg.distanceKm + accessLeg.durationMinutes / 60 : 0;
+  const importanceScore = transitPointImportance(point);
+  const matchBonus =
+    resolution.matchedPointIds.includes(point.id) ||
+    (point.metroStationId ? resolution.matchedPointIds.includes(point.metroStationId) : false) ||
+    (point.canonicalBusStopId ? resolution.matchedPointIds.includes(point.canonicalBusStopId) : false)
+      ? 20
+      : 0;
+  const score = connectorScore - importanceScore * 0.08 - matchBonus;
+
+  return { point, accessLeg, score } satisfies TransitCandidate;
+}
+
+function findPurposefulLongConnectorCandidates(
+  candidates: TransitCandidate[],
+  selected: TransitCandidate[],
+) {
+  const selectedIds = new Set(selected.map((candidate) => candidate.point.id));
+
+  return candidates
+    .filter((candidate) => {
+      const distanceKm = candidate.accessLeg?.distanceKm;
+
+      return (
+        distanceKm !== undefined &&
+        distanceKm >= PURPOSEFUL_LONG_CONNECTOR_MIN_KM &&
+        distanceKm <= PURPOSEFUL_LONG_CONNECTOR_MAX_KM &&
+        !selectedIds.has(candidate.point.id) &&
+        transitPointImportance(candidate.point) >= 3
+      );
+    })
+    .sort((left, right) => {
+      const leftDistance = left.accessLeg?.distanceKm ?? Number.MAX_SAFE_INTEGER;
+      const rightDistance = right.accessLeg?.distanceKm ?? Number.MAX_SAFE_INTEGER;
+      const leftStrategicScore = transitPointImportance(left.point) * 1.4 - leftDistance;
+      const rightStrategicScore = transitPointImportance(right.point) * 1.4 - rightDistance;
+
+      return rightStrategicScore - leftStrategicScore || left.score - right.score;
+    })
+    .slice(0, PURPOSEFUL_LONG_CONNECTOR_LIMIT);
+}
+
 function buildTransitCandidates(resolution: ResolvedTransitInput, role: "origin" | "destination") {
   const transitCandidates = resolution.candidates.filter(isTransitDatasetPoint);
   const matchedTransitCandidates = transitCandidates.filter((point) =>
@@ -740,17 +832,27 @@ function buildTransitCandidates(resolution: ResolvedTransitInput, role: "origin"
     (point.metroStationId ? resolution.matchedPointIds.includes(point.metroStationId) : false) ||
     (point.canonicalBusStopId ? resolution.matchedPointIds.includes(point.canonicalBusStopId) : false),
   );
-  const sourceCandidates = matchedTransitCandidates.length ? matchedTransitCandidates : transitCandidates;
+  const basePool = matchedTransitCandidates.length
+    ? dedupeStrings([
+        ...matchedTransitCandidates.map((point) => point.id),
+        ...transitCandidates.map((point) => point.id),
+      ])
+        .map((id) => transitCandidates.find((point) => point.id === id))
+        .filter((point): point is TransitPoint => Boolean(point))
+    : transitCandidates;
+  const allCandidates = dedupeTransitCandidates(
+    basePool.map((point) => buildCandidate(point, resolution, role)),
+  ).sort((left, right) => left.score - right.score || left.point.name.localeCompare(right.point.name));
+  const baseCandidates = allCandidates.slice(0, BASE_TRANSIT_CANDIDATE_LIMIT);
+  const purposefulLongConnectors = findPurposefulLongConnectorCandidates(
+    allCandidates,
+    baseCandidates,
+  );
 
-  return sourceCandidates
-    .map((point): TransitCandidate => {
-      const accessLeg = createAccessLeg(resolution, point, role);
-      const score = accessLeg ? accessLeg.distanceKm + accessLeg.durationMinutes / 60 : 0;
-
-      return { point, accessLeg, score };
-    })
-    .sort((left, right) => left.score - right.score || left.point.name.localeCompare(right.point.name))
-    .slice(0, 4);
+  return dedupeTransitCandidates([
+    ...baseCandidates,
+    ...purposefulLongConnectors,
+  ]).slice(0, EXTENDED_TRANSIT_CANDIDATE_LIMIT);
 }
 
 function makeStopReference(label: string, type: "bus_stop" | "metro_station" | "hub" = "bus_stop"): RouteStopReference {
@@ -1285,6 +1387,19 @@ function createMetroRoute(originStationId: string, destinationStationId: string,
 
 function collectRoutes(originCandidates: TransitCandidate[], destinationCandidates: TransitCandidate[]) {
   const routes: RouteOption[] = [];
+  const transferSearchPairs = new Set(
+    originCandidates
+      .flatMap((origin) =>
+        destinationCandidates.map((destination) => ({
+          origin,
+          destination,
+          score: origin.score + destination.score,
+        })),
+      )
+      .sort((left, right) => left.score - right.score)
+      .slice(0, TRANSFER_SEARCH_PAIR_LIMIT)
+      .map(({ origin, destination }) => `${origin.point.id}->${destination.point.id}`),
+  );
 
   for (const origin of originCandidates) {
     for (const destination of destinationCandidates) {
@@ -1308,6 +1423,10 @@ function collectRoutes(originCandidates: TransitCandidate[], destinationCandidat
         }
 
         if (!directLegs.length) {
+          if (!transferSearchPairs.has(`${origin.point.id}->${destination.point.id}`)) {
+            continue;
+          }
+
           for (const transfer of findTransferBusLegs(origin.point.busStopLabels, destination.point.busStopLabels)) {
             routes.push(createTransferBusRoute(transfer, origin, destination));
           }
