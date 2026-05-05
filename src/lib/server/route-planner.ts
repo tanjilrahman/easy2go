@@ -1,5 +1,3 @@
-import { randomUUID } from "crypto";
-
 import {
   dhakaBusSeedRoutes,
   getDhakaBusStopCoordinatesByLabel,
@@ -921,8 +919,4 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
     debugRoutes,
     source: "deterministic",
   });
-}
-
-export function createRouteId() {
-  return randomUUID();
 }

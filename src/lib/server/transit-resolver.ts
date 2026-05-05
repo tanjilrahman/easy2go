@@ -1,5 +1,5 @@
 import dhakaBusStopReviewedMetadataJson from "@/lib/data/dhaka-bus-stop-reviewed-metadata.json";
-import { DHAKA_METRO_STATIONS, type DhakaMetroStation } from "@/lib/data/dhaka-metro";
+import { DHAKA_METRO_STATIONS } from "@/lib/data/dhaka-metro";
 import { resolveLocation, type ResolvedLocation } from "@/lib/server/location-resolution";
 import {
   isGeoapifyAutocompleteEnabled,
@@ -304,44 +304,6 @@ export async function resolveTransitInput(input: LocationInput): Promise<Resolve
   };
 }
 
-export function buildAccessAdvisories(
-  resolution: ResolvedTransitInput,
-  candidate: TransitPoint,
-  role: "origin" | "destination",
-) {
-  const advisories = new Set<string>();
-
-  if (!resolution.directMatch) {
-    if (role === "origin") {
-      advisories.add(
-        `A short rickshaw can help you reach ${candidate.name} from ${resolution.displayName}.`,
-      );
-    } else {
-      advisories.add(
-        `Plan for a short rickshaw or walk from ${candidate.name} to ${resolution.displayName}.`,
-      );
-    }
-  }
-
-  for (const note of candidate.advisories) {
-    advisories.add(note);
-  }
-
-  return [...advisories];
-}
-
-export function getAllHubPoints() {
-  return [];
-}
-
-export function getAllTransitPoints() {
-  return localSuggestionCatalog;
-}
-
-export function getMetroPoints() {
-  return metroPoints;
-}
-
 export function getBusStopPointByLabel(label: string) {
   const normalizedLabel = normalizeTransitText(label);
   return busStopPoints.find(
@@ -349,8 +311,4 @@ export function getBusStopPointByLabel(label: string) {
       point.busStopLabels.some((stopLabel) => normalizeTransitText(stopLabel) === normalizedLabel) ||
       normalizeTransitText(point.name) === normalizedLabel,
   );
-}
-
-export function getMetroPointForStation(station: DhakaMetroStation) {
-  return metroPoints.find((point) => point.metroStationId === station.id);
 }

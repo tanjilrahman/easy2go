@@ -14,7 +14,7 @@ function normalize(text: string) {
   return normalizeTransitText(text);
 }
 
-export function findKnownPlace(name: string) {
+function findKnownPlace(name: string) {
   const target = normalize(name);
   if (!target) {
     return undefined;

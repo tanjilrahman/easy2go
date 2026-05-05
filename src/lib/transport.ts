@@ -2,19 +2,7 @@ import type {
   PricingConfidence,
   RouteConfidence,
   RouteKind,
-  TransportMode,
 } from "@/lib/validations/routes";
-
-export const transportModeMeta: Record<
-  TransportMode,
-  { label: string; color: string }
-> = {
-  walk: { label: "Walk", color: "#7a719f" },
-  bus: { label: "Bus", color: "#5a43d7" },
-  rickshaw: { label: "Rickshaw", color: "#0f8a6b" },
-  metro: { label: "Metro", color: "#765ef1" },
-  ride_share: { label: "Ride Share", color: "#c34b77" },
-};
 
 export function getRouteKindLabel(kind: RouteKind) {
   switch (kind) {

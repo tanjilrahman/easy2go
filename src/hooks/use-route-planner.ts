@@ -5,7 +5,6 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import {
   calculateRouteResponseSchema,
   locationSearchResponseSchema,
-  searchesResponseSchema,
   type CalculateRouteRequest,
 } from "@/lib/validations/routes";
 
@@ -42,16 +41,6 @@ export function useLocationSuggestions(query: string, enabled: boolean) {
         `/api/locations/search?query=${encodeURIComponent(query)}`,
         { method: "GET" },
         (value) => locationSearchResponseSchema.parse(value),
-      ),
-  });
-}
-
-export function useSearchHistory() {
-  return useQuery({
-    queryKey: ["search-history"],
-    queryFn: () =>
-      fetchJson("/api/searches", { method: "GET" }, (value) =>
-        searchesResponseSchema.parse(value),
       ),
   });
 }

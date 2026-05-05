@@ -1,8 +1,8 @@
 import { z } from "zod";
 
-export const latLngSchema = z.tuple([z.number(), z.number()]);
+const latLngSchema = z.tuple([z.number(), z.number()]);
 
-export const transportModeSchema = z.enum([
+const transportModeSchema = z.enum([
   "walk",
   "bus",
   "rickshaw",
@@ -12,16 +12,14 @@ export const transportModeSchema = z.enum([
 
 export type TransportMode = z.infer<typeof transportModeSchema>;
 
-export const locationSuggestionTypeSchema = z.enum([
+const locationSuggestionTypeSchema = z.enum([
   "place",
   "bus_stop",
   "metro_station",
   "hub",
 ]);
 
-export type LocationSuggestionType = z.infer<typeof locationSuggestionTypeSchema>;
-
-export const routeKindSchema = z.enum([
+const routeKindSchema = z.enum([
   "bus_direct",
   "bus_transfer",
   "metro_direct",
@@ -31,11 +29,11 @@ export const routeKindSchema = z.enum([
 
 export type RouteKind = z.infer<typeof routeKindSchema>;
 
-export const routeConfidenceSchema = z.enum(["exact", "verified", "advisory"]);
+const routeConfidenceSchema = z.enum(["exact", "verified", "advisory"]);
 
 export type RouteConfidence = z.infer<typeof routeConfidenceSchema>;
 
-export const routeOptimizationSchema = z.enum([
+const routeOptimizationSchema = z.enum([
   "recommended",
   "fastest",
   "cheapest",
@@ -43,11 +41,9 @@ export const routeOptimizationSchema = z.enum([
 
 export type RouteOptimization = z.infer<typeof routeOptimizationSchema>;
 
-export const fareTypeSchema = z.enum(["exact", "unknown", "advisory"]);
+const fareTypeSchema = z.enum(["exact", "unknown", "advisory"]);
 
-export type FareType = z.infer<typeof fareTypeSchema>;
-
-export const connectorTypeSchema = z.enum([
+const connectorTypeSchema = z.enum([
   "walk",
   "rickshaw",
   "long_rickshaw",
@@ -56,7 +52,7 @@ export const connectorTypeSchema = z.enum([
 
 export type ConnectorType = z.infer<typeof connectorTypeSchema>;
 
-export const pricingConfidenceSchema = z.enum([
+const pricingConfidenceSchema = z.enum([
   "exact",
   "regulated_estimate",
   "estimated",
@@ -64,18 +60,14 @@ export const pricingConfidenceSchema = z.enum([
 
 export type PricingConfidence = z.infer<typeof pricingConfidenceSchema>;
 
-export const distanceSourceSchema = z.enum([
+const distanceSourceSchema = z.enum([
   "local_estimate",
   "metro_exact",
 ]);
 
-export type DistanceSource = z.infer<typeof distanceSourceSchema>;
+const connectorBurdenSchema = z.enum(["low", "medium", "high"]);
 
-export const connectorBurdenSchema = z.enum(["low", "medium", "high"]);
-
-export type ConnectorBurden = z.infer<typeof connectorBurdenSchema>;
-
-export const locationSuggestionSchema = z.object({
+const locationSuggestionSchema = z.object({
   id: z.string(),
   name: z.string(),
   address: z.string().optional(),
@@ -89,7 +81,7 @@ export const locationSuggestionSchema = z.object({
 
 export type LocationSuggestion = z.infer<typeof locationSuggestionSchema>;
 
-export const locationInputSchema = z.object({
+const locationInputSchema = z.object({
   name: z.string().min(2),
   address: z.string().optional(),
   placeId: z.string().optional(),
@@ -100,7 +92,7 @@ export const locationInputSchema = z.object({
 
 export type LocationInput = z.infer<typeof locationInputSchema>;
 
-export const routeStopReferenceSchema = z.object({
+const routeStopReferenceSchema = z.object({
   id: z.string().optional(),
   label: z.string(),
   type: locationSuggestionTypeSchema,
@@ -112,7 +104,7 @@ export const routeStopReferenceSchema = z.object({
 
 export type RouteStopReference = z.infer<typeof routeStopReferenceSchema>;
 
-export const routeMapPointSchema = z.object({
+const routeMapPointSchema = z.object({
   label: z.string(),
   coordinates: latLngSchema,
   role: z.enum(["origin", "destination", "boarding", "alighting", "transfer", "stop"]),
@@ -120,7 +112,7 @@ export const routeMapPointSchema = z.object({
 
 export type RouteMapPoint = z.infer<typeof routeMapPointSchema>;
 
-export const routeMapLineSchema = z.object({
+const routeMapLineSchema = z.object({
   mode: transportModeSchema,
   label: z.string().optional(),
   coordinates: z.array(latLngSchema).min(2),
@@ -129,7 +121,7 @@ export const routeMapLineSchema = z.object({
 
 export type RouteMapLine = z.infer<typeof routeMapLineSchema>;
 
-export const routeMapPreviewSchema = z.object({
+const routeMapPreviewSchema = z.object({
   originLabel: z.string(),
   destinationLabel: z.string(),
   originQuery: z.string(),
@@ -142,7 +134,7 @@ export const routeMapPreviewSchema = z.object({
 
 export type RouteMapPreview = z.infer<typeof routeMapPreviewSchema>;
 
-export const routeSegmentSchema = z.object({
+const routeSegmentSchema = z.object({
   mode: transportModeSchema,
   instruction: z.string(),
   startLocation: z.string(),
@@ -214,9 +206,7 @@ export const calculateRouteResponseSchema = z.object({
   searchId: z.string().optional(),
 });
 
-export type CalculateRouteResponse = z.infer<typeof calculateRouteResponseSchema>;
-
-export const searchRecordSchema = z.object({
+const searchRecordSchema = z.object({
   id: z.string(),
   origin: z.string(),
   destination: z.string(),

@@ -1,9 +1,9 @@
 import dhakaBusSeedJson from "./dhaka-bus-seed.json";
 import dhakaBusStopReviewedMetadataJson from "./dhaka-bus-stop-reviewed-metadata.json";
 
-export type DhakaBusStopCoordinateConfidence = "exact" | "verified" | "approximate";
+type DhakaBusStopCoordinateConfidence = "exact" | "verified" | "approximate";
 
-export interface DhakaBusStopMetadataEntry {
+interface DhakaBusStopMetadataEntry {
   labels: string[];
   placeName?: string;
   address?: string;
@@ -12,7 +12,7 @@ export interface DhakaBusStopMetadataEntry {
   confidence?: DhakaBusStopCoordinateConfidence;
 }
 
-export interface DhakaBusStopVariant {
+interface DhakaBusStopVariant {
   name: string;
   placeName?: string;
   address?: string;
@@ -20,7 +20,7 @@ export interface DhakaBusStopVariant {
   source?: string;
 }
 
-export interface DhakaBusSeedSource {
+interface DhakaBusSeedSource {
   name: string;
   url: string;
   retrievedAt: string;
@@ -28,13 +28,13 @@ export interface DhakaBusSeedSource {
   notes: string[];
 }
 
-export interface DhakaBusSeedSummary {
+interface DhakaBusSeedSummary {
   routeCount: number;
   busCount: number;
   stopCount: number;
 }
 
-export interface DhakaBusSeedBus {
+interface DhakaBusSeedBus {
   id: string;
   label: string;
   labelEn: string;
@@ -43,7 +43,7 @@ export interface DhakaBusSeedBus {
   routeCount: number;
 }
 
-export interface DhakaBusSeedStop {
+interface DhakaBusSeedStop {
   id: string;
   label: string;
   labelEn: string;
@@ -80,7 +80,7 @@ export interface DhakaBusSeedRoute {
   closingTime24h: string | null;
 }
 
-export interface DhakaBusSeedDataset {
+interface DhakaBusSeedDataset {
   version: number;
   generatedAt: string;
   source: DhakaBusSeedSource;
@@ -91,7 +91,7 @@ export interface DhakaBusSeedDataset {
 }
 
 const rawDhakaBusSeedDataset = dhakaBusSeedJson as unknown as DhakaBusSeedDataset;
-export const dhakaBusStopMetadataEntries =
+const dhakaBusStopMetadataEntries =
   dhakaBusStopReviewedMetadataJson as unknown as DhakaBusStopMetadataEntry[];
 
 function normalizeBusStopLabel(value: string) {
@@ -146,14 +146,13 @@ for (const stop of enrichedDhakaBusSeedStops) {
   }
 }
 
-export const dhakaBusSeedDataset: DhakaBusSeedDataset = {
+const dhakaBusSeedDataset: DhakaBusSeedDataset = {
   ...rawDhakaBusSeedDataset,
   stops: enrichedDhakaBusSeedStops,
 };
 
 export const dhakaBusSeedRoutes = dhakaBusSeedDataset.routes;
 export const dhakaBusSeedStops = dhakaBusSeedDataset.stops;
-export const dhakaBusSeedBuses = dhakaBusSeedDataset.buses;
 
 export function getDhakaBusStopByLabel(label?: string) {
   return label ? busStopByNormalizedLabel.get(normalizeBusStopLabel(label)) : undefined;

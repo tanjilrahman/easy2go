@@ -17,7 +17,7 @@ interface DhakaMapProps {
 
 export type { MapPickMode };
 
-export function DhakaMap({
+function DhakaMap({
   activeRoute,
   userCoordinates,
   viewportPaddingRatio,
