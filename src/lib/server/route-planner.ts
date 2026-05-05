@@ -68,6 +68,40 @@ interface RouteMetrics {
   costBdt?: number;
 }
 
+interface RouteScoreBreakdown {
+  durationMinutes: number;
+  fareBdt: number;
+  transferCount: number;
+  connectorDistanceKm: number;
+  rickshawDistanceKm: number;
+  walkDistanceKm: number;
+  longRickshawCount: number;
+  segmentCount: number;
+  detourRatio: number;
+  confidencePenalty: number;
+}
+
+interface ScoreProfile {
+  id: "balanced" | "fastest_practical" | "lowest_hassle" | "lowest_fare";
+  label: string;
+  primaryReason: string;
+  scoringReason: string;
+  weights: {
+    duration: number;
+    fare: number;
+    transfer: number;
+    connector: number;
+    rickshaw: number;
+    walk: number;
+    longRickshaw: number;
+    complexity: number;
+    detour: number;
+    confidence: number;
+    directBonus: number;
+    metroBonus: number;
+  };
+}
+
 const ACCESS_WALK_MAX_KM = 0.8;
 const BUS_SPEED_KMPH = 13;
 const METRO_SPEED_KMPH = 32;
@@ -81,6 +115,93 @@ const TRANSFER_BUFFER_MINUTES = 6;
 const BUS_FARE_PER_KM_BDT = 2.42;
 const METRO_SERVICE_WINDOW_TEXT =
   "Weekdays & Sat/holidays: Uttara North 06:30-21:30, Motijheel 07:15-22:10 | Friday: Uttara North 15:00-21:00, Motijheel 15:20-21:40";
+
+const SCORE_PROFILES = {
+  balanced: {
+    id: "balanced",
+    label: "Best match",
+    primaryReason: "Best overall balance",
+    scoringReason:
+      "Balanced score using time, fare, transfers, connector burden, detour, simplicity, and dataset confidence.",
+    weights: {
+      duration: 1,
+      fare: 0.15,
+      transfer: 16,
+      connector: 5,
+      rickshaw: 3,
+      walk: 2,
+      longRickshaw: 22,
+      complexity: 2,
+      detour: 18,
+      confidence: 10,
+      directBonus: 8,
+      metroBonus: 4,
+    },
+  },
+  fastestPractical: {
+    id: "fastest_practical",
+    label: "Fastest practical",
+    primaryReason: "Fastest practical option",
+    scoringReason:
+      "Fast score with guardrails for transfers, long connectors, detours, and route complexity.",
+    weights: {
+      duration: 1.35,
+      fare: 0.05,
+      transfer: 10,
+      connector: 5,
+      rickshaw: 3,
+      walk: 1.5,
+      longRickshaw: 24,
+      complexity: 1.5,
+      detour: 22,
+      confidence: 8,
+      directBonus: 4,
+      metroBonus: 5,
+    },
+  },
+  lowestHassle: {
+    id: "lowest_hassle",
+    label: "Lowest hassle",
+    primaryReason: "Simplest trip shape",
+    scoringReason:
+      "Hassle score prioritizing directness, short connectors, fewer steps, fewer transfers, and reliable dataset matches.",
+    weights: {
+      duration: 0.65,
+      fare: 0.05,
+      transfer: 28,
+      connector: 8,
+      rickshaw: 5,
+      walk: 4,
+      longRickshaw: 35,
+      complexity: 5,
+      detour: 16,
+      confidence: 14,
+      directBonus: 20,
+      metroBonus: 8,
+    },
+  },
+  lowestFare: {
+    id: "lowest_fare",
+    label: "Lowest fare",
+    primaryReason: "Lowest estimated fare",
+    scoringReason:
+      "Fare score using estimated fare first, with penalties for impractical transfers, connectors, and detours.",
+    weights: {
+      duration: 0.35,
+      fare: 1,
+      transfer: 12,
+      connector: 4,
+      rickshaw: 5,
+      walk: 1,
+      longRickshaw: 24,
+      complexity: 2,
+      detour: 12,
+      confidence: 8,
+      directBonus: 6,
+      metroBonus: 2,
+    },
+  },
+} satisfies Record<string, ScoreProfile>;
 
 function roundDistanceKm(distanceKm: number) {
   return Math.round(distanceKm * 10) / 10;
@@ -98,37 +219,6 @@ function dedupeStrings(values: string[]) {
   return Array.from(new Set(values.filter(Boolean)));
 }
 
-function sortByOptimization(routes: RouteOption[], optimization: RouteOptimization) {
-  return [...routes].sort((left, right) => {
-    const leftDuration = left.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
-    const rightDuration = right.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
-    const leftCost = left.totalCost ?? Number.MAX_SAFE_INTEGER;
-    const rightCost = right.totalCost ?? Number.MAX_SAFE_INTEGER;
-
-    if (optimization === "fastest" && leftDuration !== rightDuration) {
-      return leftDuration - rightDuration;
-    }
-
-    if (optimization === "cheapest" && leftCost !== rightCost) {
-      return leftCost - rightCost;
-    }
-
-    if (left.transferCount !== right.transferCount) {
-      return left.transferCount - right.transferCount;
-    }
-
-    if (leftDuration !== rightDuration) {
-      return leftDuration - rightDuration;
-    }
-
-    if (leftCost !== rightCost) {
-      return leftCost - rightCost;
-    }
-
-    return left.id.localeCompare(right.id);
-  });
-}
-
 function combineMetrics(parts: Array<Partial<RouteMetrics>>) {
   const distanceKm = parts.reduce((sum, part) => sum + (part.distanceKm ?? 0), 0);
   const durationMinutes = parts.reduce((sum, part) => sum + (part.durationMinutes ?? 0), 0);
@@ -140,6 +230,218 @@ function combineMetrics(parts: Array<Partial<RouteMetrics>>) {
     estimatedDurationMinutes: durationMinutes > 0 ? Math.round(durationMinutes) : undefined,
     totalCost: costBdt,
   };
+}
+
+function confidencePenalty(route: RouteOption) {
+  switch (route.confidence) {
+    case "exact":
+      return 0;
+    case "verified":
+      return 1;
+    case "advisory":
+      return 3;
+  }
+}
+
+function routeEndpointCoordinates(route: RouteOption) {
+  return {
+    origin:
+      route.mapPreview.originCoordinates ??
+      route.boarding.coordinates ??
+      findLabelCoordinates(route.boarding.label),
+    destination:
+      route.mapPreview.destinationCoordinates ??
+      route.alighting.coordinates ??
+      findLabelCoordinates(route.alighting.label),
+  };
+}
+
+function getDetourRatio(route: RouteOption) {
+  const totalDistance = route.estimatedDistanceKm;
+  const { origin, destination } = routeEndpointCoordinates(route);
+
+  if (!totalDistance || !origin || !destination) {
+    return 1;
+  }
+
+  const directDistance = haversineDistanceKm(origin, destination);
+
+  if (directDistance < 0.3) {
+    return 1;
+  }
+
+  return Math.max(1, totalDistance / directDistance);
+}
+
+function analyzeRoute(route: RouteOption): RouteScoreBreakdown {
+  const connectorSegments = route.segments.filter((segment) => segment.connectorType);
+  const connectorDistanceKm = connectorSegments.reduce(
+    (sum, segment) => sum + (segment.connectorDistanceKm ?? segment.estimatedDistanceKm ?? 0),
+    0,
+  );
+  const rickshawDistanceKm = connectorSegments
+    .filter((segment) => segment.mode === "rickshaw" || segment.mode === "ride_share")
+    .reduce((sum, segment) => sum + (segment.connectorDistanceKm ?? segment.estimatedDistanceKm ?? 0), 0);
+  const walkDistanceKm = connectorSegments
+    .filter((segment) => segment.mode === "walk")
+    .reduce((sum, segment) => sum + (segment.connectorDistanceKm ?? segment.estimatedDistanceKm ?? 0), 0);
+
+  return {
+    durationMinutes: route.estimatedDurationMinutes ?? 999,
+    fareBdt: route.totalCost ?? 999,
+    transferCount: route.transferCount,
+    connectorDistanceKm,
+    rickshawDistanceKm,
+    walkDistanceKm,
+    longRickshawCount: connectorSegments.filter((segment) => segment.connectorType === "long_rickshaw").length,
+    segmentCount: route.segments.length,
+    detourRatio: getDetourRatio(route),
+    confidencePenalty: confidencePenalty(route),
+  };
+}
+
+function connectorBurden(route: RouteOption): RouteOption["connectorBurden"] {
+  const analysis = analyzeRoute(route);
+
+  if (analysis.longRickshawCount > 0 || analysis.connectorDistanceKm > 4) {
+    return "high";
+  }
+
+  if (analysis.connectorDistanceKm > 1.2 || analysis.transferCount > 0) {
+    return "medium";
+  }
+
+  return "low";
+}
+
+function profileScore(route: RouteOption, profile: ScoreProfile) {
+  const analysis = analyzeRoute(route);
+  const detourPenalty = Math.max(0, analysis.detourRatio - 1.4);
+  const walkPenalty = Math.max(0, analysis.walkDistanceKm - 0.6);
+  const directBonus = route.transferCount === 0 ? profile.weights.directBonus : 0;
+  const metroBonus = route.kind === "metro_direct" ? profile.weights.metroBonus : 0;
+
+  return (
+    analysis.durationMinutes * profile.weights.duration +
+    analysis.fareBdt * profile.weights.fare +
+    analysis.transferCount * profile.weights.transfer +
+    analysis.connectorDistanceKm * profile.weights.connector +
+    analysis.rickshawDistanceKm * profile.weights.rickshaw +
+    walkPenalty * profile.weights.walk +
+    analysis.longRickshawCount * profile.weights.longRickshaw +
+    Math.max(0, analysis.segmentCount - 1) * profile.weights.complexity +
+    detourPenalty * profile.weights.detour +
+    analysis.confidencePenalty * profile.weights.confidence -
+    directBonus -
+    metroBonus
+  );
+}
+
+function scoreTieBreaker(left: RouteOption, right: RouteOption) {
+  const leftDuration = left.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const rightDuration = right.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const leftCost = left.totalCost ?? Number.MAX_SAFE_INTEGER;
+  const rightCost = right.totalCost ?? Number.MAX_SAFE_INTEGER;
+
+  return (
+    left.transferCount - right.transferCount ||
+    leftDuration - rightDuration ||
+    leftCost - rightCost ||
+    left.id.localeCompare(right.id)
+  );
+}
+
+function routeDiversityKey(route: RouteOption) {
+  return [
+    route.kind,
+    route.serviceLabels.join("+"),
+    normalizeTransitText(route.boarding.label),
+    normalizeTransitText(route.alighting.label),
+  ].join(":");
+}
+
+function routeServiceKey(route: RouteOption) {
+  return route.serviceLabels.join("+") || route.primaryServiceLabel || route.kind;
+}
+
+function diversityPenalty(route: RouteOption, selectedRoutes: RouteOption[]) {
+  let penalty = 0;
+  const key = routeDiversityKey(route);
+  const serviceKey = routeServiceKey(route);
+
+  for (const selected of selectedRoutes) {
+    if (routeDiversityKey(selected) === key) {
+      penalty += 40;
+    }
+
+    if (routeServiceKey(selected) === serviceKey) {
+      penalty += 12;
+    }
+
+    if (selected.kind === route.kind) {
+      penalty += 4;
+    }
+  }
+
+  return penalty;
+}
+
+function profilesForOptimization(optimization: RouteOptimization) {
+  if (optimization === "fastest") {
+    return [
+      SCORE_PROFILES.fastestPractical,
+      SCORE_PROFILES.balanced,
+      SCORE_PROFILES.lowestHassle,
+    ];
+  }
+
+  if (optimization === "cheapest") {
+    return [
+      SCORE_PROFILES.lowestFare,
+      SCORE_PROFILES.balanced,
+      SCORE_PROFILES.lowestHassle,
+    ];
+  }
+
+  return [
+    SCORE_PROFILES.balanced,
+    SCORE_PROFILES.fastestPractical,
+    SCORE_PROFILES.lowestHassle,
+  ];
+}
+
+function selectRouteForProfile(
+  routes: RouteOption[],
+  profile: ScoreProfile,
+  selectedRoutes: RouteOption[],
+) {
+  return [...routes]
+    .filter((route) => !selectedRoutes.some((selected) => selected.pathSignature === route.pathSignature))
+    .sort((left, right) => {
+      const leftScore = profileScore(left, profile) + diversityPenalty(left, selectedRoutes);
+      const rightScore = profileScore(right, profile) + diversityPenalty(right, selectedRoutes);
+
+      return leftScore - rightScore || scoreTieBreaker(left, right);
+    })[0];
+}
+
+function annotateSurfaceRoute(route: RouteOption, profile: ScoreProfile) {
+  const burden = connectorBurden(route);
+  const analysis = analyzeRoute(route);
+
+  return routeOptionSchema.parse({
+    ...route,
+    connectorBurden: burden,
+    primaryReason: profile.primaryReason,
+    scoringReason: profile.scoringReason,
+    tradeoffs: dedupeStrings([
+      ...route.tradeoffs,
+      burden === "high" ? "High connector burden" : "",
+      burden === "medium" ? "Moderate connector burden" : "",
+      analysis.detourRatio > 1.8 ? "Noticeable detour versus direct distance" : "",
+      route.transferCount > 0 ? `${route.transferCount} transfer to manage` : "",
+    ]),
+  });
 }
 
 function buildServiceWindowText(route: DhakaBusSeedRoute) {
@@ -1032,13 +1334,28 @@ function dedupeRoutes(routes: RouteOption[]) {
 }
 
 export function surfaceRoutes(routes: RouteOption[], optimization: RouteOptimization) {
-  return sortByOptimization(dedupeRoutes(routes), optimization).slice(0, 3).map((route, index) =>
-    routeOptionSchema.parse({
-      ...route,
-      primaryReason: index === 0 ? (optimization === "fastest" ? "Fastest total travel time" : optimization === "cheapest" ? "Lowest total fare" : "Best simple dataset match") : "Alternative dataset match",
-      scoringReason: `Sorted by ${optimization} using total time, fare, and transfers.`,
-    }),
-  );
+  const uniqueRoutes = dedupeRoutes(routes);
+  const selectedRoutes: RouteOption[] = [];
+
+  for (const profile of profilesForOptimization(optimization)) {
+    const route = selectRouteForProfile(uniqueRoutes, profile, selectedRoutes);
+
+    if (route) {
+      selectedRoutes.push(annotateSurfaceRoute(route, profile));
+    }
+  }
+
+  while (selectedRoutes.length < 3) {
+    const route = selectRouteForProfile(uniqueRoutes, SCORE_PROFILES.balanced, selectedRoutes);
+
+    if (!route) {
+      break;
+    }
+
+    selectedRoutes.push(annotateSurfaceRoute(route, SCORE_PROFILES.balanced));
+  }
+
+  return selectedRoutes.slice(0, 3);
 }
 
 export async function calculateRoutes(payload: CalculateRouteRequest) {

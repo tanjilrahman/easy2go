@@ -111,6 +111,68 @@ describe("surfaceRoutes", () => {
     expect(surfaceRoutes([cheapest, fastest], "cheapest")[0]?.id).toBe("cheapest");
     expect(surfaceRoutes([cheapest, fastest], "recommended")).toHaveLength(2);
   });
+
+  it("labels recommended results by balanced, practical speed, and hassle profiles", () => {
+    const balanced = makeRoute({
+      id: "balanced",
+      pathSignature: "balanced",
+      estimatedDurationMinutes: 22,
+      totalCost: 20,
+      transferCount: 0,
+    });
+    const sprint = makeRoute({
+      id: "sprint",
+      pathSignature: "sprint",
+      estimatedDurationMinutes: 9,
+      totalCost: 40,
+      transferCount: 1,
+      segments: [
+        {
+          mode: "bus",
+          instruction: "Board First Bus",
+          startLocation: "Farmgate",
+          endLocation: "Shahbag",
+        },
+        {
+          mode: "walk",
+          instruction: "Change buses",
+          startLocation: "Shahbag",
+          endLocation: "Shahbag",
+        },
+        {
+          mode: "bus",
+          instruction: "Board Second Bus",
+          startLocation: "Shahbag",
+          endLocation: "Motijheel",
+        },
+      ],
+    });
+    const simple = makeRoute({
+      id: "simple",
+      pathSignature: "simple",
+      estimatedDurationMinutes: 28,
+      totalCost: 25,
+      transferCount: 0,
+      segments: [
+        {
+          mode: "bus",
+          instruction: "Board Simple Bus",
+          startLocation: "Farmgate",
+          endLocation: "Motijheel",
+        },
+      ],
+    });
+
+    const routes = surfaceRoutes([sprint, balanced, simple], "recommended");
+
+    expect(routes.map((route) => route.primaryReason)).toEqual([
+      "Best overall balance",
+      "Fastest practical option",
+      "Simplest trip shape",
+    ]);
+    expect(routes.map((route) => route.id)).toContain("sprint");
+    expect(routes.every((route) => route.connectorBurden)).toBe(true);
+  });
 });
 
 describe("calculateRoutes", () => {

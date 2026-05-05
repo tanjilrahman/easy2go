@@ -90,11 +90,15 @@ export function PlannerComparePane({
 }: PlannerComparePaneProps) {
   function getCompareLabel(index: number) {
     if (index === 0) {
-      return "Fastest";
+      return "Best match";
     }
 
     if (index === 1) {
-      return "Alternative";
+      return "Fastest practical";
+    }
+
+    if (index === 2) {
+      return "Lowest hassle";
     }
 
     return `Option ${index + 1}`;
