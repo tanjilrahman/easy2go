@@ -229,6 +229,39 @@ describe("calculateRoutes", () => {
     ).toBe(true);
   });
 
+  it("shows shared local transport fare guidance for long connectors", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Road 15",
+        coordinates: [23.81457578576774, 90.35494500541117],
+        type: "place",
+      },
+      destination: {
+        name: "DIU",
+        coordinates: [23.8790923, 90.3214822],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+    const longConnector = response.routes
+      .flatMap((route) => route.segments)
+      .find((segment) => segment.connectorType === "long_rickshaw");
+
+    expect(longConnector).toBeDefined();
+    const routeWithLongConnector = response.routes.find((route) =>
+      route.segments.some((segment) => segment === longConnector),
+    );
+
+    expect(longConnector?.fareText).toMatch(/Approx\. BDT \d+-\d+/);
+    expect(longConnector?.costLowBdt).toBeLessThan(longConnector?.costHighBdt ?? 0);
+    expect(longConnector?.note).toContain("Long connector may work better");
+    expect(longConnector?.note).not.toContain("BDT");
+    expect(routeWithLongConnector?.totalCostLowBdt).toBeLessThan(
+      routeWithLongConnector?.totalCostHighBdt ?? 0,
+    );
+    expect(routeWithLongConnector?.fareText).toMatch(/BDT \d+-\d+/);
+  });
+
   it("draws metro routes from the station-derived MRT Line 6 shape", async () => {
     const response = await calculateRoutes({
       origin: { name: "Farmgate", canonicalId: "metro-farmgate", type: "metro_station" },

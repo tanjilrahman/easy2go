@@ -2,6 +2,7 @@ import type {
   PricingConfidence,
   RouteConfidence,
   RouteKind,
+  RouteOption,
 } from "@/lib/validations/routes";
 
 export function getRouteKindLabel(kind: RouteKind) {
@@ -51,6 +52,21 @@ export function formatBdt(amount?: number) {
   }
 
   return `BDT ${Math.round(amount)}`;
+}
+
+export function formatRouteBdt(route: RouteOption) {
+  const low = route.totalCostLowBdt ?? route.totalCost;
+  const high = route.totalCostHighBdt ?? route.totalCost;
+
+  if (low === undefined || high === undefined) {
+    return "Fare varies";
+  }
+
+  if (Math.round(low) === Math.round(high)) {
+    return formatBdt(high);
+  }
+
+  return `BDT ${Math.round(low)}-${Math.round(high)}`;
 }
 
 export function getPricingConfidenceLabel(confidence?: PricingConfidence) {

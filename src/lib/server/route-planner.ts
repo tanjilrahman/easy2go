@@ -76,6 +76,8 @@ interface RouteMetrics {
   distanceKm: number;
   durationMinutes: number;
   costBdt?: number;
+  costLowBdt?: number;
+  costHighBdt?: number;
 }
 
 interface RouteScoreBreakdown {
@@ -139,6 +141,13 @@ const RICKSHAW_BASE_FARE_BDT = 20;
 const RICKSHAW_BASE_DISTANCE_KM = 0.5;
 const RICKSHAW_FARE_PER_EXTRA_KM_BDT = 20;
 const RICKSHAW_FARE_ROUNDING_BDT = 10;
+const SHARED_CONNECTOR_BASE_FARE_LOW_BDT = 10;
+const SHARED_CONNECTOR_BASE_FARE_HIGH_BDT = 15;
+const SHARED_CONNECTOR_MIN_FARE_LOW_BDT = 15;
+const SHARED_CONNECTOR_MIN_FARE_HIGH_BDT = 25;
+const SHARED_CONNECTOR_FARE_PER_KM_LOW_BDT = 3;
+const SHARED_CONNECTOR_FARE_PER_KM_HIGH_BDT = 5;
+const SHARED_CONNECTOR_FARE_ROUNDING_BDT = 5;
 const BUS_MIN_FARE_BDT = 10;
 const BUS_FARE_ROUNDING_BDT = 5;
 const BUS_MIN_BILLABLE_KM_PER_STOP = 0.5;
@@ -273,8 +282,36 @@ function formatApproxFare(costBdt: number) {
   return `Approx. BDT ${Math.round(costBdt)}`;
 }
 
+function formatApproxFareRange(lowBdt: number, highBdt: number) {
+  return lowBdt === highBdt
+    ? formatApproxFare(lowBdt)
+    : `Approx. BDT ${Math.round(lowBdt)}-${Math.round(highBdt)}`;
+}
+
 function formatExactFare(costBdt: number) {
   return `BDT ${Math.round(costBdt)}`;
+}
+
+function roundFareToBdt(value: number, interval: number) {
+  return Math.ceil(value / interval) * interval;
+}
+
+function estimateSharedConnectorFareRangeBdt(distanceKm: number) {
+  const low = Math.max(
+    SHARED_CONNECTOR_MIN_FARE_LOW_BDT,
+    SHARED_CONNECTOR_BASE_FARE_LOW_BDT +
+      distanceKm * SHARED_CONNECTOR_FARE_PER_KM_LOW_BDT,
+  );
+  const high = Math.max(
+    SHARED_CONNECTOR_MIN_FARE_HIGH_BDT,
+    SHARED_CONNECTOR_BASE_FARE_HIGH_BDT +
+      distanceKm * SHARED_CONNECTOR_FARE_PER_KM_HIGH_BDT,
+  );
+
+  return {
+    low: roundFareToBdt(low, SHARED_CONNECTOR_FARE_ROUNDING_BDT),
+    high: roundFareToBdt(high, SHARED_CONNECTOR_FARE_ROUNDING_BDT),
+  };
 }
 
 function dedupeStrings(values: string[]) {
@@ -296,14 +333,50 @@ function combineMetrics(parts: Array<Partial<RouteMetrics>>) {
   const costBdt = costParts.length
     ? costParts.reduce((sum, value) => sum + value, 0)
     : undefined;
+  const lowParts = parts
+    .map((part) => part.costLowBdt ?? part.costBdt)
+    .filter((value): value is number => value !== undefined);
+  const highParts = parts
+    .map((part) => part.costHighBdt ?? part.costBdt)
+    .filter((value): value is number => value !== undefined);
+  const costLowBdt = lowParts.length
+    ? lowParts.reduce((sum, value) => sum + value, 0)
+    : costBdt;
+  const costHighBdt = highParts.length
+    ? highParts.reduce((sum, value) => sum + value, 0)
+    : costBdt;
 
   return {
     estimatedDistanceKm:
       distanceKm > 0 ? roundDistanceKm(distanceKm) : undefined,
     estimatedDurationMinutes:
       durationMinutes > 0 ? Math.round(durationMinutes) : undefined,
-    totalCost: costBdt,
+    totalCost: costHighBdt ?? costBdt,
+    totalCostLowBdt: costLowBdt,
+    totalCostHighBdt: costHighBdt,
   };
+}
+
+function formatMetricsFare(
+  metrics: ReturnType<typeof combineMetrics>,
+  fareType: "exact" | "unknown" | "advisory",
+) {
+  const low = metrics.totalCostLowBdt ?? metrics.totalCost;
+  const high = metrics.totalCostHighBdt ?? metrics.totalCost;
+
+  if (low !== undefined && high !== undefined && low !== high) {
+    return fareType === "exact"
+      ? `BDT ${Math.round(low)}-${Math.round(high)}`
+      : formatApproxFareRange(low, high);
+  }
+
+  if (metrics.totalCost === undefined) {
+    return "Fare varies";
+  }
+
+  return fareType === "exact"
+    ? formatExactFare(metrics.totalCost)
+    : formatApproxFare(metrics.totalCost);
 }
 
 function confidencePenalty(route: RouteOption) {
@@ -1003,6 +1076,13 @@ function createAccessLeg(
 }
 
 function buildAccessSegment(leg: AccessLeg): RouteSegment {
+  const sharedFareRange =
+    leg.connectorType === "long_rickshaw"
+      ? estimateSharedConnectorFareRangeBdt(leg.distanceKm)
+      : undefined;
+  const lowFare = sharedFareRange?.low ?? leg.costBdt;
+  const highFare = leg.costBdt ?? sharedFareRange?.high;
+
   return {
     mode: leg.mode,
     instruction: leg.mode === "walk" ? "Walk connector" : "Local connector",
@@ -1012,7 +1092,11 @@ function buildAccessSegment(leg: AccessLeg): RouteSegment {
       leg.connectorType === "long_rickshaw"
         ? LONG_CONNECTOR_SHARED_TRANSPORT_NOTE
         : undefined,
-    fareText: leg.costBdt ? formatApproxFare(leg.costBdt) : undefined,
+    fareText: leg.costBdt
+      ? leg.connectorType === "long_rickshaw"
+        ? formatApproxFareRange(lowFare ?? leg.costBdt, highFare ?? leg.costBdt)
+        : formatApproxFare(leg.costBdt)
+      : undefined,
     estimatedDistanceKm: roundDistanceKm(leg.distanceKm),
     estimatedDurationMinutes: leg.durationMinutes,
     connectorType: leg.connectorType,
@@ -1020,8 +1104,8 @@ function buildAccessSegment(leg: AccessLeg): RouteSegment {
     connectorFare: leg.costBdt,
     distanceSource: "local_estimate",
     pricingConfidence: leg.costBdt ? "estimated" : undefined,
-    costLowBdt: leg.costBdt,
-    costHighBdt: leg.costBdt,
+    costLowBdt: lowFare,
+    costHighBdt: highFare,
   };
 }
 
@@ -1031,6 +1115,11 @@ function accessMetrics(leg: AccessLeg | null): Partial<RouteMetrics> {
         distanceKm: leg.distanceKm,
         durationMinutes: leg.durationMinutes,
         costBdt: leg.costBdt,
+        costLowBdt:
+          leg.connectorType === "long_rickshaw"
+            ? estimateSharedConnectorFareRangeBdt(leg.distanceKm).low
+            : leg.costBdt,
+        costHighBdt: leg.costBdt,
       }
     : {};
 }
@@ -1116,10 +1205,20 @@ function applyRoadMetricsToSegment(
 
   if (segment.mode === "rickshaw" || segment.mode === "ride_share") {
     const fare = estimateRickshawFareBdt(distanceKm);
+    const sharedFareRange =
+      segment.connectorType === "long_rickshaw"
+        ? estimateSharedConnectorFareRangeBdt(distanceKm)
+        : undefined;
+    const lowFare = sharedFareRange?.low ?? fare;
+    const highFare = fare ?? sharedFareRange?.high;
 
     return {
       ...segment,
-      fareText: fare ? formatApproxFare(fare) : undefined,
+      fareText: fare
+        ? segment.connectorType === "long_rickshaw"
+          ? formatApproxFareRange(lowFare ?? fare, highFare ?? fare)
+          : formatApproxFare(fare)
+        : undefined,
       estimatedDistanceKm: roundedDistanceKm,
       estimatedDurationMinutes: durationMinutes,
       distanceSource: "road_api" as const,
@@ -1128,8 +1227,8 @@ function applyRoadMetricsToSegment(
         ? roundedDistanceKm
         : segment.connectorDistanceKm,
       connectorFare: fare,
-      costLowBdt: fare,
-      costHighBdt: fare,
+      costLowBdt: lowFare,
+      costHighBdt: highFare,
     };
   }
 
@@ -1153,7 +1252,9 @@ function metricsFromSegments(segments: RouteSegment[]) {
     segments.map((segment) => ({
       distanceKm: segment.estimatedDistanceKm,
       durationMinutes: segment.estimatedDurationMinutes,
-      costBdt: segment.costLowBdt,
+      costBdt: segment.costHighBdt ?? segment.costLowBdt,
+      costLowBdt: segment.costLowBdt,
+      costHighBdt: segment.costHighBdt,
     })),
   );
 }
@@ -1590,19 +1691,14 @@ async function applyRoadSnappedMapPreview(route: RouteOption) {
       : segment;
   });
   const metrics = metricsFromSegments(segments);
-  const fareText =
-    metrics.totalCost !== undefined
-      ? route.fareType === "exact"
-        ? formatExactFare(metrics.totalCost)
-        : formatApproxFare(metrics.totalCost)
-      : "Fare varies";
+  const fareText = formatMetricsFare(metrics, route.fareType);
 
   return routeOptionSchema.parse({
     ...route,
     fareText,
     totalCost: metrics.totalCost,
-    totalCostLowBdt: metrics.totalCost,
-    totalCostHighBdt: metrics.totalCost,
+    totalCostLowBdt: metrics.totalCostLowBdt ?? metrics.totalCost,
+    totalCostHighBdt: metrics.totalCostHighBdt ?? metrics.totalCost,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     highlights: dedupeStrings([
@@ -1610,7 +1706,7 @@ async function applyRoadSnappedMapPreview(route: RouteOption) {
         ? `${metrics.estimatedDurationMinutes} min`
         : "",
       metrics.totalCost !== undefined
-        ? `BDT ${Math.round(metrics.totalCost)}`
+        ? formatMetricsFare(metrics, route.fareType).replace("Approx. ", "")
         : "",
       route.transferCount === 0
         ? "No transfers"
@@ -2072,13 +2168,10 @@ function createDirectBusRoute(
     confidence: "verified",
     summary: `Bus \u00b7 ${busName}`,
     fareType: "advisory",
-    fareText:
-      metrics.totalCost !== undefined
-        ? formatApproxFare(metrics.totalCost)
-        : "Fare varies",
+    fareText: formatMetricsFare(metrics, "advisory"),
     totalCost: metrics.totalCost,
-    totalCostLowBdt: metrics.totalCost,
-    totalCostHighBdt: metrics.totalCost,
+    totalCostLowBdt: metrics.totalCostLowBdt ?? metrics.totalCost,
+    totalCostHighBdt: metrics.totalCostHighBdt ?? metrics.totalCost,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText: leg.serviceWindowText,
@@ -2124,7 +2217,6 @@ function createTransferBusRoute(
     secondDistanceKm,
     transfer.secondLeg.stopCount,
   );
-  const totalFare = firstFare + secondFare;
   const transferDurationMinutes =
     transfer.transferWalkDurationMinutes ?? TRANSFER_BUFFER_MINUTES;
   const metrics = combineMetrics([
@@ -2197,10 +2289,10 @@ function createTransferBusRoute(
     confidence: "verified",
     summary: `Transfer \u00b7 ${firstBusName} \u2192 ${secondBusName}`,
     fareType: "advisory",
-    fareText: formatApproxFare(metrics.totalCost ?? totalFare),
+    fareText: formatMetricsFare(metrics, "advisory"),
     totalCost: metrics.totalCost,
-    totalCostLowBdt: metrics.totalCost,
-    totalCostHighBdt: metrics.totalCost,
+    totalCostLowBdt: metrics.totalCostLowBdt ?? metrics.totalCost,
+    totalCostHighBdt: metrics.totalCostHighBdt ?? metrics.totalCost,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     stopCount: transfer.firstLeg.stopCount + transfer.secondLeg.stopCount,
@@ -2284,13 +2376,10 @@ function createMetroRoute(
     confidence: "exact",
     summary: "Metro \u00b7 MRT Line 6",
     fareType: "exact",
-    fareText:
-      metrics.totalCost !== undefined
-        ? formatExactFare(metrics.totalCost)
-        : "Fare varies",
+    fareText: formatMetricsFare(metrics, "exact"),
     totalCost: metrics.totalCost,
-    totalCostLowBdt: metrics.totalCost,
-    totalCostHighBdt: metrics.totalCost,
+    totalCostLowBdt: metrics.totalCostLowBdt ?? metrics.totalCost,
+    totalCostHighBdt: metrics.totalCostHighBdt ?? metrics.totalCost,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     serviceWindowText: METRO_SERVICE_WINDOW_TEXT,
@@ -2452,13 +2541,10 @@ function createBusMetroHybridRoute(
     confidence: "verified",
     summary: `Transfer \u00b7 ${busName} \u2192 MRT Line 6`,
     fareType: "advisory",
-    fareText:
-      metrics.totalCost !== undefined
-        ? formatApproxFare(metrics.totalCost)
-        : "Fare varies",
+    fareText: formatMetricsFare(metrics, "advisory"),
     totalCost: metrics.totalCost,
-    totalCostLowBdt: metrics.totalCost,
-    totalCostHighBdt: metrics.totalCost,
+    totalCostLowBdt: metrics.totalCostLowBdt ?? metrics.totalCost,
+    totalCostHighBdt: metrics.totalCostHighBdt ?? metrics.totalCost,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     transferCount: 1,
@@ -2516,13 +2602,10 @@ function createMetroBusHybridRoute(
     confidence: "verified",
     summary: `Transfer \u00b7 MRT Line 6 \u2192 ${busName}`,
     fareType: "advisory",
-    fareText:
-      metrics.totalCost !== undefined
-        ? formatApproxFare(metrics.totalCost)
-        : "Fare varies",
+    fareText: formatMetricsFare(metrics, "advisory"),
     totalCost: metrics.totalCost,
-    totalCostLowBdt: metrics.totalCost,
-    totalCostHighBdt: metrics.totalCost,
+    totalCostLowBdt: metrics.totalCostLowBdt ?? metrics.totalCost,
+    totalCostHighBdt: metrics.totalCostHighBdt ?? metrics.totalCost,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
     transferCount: 1,

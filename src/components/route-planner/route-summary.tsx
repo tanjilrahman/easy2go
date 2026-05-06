@@ -1,7 +1,7 @@
 import { ArrowRight, Coins, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { formatBdt } from "@/lib/transport";
+import { formatRouteBdt } from "@/lib/transport";
 import { cn } from "@/lib/utils";
 import type { RouteOption } from "@/lib/validations/routes";
 
@@ -12,7 +12,10 @@ function RouteBadges({ label }: { label?: string }) {
 
   return (
     <div className="mb-2 flex flex-wrap items-center gap-2">
-      <span className="rounded-lg bg-foreground px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary-foreground">
+      <span className={cn(
+        "rounded-lg px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-primary-foreground",
+        label === "Best match" ? "bg-primary" : "bg-foreground",
+      )}>
         {label}
       </span>
     </div>
@@ -150,7 +153,7 @@ export function RouteCoreMetrics({
         ) : "N/A"}
       </RouteMetric>
       <RouteMetric icon={Coins} iconClassName="text-emerald-600">
-        <span className="font-semibold text-foreground">{formatBdt(route.totalCost)}</span>
+        <span className="font-semibold text-foreground">{formatRouteBdt(route)}</span>
       </RouteMetric>
       {route.transferCount ? (
         <RouteMetric icon={transferIcon} iconClassName="text-amber-600">

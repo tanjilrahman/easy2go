@@ -7,7 +7,7 @@ import {
   RouteOverview,
   RouteServiceLabels,
 } from "@/components/route-planner/route-summary";
-import { formatBdt } from "@/lib/transport";
+import { formatRouteBdt } from "@/lib/transport";
 import type { RouteOption } from "@/lib/validations/routes";
 
 interface PlannerDebugRoutesProps {
@@ -33,7 +33,7 @@ export function PlannerDebugRoutes({ routes }: PlannerDebugRoutesProps) {
                 {route.estimatedDurationMinutes ? `${route.estimatedDurationMinutes} min` : "N/A"}
               </RouteMetric>
               <RouteMetric icon={Coins} iconClassName="text-emerald-600">
-                {formatBdt(route.totalCost)}
+                {formatRouteBdt(route)}
               </RouteMetric>
               {route.connectorBurden ? (
                 <span className="compare-metric">

@@ -71,7 +71,7 @@ export function PlannerComparePane({
     }
 
     if (index === 2) {
-      return "Lowest hassle";
+      return "Lowest cost";
     }
 
     return `Option ${index + 1}`;

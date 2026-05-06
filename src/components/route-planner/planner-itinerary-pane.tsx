@@ -216,8 +216,8 @@ export function PlannerItineraryPane({
                         <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs leading-5 text-amber-800">
                           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                           <p>
-                            Long connector: local shared transport could be
-                            available.
+                            {segment.note ??
+                              "Long connector: local shared transport could be available."}
                           </p>
                         </div>
                       ) : null}
