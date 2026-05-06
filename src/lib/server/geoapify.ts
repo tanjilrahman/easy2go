@@ -3,6 +3,7 @@ import { normalizeTransitText } from "@/lib/server/transit-support";
 import type { LocationSuggestion } from "@/lib/validations/routes";
 
 const GEOAPIFY_SEARCH_TIMEOUT_MS = 1800;
+const GEOAPIFY_AUTOCOMPLETE_ENABLED = true;
 
 interface GeoapifyFeature {
   properties?: {
@@ -32,13 +33,7 @@ function getGeoapifyKey() {
 }
 
 export function isGeoapifyAutocompleteEnabled() {
-  const explicitFlag = process.env.GEOAPIFY_AUTOCOMPLETE_ENABLED;
-
-  if (explicitFlag === "false" || explicitFlag === "0") {
-    return false;
-  }
-
-  return Boolean(getGeoapifyKey());
+  return GEOAPIFY_AUTOCOMPLETE_ENABLED && Boolean(getGeoapifyKey());
 }
 
 async function fetchGeoapifyJson<T>(url: URL): Promise<T | null> {

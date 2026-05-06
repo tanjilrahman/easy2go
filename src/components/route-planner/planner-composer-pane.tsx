@@ -3,8 +3,7 @@
 import {
   ArrowDownUp,
   Bookmark,
-  ChevronDown,
-  ChevronUp,
+  History,
   LoaderCircle,
   LocateFixed,
   MapPin,
@@ -15,12 +14,16 @@ import {
 import { type KeyboardEvent, useEffect, useId, useMemo, useState } from "react";
 
 import { useDebouncedValue } from "@/hooks/use-debounced-value";
-import type { RecentTrip, SavedPlace } from "@/hooks/use-planner-memory";
+import type { SavedPlace } from "@/hooks/use-planner-memory";
 import { useLocationSuggestions } from "@/hooks/use-route-planner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
-import type { CalculateRouteRequest, LocationInput, LocationSuggestion } from "@/lib/validations/routes";
+import type {
+  CalculateRouteRequest,
+  LocationInput,
+  LocationSuggestion,
+} from "@/lib/validations/routes";
 
 interface PlannerComposerPaneProps {
   originText: string;
@@ -40,7 +43,6 @@ interface PlannerComposerPaneProps {
   isLocating?: boolean;
   locationError?: string | null;
   savedPlaces: Partial<Record<SavedPlace["slot"], SavedPlace>>;
-  recentTrips: RecentTrip[];
 }
 
 type ActiveField = "origin" | "destination" | null;
@@ -87,11 +89,9 @@ export function PlannerComposerPane({
   isLocating,
   locationError,
   savedPlaces,
-  recentTrips,
 }: PlannerComposerPaneProps) {
   const [activeField, setActiveField] = useState<ActiveField>(null);
   const [activeSuggestionIndex, setActiveSuggestionIndex] = useState(0);
-  const [showRecentTripsOnMobile, setShowRecentTripsOnMobile] = useState(false);
   const listboxId = useId();
   const debouncedOrigin = useDebouncedValue(originText.trim(), 250);
   const debouncedDestination = useDebouncedValue(destinationText.trim(), 250);
@@ -102,9 +102,14 @@ export function PlannerComposerPane({
         ? debouncedDestination
         : "";
 
-  const suggestionsQuery = useLocationSuggestions(activeQuery, activeQuery.length >= 2);
+  const suggestionsQuery = useLocationSuggestions(
+    activeQuery,
+    activeQuery.length >= 2,
+  );
   const suggestions = suggestionsQuery.data?.suggestions ?? [];
-  const hasGeoapifySuggestions = suggestions.some((item) => item.provider === "geoapify");
+  const hasGeoapifySuggestions = suggestions.some(
+    (item) => item.provider === "geoapify",
+  );
 
   const originValue = useMemo(
     () =>
@@ -142,11 +147,10 @@ export function PlannerComposerPane({
     originValue.name.length > 1 &&
     destinationValue.name.length > 1;
   const hasSuggestionsOpen = Boolean(activeField && activeQuery.length >= 2);
-  const hasExpandedRecentTrips = recentTrips.length > 0 && showRecentTripsOnMobile;
 
   useEffect(() => {
-    onExpandedContentChange?.(hasSuggestionsOpen || hasExpandedRecentTrips);
-  }, [hasExpandedRecentTrips, hasSuggestionsOpen, onExpandedContentChange]);
+    onExpandedContentChange?.(hasSuggestionsOpen);
+  }, [hasSuggestionsOpen, onExpandedContentChange]);
 
   function selectSuggestion(item: LocationSuggestion) {
     const nextValue = toLocationInput(item);
@@ -172,18 +176,14 @@ export function PlannerComposerPane({
     }
   }
 
-  function applyTrip(trip: RecentTrip) {
-    onOriginTextChange(trip.origin.name);
-    onOriginSelectionChange(trip.origin);
-    onDestinationTextChange(trip.destination.name);
-    onDestinationSelectionChange(trip.destination);
-    setActiveField(null);
-    setShowRecentTripsOnMobile(false);
-  }
-
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
     if (!suggestions.length) {
-      if (event.key === "Enter" && canSearch && originValue && destinationValue) {
+      if (
+        event.key === "Enter" &&
+        canSearch &&
+        originValue &&
+        destinationValue
+      ) {
         event.preventDefault();
         onSearch({
           origin: originValue,
@@ -202,7 +202,9 @@ export function PlannerComposerPane({
 
     if (event.key === "ArrowUp") {
       event.preventDefault();
-      setActiveSuggestionIndex((current) => (current - 1 + suggestions.length) % suggestions.length);
+      setActiveSuggestionIndex(
+        (current) => (current - 1 + suggestions.length) % suggestions.length,
+      );
       return;
     }
 
@@ -221,14 +223,11 @@ export function PlannerComposerPane({
   return (
     <div className="flex h-full min-h-0 flex-col">
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-        <div className="space-y-4 pb-4">
-          <div className="flex items-start justify-between gap-3">
-            <div className="min-w-0">
-              <p className="text-base font-semibold tracking-tight text-foreground font-display">Plan your trip</p>
-              <p className="mt-0.5 text-xs text-muted-foreground">
-                Fastest bus route with the right last-mile connector.
-              </p>
-            </div>
+        <div className="space-y-3 pb-2">
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-base font-semibold tracking-tight text-foreground font-display">
+              Plan your trip
+            </p>
             <Button
               type="button"
               variant="outline"
@@ -236,20 +235,22 @@ export function PlannerComposerPane({
               onClick={onOpenSaved}
               className="shrink-0"
             >
-              <Bookmark className="mr-1.5 h-3.5 w-3.5" />
-              Saved
+              <History className="mr-1.5 h-3.5 w-3.5" />
+              History
             </Button>
           </div>
 
           {/* Unified stacked input block */}
           <div className="relative rounded-xl border border-border bg-surface">
             {/* Origin row */}
-            <div className="relative flex items-center gap-3 px-3.5 py-3">
+            <div className="relative flex items-center gap-3 px-3.5 py-2.5">
               <LocateFixed className="shrink-0 h-4 w-4 text-primary" />
               <Input
                 id="planner-origin"
                 role="combobox"
-                aria-expanded={activeField === "origin" && suggestions.length > 0}
+                aria-expanded={
+                  activeField === "origin" && suggestions.length > 0
+                }
                 aria-controls={listboxId}
                 aria-autocomplete="list"
                 aria-activedescendant={
@@ -289,7 +290,7 @@ export function PlannerComposerPane({
               <button
                 type="button"
                 onClick={onSwap}
-                className="absolute right-3 top-1/2 z-10 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md border border-border bg-surface text-muted-foreground shadow-sm transition hover:bg-muted hover:text-foreground"
+                className="absolute left-1/2 top-1/2 z-10 inline-flex h-7 w-7 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-md border border-border bg-surface text-muted-foreground shadow-sm transition hover:bg-muted hover:text-foreground"
                 aria-label="Swap origin and destination"
               >
                 <ArrowDownUp className="h-3.5 w-3.5" />
@@ -297,16 +298,19 @@ export function PlannerComposerPane({
             </div>
 
             {/* Destination row */}
-            <div className="relative flex items-center gap-3 px-3.5 py-3">
+            <div className="relative flex items-center gap-3 px-3.5 py-2.5">
               <Navigation2 className="shrink-0 h-4 w-4 text-secondary" />
               <Input
                 id="planner-destination"
                 role="combobox"
-                aria-expanded={activeField === "destination" && suggestions.length > 0}
+                aria-expanded={
+                  activeField === "destination" && suggestions.length > 0
+                }
                 aria-controls={listboxId}
                 aria-autocomplete="list"
                 aria-activedescendant={
-                  activeField === "destination" && suggestions[activeSuggestionIndex]
+                  activeField === "destination" &&
+                  suggestions[activeSuggestionIndex]
                     ? `${listboxId}-${suggestions[activeSuggestionIndex]?.id}`
                     : undefined
                 }
@@ -323,30 +327,6 @@ export function PlannerComposerPane({
                 className="h-8 border-0 bg-transparent p-0 text-sm shadow-none ring-0 focus:ring-0 focus-visible:ring-0 focus-visible:ring-offset-0"
               />
             </div>
-          </div>
-
-          {/* Saved chips below the unified input */}
-          <div className="flex flex-wrap gap-1.5">
-            {savedPlaces.home ? (
-              <button
-                type="button"
-                onClick={() => applySavedPlace(savedPlaces.home!, "origin")}
-                className="planner-chip"
-              >
-                <Star className="h-3.5 w-3.5" />
-                Home
-              </button>
-            ) : null}
-            {savedPlaces.work ? (
-              <button
-                type="button"
-                onClick={() => applySavedPlace(savedPlaces.work!, "origin")}
-                className="planner-chip"
-              >
-                <Bookmark className="h-3.5 w-3.5" />
-                Work
-              </button>
-            ) : null}
           </div>
 
           {locationError ? (
@@ -389,7 +369,9 @@ export function PlannerComposerPane({
                         <MapPin className="h-4 w-4" />
                       </div>
                       <div className="min-w-0 flex-1 space-y-0.5">
-                        <p className="break-words text-sm font-semibold leading-snug text-foreground">{item.name}</p>
+                        <p className="break-words text-sm font-semibold leading-snug text-foreground">
+                          {item.name}
+                        </p>
                         <p className="break-words text-xs leading-snug text-muted-foreground">
                           {item.address ?? "Dhaka, Bangladesh"}
                         </p>
@@ -399,11 +381,6 @@ export function PlannerComposerPane({
                       </span>
                     </button>
                   ))}
-                  {hasGeoapifySuggestions ? (
-                    <p className="border-t border-border px-4 py-2 text-[11px] font-medium text-muted-foreground">
-                      Powered by Geoapify
-                    </p>
-                  ) : null}
                 </div>
               ) : (
                 <div className="px-4 py-3 text-sm text-muted-foreground">
@@ -411,50 +388,11 @@ export function PlannerComposerPane({
                 </div>
               )}
             </div>
-          ) : recentTrips.length ? (
-            <div className="space-y-2">
-              <div className="sm:hidden">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowRecentTripsOnMobile((current) => !current)}
-                  className="w-full justify-between"
-                >
-                  <span>Recent trips</span>
-                  {showRecentTripsOnMobile ? (
-                    <ChevronUp className="h-4 w-4" />
-                  ) : (
-                    <ChevronDown className="h-4 w-4" />
-                  )}
-                </Button>
-              </div>
-
-              <div className={cn("space-y-2 sm:block", showRecentTripsOnMobile ? "block" : "hidden")}>
-                <p className="px-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  Recent trips
-                </p>
-                <div className="flex flex-wrap gap-1.5">
-                  {recentTrips.slice(0, 4).map((trip) => (
-                    <button
-                      type="button"
-                      key={trip.id}
-                      onClick={() => applyTrip(trip)}
-                      className="planner-trip-chip"
-                    >
-                      <span className="truncate">{trip.origin.name}</span>
-                      <span className="text-muted-foreground/60">to</span>
-                      <span className="truncate">{trip.destination.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
           ) : null}
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 shrink-0 border-t border-border bg-surface/95 pt-3 backdrop-blur-sm">
+      <div className="sticky bottom-0 z-10 shrink-0 mt-3">
         <Button
           type="button"
           onClick={() => {
@@ -470,7 +408,7 @@ export function PlannerComposerPane({
           }}
           disabled={Boolean(!canSearch || isLoading)}
           size="lg"
-          className="h-11 w-full text-sm shadow-lg shadow-primary/15"
+          className="h-10 w-full text-sm shadow-lg shadow-primary/15"
         >
           {isLoading ? (
             <>

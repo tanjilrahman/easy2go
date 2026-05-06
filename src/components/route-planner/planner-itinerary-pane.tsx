@@ -1,8 +1,7 @@
 "use client";
 
-import { ArrowLeft, History, Route, Timer } from "lucide-react";
+import { History, Route, Timer } from "lucide-react";
 
-import { PlannerDebugRoutes } from "@/components/route-planner/planner-debug-routes";
 import {
   RouteCoreMetrics,
   RouteOverview,
@@ -10,22 +9,16 @@ import {
 } from "@/components/route-planner/route-summary";
 import { Button } from "@/components/ui/button";
 import { TransportIcon } from "@/components/transport-icon";
-import { getPricingConfidenceLabel } from "@/lib/transport";
+
 import type { LocationInput, RouteOption } from "@/lib/validations/routes";
 
 interface PlannerItineraryPaneProps {
   route: RouteOption | null;
-  debugRoutes: RouteOption[];
-  onBack: () => void;
-  onBackLabel: string;
   onUseReturnTrip: (origin: LocationInput, destination: LocationInput) => void;
 }
 
 export function PlannerItineraryPane({
   route,
-  debugRoutes,
-  onBack,
-  onBackLabel,
   onUseReturnTrip,
 }: PlannerItineraryPaneProps) {
   if (!route) {
@@ -35,41 +28,25 @@ export function PlannerItineraryPane({
   const compactModes = new Set(["walk", "ride_share"]);
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-3">
+    <div className="flex min-h-0 flex-col gap-2">
       <div className="min-h-0 flex-1 overflow-y-auto pr-1">
-        <div className="space-y-3 pb-3">
-          <div className="rounded-xl border border-border bg-surface p-4">
-            <div className="flex items-start justify-between gap-4">
-              <div className="min-w-0 flex-1">
-                <RouteOverview route={route} showParentStop />
-              </div>
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={onBack}
-              >
-                <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
-                {onBackLabel}
-              </Button>
-            </div>
+        <div className="space-y-2 pb-2">
+          <div className="rounded-xl border border-border bg-surface p-3">
+            <RouteOverview route={route} showParentStop />
 
-            <div className="mt-3 grid grid-cols-3 gap-2">
+            <div className="mt-2 grid grid-cols-3 gap-2">
               <RouteCoreMetrics route={route} durationIcon={Timer} transferIcon={History} />
             </div>
 
             <RouteServiceLabels route={route} />
-            {route.scoringReason ? (
-              <p className="mt-2 text-xs text-muted-foreground">{route.scoringReason}</p>
-            ) : null}
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-2">
             {route.segments.map((segment, index) =>
               compactModes.has(segment.mode) ? (
                 <div
                   key={`${segment.instruction}-${index}`}
-                  className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2.5 text-sm"
+                  className="flex items-center gap-3 rounded-xl border border-border bg-surface px-3 py-2 text-sm"
                 >
                   <TransportIcon mode={segment.mode} size="sm" />
                   <div className="min-w-0 flex-1 text-muted-foreground">
@@ -84,7 +61,7 @@ export function PlannerItineraryPane({
               ) : (
                 <div
                   key={`${segment.instruction}-${index}`}
-                  className="rounded-xl border border-border bg-surface px-4 py-3"
+                  className="rounded-xl border border-border bg-surface px-3 py-2.5"
                 >
                   <div className="flex gap-3.5">
                     <TransportIcon mode={segment.mode} />
@@ -128,11 +105,6 @@ export function PlannerItineraryPane({
                             {segment.fareText}
                           </span>
                         ) : null}
-                        {getPricingConfidenceLabel(segment.pricingConfidence) ? (
-                          <span className="rounded-lg bg-surface-strong border border-border px-2.5 py-1">
-                            {getPricingConfidenceLabel(segment.pricingConfidence)}
-                          </span>
-                        ) : null}
                       </div>
                       {segment.note ? (
                         <p className="mt-2 text-xs leading-5 text-muted-foreground">{segment.note}</p>
@@ -151,8 +123,7 @@ export function PlannerItineraryPane({
           </div>
 
           {route.advisories.length ? (
-            <div className="rounded-xl border border-border bg-surface p-4">
-              <p className="mb-2 text-sm font-semibold text-foreground">Notes</p>
+            <div className="rounded-xl border border-border bg-surface p-3">
               <div className="space-y-2">
                 {route.advisories.map((advisory) => (
                   <p
@@ -166,11 +137,10 @@ export function PlannerItineraryPane({
             </div>
           ) : null}
 
-          <PlannerDebugRoutes routes={debugRoutes} />
         </div>
       </div>
 
-      <div className="sticky bottom-0 z-10 shrink-0 border-t border-border bg-surface/95 pt-3 backdrop-blur-sm">
+      <div className="sticky bottom-0 z-10 shrink-0 border-t border-border bg-surface/95 pt-2 backdrop-blur-sm">
         <Button
           type="button"
           onClick={() =>
@@ -200,7 +170,7 @@ export function PlannerItineraryPane({
             )
           }
           size="lg"
-          className="h-11 w-full text-sm shadow-lg shadow-primary/15"
+          className="h-10 w-full text-sm shadow-lg shadow-primary/15"
         >
           <Route className="mr-2 h-5 w-5" />
           Return trip

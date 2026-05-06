@@ -59,13 +59,12 @@ export function PlannerPane({
         ref={paneRef}
         layout
         transition={{ type: "spring", stiffness: 180, damping: 24 }}
-        style={{ height: maxHeight, maxHeight }}
-        className="pointer-events-auto planner-pane mx-auto flex h-full w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-2xl sm:max-w-[min(70vw,34rem)]"
+        style={{ maxHeight }}
+        className="pointer-events-auto planner-pane mx-auto flex w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-2xl sm:max-w-[min(70vw,34rem)]"
       >
         {showHeader ? (
-          <div className="flex items-start justify-between gap-3 border-b border-border px-5 pb-3 pt-4">
+          <div className="flex items-start justify-between gap-3 border-b border-border px-4 pb-2 pt-3">
             <div className="min-w-0">
-              <div className="mb-2 h-1 w-10 rounded-full bg-muted-foreground/20" />
               {title ? (
                 <h2 className="truncate font-display text-lg font-semibold tracking-tight text-foreground">
                   {title}
@@ -79,7 +78,7 @@ export function PlannerPane({
           </div>
         ) : null}
 
-        <div className="min-h-0 flex-1 overflow-hidden">
+        <div className={cn("flex min-h-0 flex-col overflow-hidden", scrollable ? "flex-1" : "")}>
           <AnimatePresence mode="wait">
             <motion.div
               key={paneKey}
@@ -88,8 +87,8 @@ export function PlannerPane({
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.18, ease: "easeOut" }}
               className={cn(
-                "flex h-full min-h-0 flex-col px-5 pb-5 pt-4",
-                scrollable ? "overflow-hidden" : "overflow-hidden",
+                "flex min-h-0 flex-col px-4 pb-4 pt-3",
+                scrollable ? "flex-1 overflow-y-auto overscroll-contain" : "",
               )}
             >
               {children}

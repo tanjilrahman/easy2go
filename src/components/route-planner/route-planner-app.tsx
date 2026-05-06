@@ -1,9 +1,10 @@
 "use client";
 
 import { startTransition, useEffect, useMemo, useState } from "react";
-import { LocateFixed, MapPin, X } from "lucide-react";
+import { ArrowLeft, LocateFixed, MapPin, X } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
+import { Button } from "@/components/ui/button";
 import { MapFrame, type MapPickMode } from "@/components/map/dhaka-map";
 import { PlannerComparePane } from "@/components/route-planner/planner-compare-pane";
 import { PlannerComposerPane } from "@/components/route-planner/planner-composer-pane";
@@ -34,13 +35,13 @@ function paneMeta(pane: PaneState, composeExpanded: boolean) {
       };
     case "saved":
       return {
-        title: "Saved",
+        title: "Recent trips",
         maxHeight: "56vh",
       };
     default:
       return {
         title: undefined,
-        maxHeight: composeExpanded ? "64vh" : "46vh",
+        maxHeight: composeExpanded ? "64vh" : "36vh",
       };
   }
 }
@@ -83,12 +84,9 @@ export function RoutePlannerApp() {
     draftDestination,
     lastSelectedRouteSignature,
     saveDraft,
-    savePlace,
-    removePlace,
     recordTrip,
     rememberRoute,
     recentTrips,
-    savedPlaces,
     savedPlaceMap,
   } = memory;
   const calculateRoutes = useCalculateRoutes();
@@ -391,6 +389,35 @@ export function RoutePlannerApp() {
         }
         maxHeight={paneCopy.maxHeight}
         scrollable={pane !== "compose"}
+        actions={
+          pane === "compare" ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={resetToCompose}
+            >
+              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+              Edit
+            </Button>
+          ) : pane === "itinerary" ? (
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                if (results.length > 1) {
+                  setPane("compare");
+                } else {
+                  resetToCompose();
+                }
+              }}
+            >
+              <ArrowLeft className="mr-1.5 h-3.5 w-3.5" />
+              {results.length > 1 ? "Compare" : "Edit trip"}
+            </Button>
+          ) : undefined
+        }
         onHeightChange={setPaneHeightPx}
       >
         {pane === "compose" ? (
@@ -417,7 +444,6 @@ export function RoutePlannerApp() {
             isLocating={isLocatingOrigin}
             locationError={locationError}
             savedPlaces={memoryUiReady ? savedPlaceMap : {}}
-            recentTrips={memoryUiReady ? recentTrips : []}
           />
         ) : null}
 
@@ -431,23 +457,12 @@ export function RoutePlannerApp() {
               rememberRoute(route.pathSignature);
             }}
             onOpenItinerary={() => setPane("itinerary")}
-            onBack={resetToCompose}
           />
         ) : null}
 
         {pane === "itinerary" ? (
           <PlannerItineraryPane
             route={activeRoute}
-            debugRoutes={debugRoutes}
-            onBack={() => {
-              if (results.length > 1) {
-                setPane("compare");
-                return;
-              }
-
-              resetToCompose();
-            }}
-            onBackLabel={results.length > 1 ? "Compare" : "Edit trip"}
             onUseReturnTrip={(nextOrigin, nextDestination) => {
               applyLocation(nextOrigin, "origin");
               applyLocation(nextDestination, "destination");
@@ -458,17 +473,8 @@ export function RoutePlannerApp() {
 
         {pane === "saved" ? (
           <PlannerSavedPane
-            savedPlaces={memoryUiReady ? savedPlaces : []}
             recentTrips={memoryUiReady ? recentTrips : []}
-            currentOrigin={originValue}
-            currentDestination={destinationValue}
             onBack={resetToCompose}
-            onApplyPlace={(location, field) => {
-              applyLocation(location, field);
-              resetToCompose();
-            }}
-            onSavePlace={(slot, location) => savePlace(slot, location)}
-            onRemovePlace={(slot) => removePlace(slot)}
             onApplyTrip={(trip) => {
               applyLocation(trip.origin, "origin");
               applyLocation(trip.destination, "destination");

@@ -26,7 +26,7 @@ export interface RoadSnappedRoute {
 const routeGeometryCache = new Map<string, RoadSnappedRoute>();
 const MAX_CACHE_ENTRIES = 500;
 const REQUEST_TIMEOUT_MS = 3500;
-const DEFAULT_MAX_WAYPOINTS = 24;
+const MAX_WAYPOINTS = 24;
 const MAX_GEOMETRY_POINTS = 900;
 const SIMPLIFICATION_TOLERANCE_DEGREES = 0.00008;
 
@@ -42,14 +42,6 @@ function getGeoapifyMode(mode: TransportMode): GeoapifyMode | null {
     case "metro":
       return null;
   }
-}
-
-function getMaxWaypoints() {
-  const configured = Number(process.env.GEOAPIFY_ROUTING_MAX_WAYPOINTS);
-
-  return Number.isInteger(configured) && configured >= 2
-    ? configured
-    : DEFAULT_MAX_WAYPOINTS;
 }
 
 function coordinateKey([lat, lng]: [number, number]) {
@@ -203,13 +195,12 @@ export async function getRoadSnappedRoute(
 ) {
   const apiKey = process.env.GEOAPIFY_API_KEY?.trim();
   const geoapifyMode = getGeoapifyMode(mode);
-  const maxWaypoints = getMaxWaypoints();
 
   if (
     !apiKey ||
     !geoapifyMode ||
     coordinates.length < 2 ||
-    coordinates.length > maxWaypoints
+    coordinates.length > MAX_WAYPOINTS
   ) {
     return null;
   }

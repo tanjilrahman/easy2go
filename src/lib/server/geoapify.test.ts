@@ -25,11 +25,6 @@ describe("searchGeoapifyPlaces", () => {
     expect(fetchSpy).not.toHaveBeenCalled();
   }
 
-  it("returns no results when autocomplete is disabled", async () => {
-    vi.stubEnv("GEOAPIFY_AUTOCOMPLETE_ENABLED", "false");
-    await expectNoGeoapifyLookup();
-  });
-
   it("returns no results without an API key", async () => {
     vi.stubEnv("GEOAPIFY_API_KEY", "");
     await expectNoGeoapifyLookup();

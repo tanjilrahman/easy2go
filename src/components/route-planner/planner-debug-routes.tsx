@@ -20,15 +20,7 @@ export function PlannerDebugRoutes({ routes }: PlannerDebugRoutesProps) {
   }
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-4">
-      <div className="mb-3 flex items-center justify-between gap-3">
-        <div>
-          <p className="text-sm font-semibold text-foreground">Debug: all routes found</p>
-          <p className="text-xs text-muted-foreground">{routes.length} unique route candidates</p>
-        </div>
-      </div>
-
-      <div className="space-y-2">
+    <div className="space-y-2">
         {routes.map((route, index) => (
           <div
             key={`${route.id}-${index}`}
@@ -60,7 +52,6 @@ export function PlannerDebugRoutes({ routes }: PlannerDebugRoutesProps) {
             ) : null}
           </div>
         ))}
-      </div>
     </div>
   );
 }

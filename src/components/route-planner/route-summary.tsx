@@ -1,7 +1,7 @@
 import { Coins, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { formatBdt, getConfidenceTone, getRouteKindLabel, getRouteKindTone } from "@/lib/transport";
+import { formatBdt, getRouteKindLabel, getRouteKindTone } from "@/lib/transport";
 import { cn } from "@/lib/utils";
 import type { RouteOption } from "@/lib/validations/routes";
 
@@ -17,9 +17,6 @@ function RouteBadges({ route, label }: { route: RouteOption; label?: string }) {
       ) : null}
       <span className={cn(badgeClass, getRouteKindTone(route.kind))}>
         {getRouteKindLabel(route.kind)}
-      </span>
-      <span className={cn(badgeClass, getConfidenceTone(route.confidence))}>
-        {route.confidence}
       </span>
     </div>
   );

@@ -54,7 +54,7 @@ const DEFAULT_RASTER_STYLE: StyleSpecification = {
   ],
 };
 const DEFAULT_MAP_ATTRIBUTION =
-  "© OpenStreetMap contributors, © CARTO";
+  "© OpenStreetMap contributors, © OpenFreeMap, © OpenMapTiles";
 const DHAKA_CENTER_LNG_LAT: LngLatLike = [DHAKA_CENTER[1], DHAKA_CENTER[0]];
 const SOURCE_IDS = {
   routeLines: "easy2go-route-lines",
@@ -358,14 +358,6 @@ export function OpenMap({
     () => buildUserPointCollection(userCoordinates),
     [userCoordinates],
   );
-  const configuredMapStyleUrl = process.env.NEXT_PUBLIC_MAP_STYLE_URL?.trim();
-  const mapStyle = configuredMapStyleUrl || DEFAULT_RASTER_STYLE;
-  const configuredAttribution = process.env.NEXT_PUBLIC_MAP_ATTRIBUTION?.trim();
-  const attribution =
-    configuredMapStyleUrl && configuredAttribution
-      ? configuredAttribution
-      : DEFAULT_MAP_ATTRIBUTION;
-
   useEffect(() => {
     pickModeRef.current = pickMode ?? null;
     onPickLocationRef.current = onPickLocation;
@@ -386,7 +378,7 @@ export function OpenMap({
     const container = containerRef.current;
     const map = new maplibregl.Map({
       container,
-      style: mapStyle,
+      style: DEFAULT_RASTER_STYLE,
       center: DHAKA_CENTER_LNG_LAT,
       zoom: 12,
       attributionControl: false,
@@ -395,7 +387,7 @@ export function OpenMap({
     map.addControl(
       new maplibregl.AttributionControl({
         compact: true,
-        customAttribution: attribution,
+        customAttribution: DEFAULT_MAP_ATTRIBUTION,
       }),
       "bottom-right",
     );
@@ -437,7 +429,7 @@ export function OpenMap({
       map.remove();
       mapRef.current = null;
     };
-  }, [attribution, mapStyle]);
+  }, []);
 
   useEffect(() => {
     const map = mapRef.current;
