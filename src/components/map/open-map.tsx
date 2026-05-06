@@ -88,6 +88,13 @@ function makePointFeature(
   };
 }
 
+function formatMapLabel(label?: string | null): string {
+  if (!label) return "";
+  // Remove everything from the first Bengali character onwards or inside parentheses
+  // This avoids the MapLibre complex text shaping issues with Indic scripts
+  return label.split("(")[0].replace(/[\u0980-\u09FF].*$/, "").trim();
+}
+
 function buildRouteLineCollection(route?: RouteOption | null): FeatureCollection<LineString> {
   if (!route) {
     return makeEmptyCollection();
@@ -100,7 +107,7 @@ function buildRouteLineCollection(route?: RouteOption | null): FeatureCollection
       properties: {
         id: `${line.mode}-${index}`,
         mode: line.mode,
-        label: line.label ?? "",
+        label: formatMapLabel(line.label),
         confidence: line.confidence,
       },
       geometry: {
@@ -120,7 +127,7 @@ function buildRoutePointCollection(route?: RouteOption | null): FeatureCollectio
     type: "FeatureCollection",
     features: route.mapPreview.points.map((point) =>
       makePointFeature(point.coordinates, {
-        label: point.label,
+        label: formatMapLabel(point.label),
         role: point.role,
       }),
     ),
@@ -141,13 +148,13 @@ function buildSelectedPointCollection(
     features: [
       originSelection?.coordinates
         ? makePointFeature(originSelection.coordinates, {
-            label: originSelection.name,
+            label: formatMapLabel(originSelection.name),
             role: "origin",
           })
         : null,
       destinationSelection?.coordinates
         ? makePointFeature(destinationSelection.coordinates, {
-            label: destinationSelection.name,
+            label: formatMapLabel(destinationSelection.name),
             role: "destination",
           })
         : null,
@@ -196,6 +203,7 @@ function addMapLayers(map: MapLibreMap) {
     });
   }
 
+  // Soft shadow for depth
   if (!map.getLayer("easy2go-route-line-shadow")) {
     map.addLayer({
       id: "easy2go-route-line-shadow",
@@ -204,7 +212,8 @@ function addMapLayers(map: MapLibreMap) {
       paint: {
         "line-color": "rgba(15, 23, 42, 0.22)",
         "line-width": 8,
-        "line-blur": 1,
+        "line-blur": 2,
+        "line-translate": [0, 2],
       },
       layout: {
         "line-cap": "round",
@@ -213,6 +222,32 @@ function addMapLayers(map: MapLibreMap) {
     });
   }
 
+  // White outline casing
+  if (!map.getLayer("easy2go-route-line-casing")) {
+    map.addLayer({
+      id: "easy2go-route-line-casing",
+      type: "line",
+      source: SOURCE_IDS.routeLines,
+      paint: {
+        "line-color": "#ffffff",
+        "line-width": [
+          "match",
+          ["get", "mode"],
+          "walk",
+          5,
+          "rickshaw",
+          6,
+          7,
+        ],
+      },
+      layout: {
+        "line-cap": "round",
+        "line-join": "round",
+      },
+    });
+  }
+
+  // Bright core line
   if (!map.getLayer("easy2go-route-line")) {
     map.addLayer({
       id: "easy2go-route-line",
@@ -256,6 +291,31 @@ function addMapLayers(map: MapLibreMap) {
       layout: {
         "line-cap": "round",
         "line-join": "round",
+      },
+    });
+  }
+
+  // Add symbol layer for mode labels along the line
+  if (!map.getLayer("easy2go-route-line-labels")) {
+    map.addLayer({
+      id: "easy2go-route-line-labels",
+      type: "symbol",
+      source: SOURCE_IDS.routeLines,
+      layout: {
+        "symbol-placement": "line",
+        "text-field": ["case", ["!=", ["get", "label"], ""], ["get", "label"], ["get", "mode"]],
+        "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+        "text-size": 11,
+        "text-transform": "uppercase",
+        "text-letter-spacing": 0.05,
+        "text-keep-upright": true,
+        "symbol-spacing": 150,
+      },
+      paint: {
+        "text-color": "#1e293b",
+        "text-halo-color": "#ffffff",
+        "text-halo-width": 3,
+        "text-halo-blur": 1,
       },
     });
   }
@@ -323,6 +383,27 @@ function addMapLayers(map: MapLibreMap) {
           ],
           "circle-stroke-color": "#ffffff",
           "circle-stroke-width": 2,
+        },
+      });
+    }
+    
+    // Add point labels
+    if (!map.getLayer(`${config.id}-labels`) && config.id !== "easy2go-user-point") {
+      map.addLayer({
+        id: `${config.id}-labels`,
+        type: "symbol",
+        source: config.source,
+        layout: {
+          "text-field": ["get", "label"],
+          "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
+          "text-size": 11,
+          "text-offset": [0, 1.5],
+          "text-anchor": "top",
+        },
+        paint: {
+          "text-color": "#0f172a",
+          "text-halo-color": "#ffffff",
+          "text-halo-width": 3,
         },
       });
     }
