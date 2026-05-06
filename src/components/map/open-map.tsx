@@ -566,6 +566,19 @@ export function OpenMap({
 
   useEffect(() => {
     const map = mapRef.current;
+    if (!map || !userCoordinates) {
+      return;
+    }
+
+    map.flyTo({
+      center: toLngLat(userCoordinates),
+      zoom: 15,
+      duration: 900,
+    });
+  }, [userCoordinates]);
+
+  useEffect(() => {
+    const map = mapRef.current;
     if (!map) {
       return;
     }
