@@ -1611,7 +1611,7 @@
     "labels": ["Shishu Mela", "Shishu Mela (শিশু মেলা)", "শিশু মেলা"],
     "placeName": "Shishu Mela Bus Stop, Bus station",
     "address": "Shishu Mela Bus Stop, Bus station",
-    "coordinates": [23.7729988, 90.3674856],
+    "coordinates": [23.773196078021424, 90.3675653951199],
     "source": "osm:node/12514058864",
     "confidence": "verified"
   },
@@ -1651,7 +1651,7 @@
     "labels": ["Shyamoli", "Shyamoli (শ্যামলী)", "শ্যামলী"],
     "placeName": "Shyamoli Bus Station",
     "address": "Shyamoli Bus Station",
-    "coordinates": [23.8088054, 90.4214847],
+    "coordinates": [23.775037993899026, 90.36525145009597],
     "source": "osm:node/3803653181",
     "confidence": "verified"
   },
