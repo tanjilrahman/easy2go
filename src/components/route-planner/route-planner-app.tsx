@@ -342,17 +342,17 @@ export function RoutePlannerApp() {
       </div>
 
       {/* Map controls - redesigned as solid floating pills */}
-      <div className="absolute right-3 top-3 z-40 flex max-w-[calc(100vw-7.25rem)] items-center gap-1.5 rounded-xl border border-border bg-surface/95 p-1 shadow-lg backdrop-blur-sm sm:right-4 sm:top-4">
+      <div className="absolute right-3 top-3 z-40 flex max-w-[calc(100vw-7.25rem)] items-center gap-1 rounded-lg border border-border bg-surface/95 p-0.5 shadow-lg backdrop-blur-sm sm:right-4 sm:top-4 sm:gap-1.5 sm:rounded-xl sm:p-1">
         <button
           type="button"
           onClick={() => setMapPickMode((current) => (current === "origin" ? null : "origin"))}
-          className={`inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-bold transition ${
+          className={`inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-bold transition sm:h-9 sm:gap-1.5 sm:rounded-lg sm:px-2.5 ${
             mapPickMode === "origin"
               ? "bg-emerald-600 text-white shadow-md"
               : "text-foreground hover:bg-muted"
           }`}
         >
-          <LocateFixed className="h-4 w-4" />
+          <LocateFixed className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span className="hidden sm:inline">Current</span>
         </button>
         <button
@@ -360,23 +360,23 @@ export function RoutePlannerApp() {
           onClick={() =>
             setMapPickMode((current) => (current === "destination" ? null : "destination"))
           }
-          className={`inline-flex h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs font-bold transition ${
+          className={`inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-bold transition sm:h-9 sm:gap-1.5 sm:rounded-lg sm:px-2.5 ${
             mapPickMode === "destination"
               ? "bg-rose-500 text-white shadow-md"
               : "text-foreground hover:bg-muted"
           }`}
         >
-          <MapPin className="h-4 w-4" />
+          <MapPin className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           <span className="hidden sm:inline">Destination</span>
         </button>
         {mapPickMode ? (
           <button
             type="button"
             onClick={() => setMapPickMode(null)}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg text-muted-foreground transition hover:bg-muted"
+            className="inline-flex h-8 w-8 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted sm:h-9 sm:w-9 sm:rounded-lg"
             aria-label="Cancel map pick"
           >
-            <X className="h-4 w-4" />
+            <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
           </button>
         ) : null}
       </div>

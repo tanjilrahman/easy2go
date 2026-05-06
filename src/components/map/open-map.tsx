@@ -579,6 +579,62 @@ export function OpenMap({
 
   useEffect(() => {
     const map = mapRef.current;
+    if (!map || activeRoute || pickMode) {
+      return;
+    }
+
+    const coordinates: [number, number][] = [];
+    if (originSelection?.coordinates) {
+      coordinates.push(toLngLat(originSelection.coordinates));
+    }
+    if (destinationSelection?.coordinates) {
+      coordinates.push(toLngLat(destinationSelection.coordinates));
+    }
+
+    if (coordinates.length === 0) {
+      return;
+    }
+
+    if (coordinates.length === 1) {
+      map.flyTo({
+        center: coordinates[0],
+        zoom: 15,
+        duration: 700,
+      });
+      return;
+    }
+
+    const bounds = coordinates.reduce(
+      (nextBounds, coordinate) => nextBounds.extend(coordinate),
+      new maplibregl.LngLatBounds(coordinates[0], coordinates[0]),
+    );
+
+    const bottomPadding =
+      viewportBottomInsetPx && viewportBottomInsetPx > 0
+        ? Math.round(viewportBottomInsetPx + 24)
+        : Math.round(window.innerHeight * viewportPaddingRatio);
+
+    map.fitBounds(bounds as LngLatBoundsLike, {
+      padding: {
+        top: 80,
+        right: 36,
+        bottom: bottomPadding,
+        left: 36,
+      },
+      maxZoom: 15,
+      duration: 700,
+    });
+  }, [
+    activeRoute,
+    pickMode,
+    originSelection,
+    destinationSelection,
+    viewportBottomInsetPx,
+    viewportPaddingRatio,
+  ]);
+
+  useEffect(() => {
+    const map = mapRef.current;
     if (!map) {
       return;
     }
