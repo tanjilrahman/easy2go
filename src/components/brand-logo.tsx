@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function BrandLogo() {
   return (
-    <div className="relative h-[32px] w-[76px] sm:h-[38px] sm:w-[92px]">
+    <div className="relative h-[40px] w-[92px] sm:h-[48px] sm:w-[112px]">
       <Image
         src="/logo.png"
         alt="Easy2Go"

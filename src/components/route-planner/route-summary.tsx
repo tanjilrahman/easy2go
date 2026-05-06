@@ -77,22 +77,26 @@ export function RouteOverview({
   boardTextClassName = "text-xs",
   showParentStop = false,
   showStopChain = true,
+  showMapPreview = true,
 }: {
   route: RouteOption;
   label?: string;
   boardTextClassName?: string;
   showParentStop?: boolean;
   showStopChain?: boolean;
+  showMapPreview?: boolean;
 }) {
   return (
     <>
       <RouteBadges label={label} />
       <h3 className="font-display text-base font-semibold text-foreground tracking-tight">{route.summary}</h3>
-      <div className="mt-1 flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground">
-        <span className="truncate">{route.mapPreview.originLabel}</span>
-        <ArrowRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40" />
-        <span className="truncate">{route.mapPreview.destinationLabel}</span>
-      </div>
+      {showMapPreview ? (
+        <div className="mt-1 flex items-center gap-1.5 text-[13px] font-medium text-muted-foreground">
+          <span className="truncate">{route.mapPreview.originLabel}</span>
+          <ArrowRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground/40" />
+          <span className="truncate">{route.mapPreview.destinationLabel}</span>
+        </div>
+      ) : null}
       {showStopChain ? (
         <RouteStopChain route={route} className={boardTextClassName} />
       ) : null}

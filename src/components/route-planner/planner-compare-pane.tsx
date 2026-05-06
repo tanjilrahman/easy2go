@@ -41,7 +41,7 @@ function CompareRow({
     >
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
-          <RouteOverview route={route} label={label} />
+          <RouteOverview route={route} label={label} showMapPreview={false} />
           <div className="mt-2.5 flex items-center gap-3 text-xs">
             <RouteCoreMetrics route={route} durationIcon={Timer} transferIcon={History} />
           </div>

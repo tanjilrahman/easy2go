@@ -1808,7 +1808,7 @@ function createDirectBusRoute(
     id: `${leg.route.id}-${normalizeTransitText(leg.boardingLabel)}-${normalizeTransitText(leg.alightingLabel)}`,
     kind: "bus_direct",
     confidence: "verified",
-    summary: `${busName} direct`,
+    summary: busName,
     fareType: "advisory",
     fareText:
       metrics.totalCost !== undefined
@@ -2020,7 +2020,7 @@ function createMetroRoute(
     id: `${originStation.id}-${destinationStation.id}`,
     kind: "metro_direct",
     confidence: "exact",
-    summary: "Metro direct",
+    summary: "Metro",
     fareType: "exact",
     fareText:
       metrics.totalCost !== undefined
