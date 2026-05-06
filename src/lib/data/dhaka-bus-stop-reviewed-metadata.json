@@ -1611,7 +1611,7 @@
     "labels": ["Shishu Mela", "Shishu Mela (শিশু মেলা)", "শিশু মেলা"],
     "placeName": "Shishu Mela Bus Stop, Bus station",
     "address": "Shishu Mela Bus Stop, Bus station",
-    "coordinates": [23.773196078021424, 90.3675653951199],
+    "coordinates": [23.773176458810177, 90.36750737957313],
     "source": "osm:node/12514058864",
     "confidence": "verified"
   },
