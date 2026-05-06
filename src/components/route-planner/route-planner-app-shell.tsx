@@ -20,8 +20,8 @@ function RoutePlannerLoadingShell() {
   return (
     <main className="relative h-dvh min-h-[100svh] overflow-hidden bg-background">
       <div className="absolute inset-0 h-full w-full bg-background" />
-      <section className="absolute inset-x-0 bottom-0 z-30 px-3 pb-3 sm:px-4 sm:pb-4">
-        <div className="planner-pane mx-auto flex h-[46vh] w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-2xl sm:max-w-[min(70vw,34rem)]">
+      <section className="pointer-events-none absolute inset-x-0 bottom-0 z-30 px-3 pb-3 sm:px-4 sm:pb-4">
+        <div className="pointer-events-auto planner-pane mx-auto flex h-[46vh] w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-2xl sm:max-w-[min(70vw,34rem)]">
           <div className="flex h-full min-h-0 flex-col px-5 pb-5 pt-4">
             <div className="space-y-3 animate-pulse">
               <div className="space-y-2 px-1 py-1">

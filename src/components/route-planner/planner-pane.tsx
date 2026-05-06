@@ -54,13 +54,13 @@ export function PlannerPane({
   }, [onHeightChange]);
 
   return (
-    <section className={cn("absolute inset-x-0 bottom-0 z-30 px-3 pb-3 sm:px-4 sm:pb-4", className)}>
+    <section className={cn("pointer-events-none absolute inset-x-0 bottom-0 z-30 px-3 pb-3 sm:px-4 sm:pb-4", className)}>
       <motion.div
         ref={paneRef}
         layout
         transition={{ type: "spring", stiffness: 180, damping: 24 }}
         style={{ height: maxHeight, maxHeight }}
-        className="planner-pane mx-auto flex h-full w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-2xl sm:max-w-[min(70vw,34rem)]"
+        className="pointer-events-auto planner-pane mx-auto flex h-full w-[calc(100vw-24px)] max-w-none flex-col overflow-hidden rounded-2xl sm:max-w-[min(70vw,34rem)]"
       >
         {showHeader ? (
           <div className="flex items-start justify-between gap-3 border-b border-border px-5 pb-3 pt-4">
