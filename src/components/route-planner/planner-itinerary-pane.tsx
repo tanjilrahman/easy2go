@@ -121,6 +121,13 @@ export function PlannerItineraryPane({
               {route.segments.map((segment, index) => {
                 const isCompact = compactModes.has(segment.mode);
                 const serviceLabels = getSegmentServiceLabels(route, segment);
+                const connectorLabels: string[] =
+                  segment.connectorType === "long_rickshaw"
+                    ? ["Rickshaw", "Leguna"]
+                    : segment.connectorType === "rickshaw"
+                      ? ["Rickshaw"]
+                      : [];
+                const allLabels = [...connectorLabels, ...serviceLabels];
 
                 return (
                   <div
@@ -142,9 +149,9 @@ export function PlannerItineraryPane({
                               {segment.instruction}
                             </p>
                           </div>
-                          {serviceLabels.length ? (
+                          {allLabels.length ? (
                             <div className="mt-1.5 flex flex-wrap gap-1.5">
-                              {serviceLabels.map((service) => (
+                              {allLabels.map((service) => (
                                 <span
                                   key={service}
                                   className="rounded-lg border border-border bg-surface-strong px-2.5 py-1 text-[11px] font-medium text-primary"
@@ -209,8 +216,8 @@ export function PlannerItineraryPane({
                         <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs leading-5 text-amber-800">
                           <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                           <p>
-                            Long connector: this rickshaw hop is larger than the
-                            normal short-mile connector.
+                            Long connector: local shared transport could be
+                            available.
                           </p>
                         </div>
                       ) : null}

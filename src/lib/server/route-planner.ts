@@ -1005,7 +1005,7 @@ function createAccessLeg(
 function buildAccessSegment(leg: AccessLeg): RouteSegment {
   return {
     mode: leg.mode,
-    instruction: leg.mode === "walk" ? "Walk connector" : "Rickshaw connector",
+    instruction: leg.mode === "walk" ? "Walk connector" : "Local connector",
     startLocation: leg.startLocation,
     endLocation: leg.endLocation,
     note:
@@ -2070,7 +2070,7 @@ function createDirectBusRoute(
     id: `${leg.route.id}-${normalizeTransitText(leg.boardingLabel)}-${normalizeTransitText(leg.alightingLabel)}`,
     kind: "bus_direct",
     confidence: "verified",
-    summary: busName,
+    summary: `Bus \u00b7 ${busName}`,
     fareType: "advisory",
     fareText:
       metrics.totalCost !== undefined
@@ -2195,7 +2195,7 @@ function createTransferBusRoute(
     id: `${transfer.firstLeg.route.id}-${transfer.secondLeg.route.id}-${normalizeTransitText(transfer.transferLabel)}`,
     kind: "bus_transfer",
     confidence: "verified",
-    summary: `${firstBusName} -> ${secondBusName}`,
+    summary: `Transfer \u00b7 ${firstBusName} \u2192 ${secondBusName}`,
     fareType: "advisory",
     fareText: formatApproxFare(metrics.totalCost ?? totalFare),
     totalCost: metrics.totalCost,
@@ -2282,7 +2282,7 @@ function createMetroRoute(
     id: `${originStation.id}-${destinationStation.id}`,
     kind: "metro_direct",
     confidence: "exact",
-    summary: "Metro",
+    summary: "Metro \u00b7 MRT Line 6",
     fareType: "exact",
     fareText:
       metrics.totalCost !== undefined
@@ -2450,7 +2450,7 @@ function createBusMetroHybridRoute(
     id: `${busLeg.route.id}-${normalizeTransitText(busLeg.boardingLabel)}-${metroOrigin.id}-${metroDestinationStationId}`,
     kind: "bus_metro_hybrid",
     confidence: "verified",
-    summary: `${busName} -> MRT Line 6`,
+    summary: `Transfer \u00b7 ${busName} \u2192 MRT Line 6`,
     fareType: "advisory",
     fareText:
       metrics.totalCost !== undefined
@@ -2514,7 +2514,7 @@ function createMetroBusHybridRoute(
     id: `${metroOriginStationId}-${metroDestination.id}-${busLeg.route.id}-${normalizeTransitText(busLeg.alightingLabel)}`,
     kind: "bus_metro_hybrid",
     confidence: "verified",
-    summary: `MRT Line 6 -> ${busName}`,
+    summary: `Transfer \u00b7 MRT Line 6 \u2192 ${busName}`,
     fareType: "advisory",
     fareText:
       metrics.totalCost !== undefined
@@ -2721,7 +2721,7 @@ function dedupeRoutes(routes: RouteOption[]) {
         : existing;
     const mergedSummary =
       mergedServiceLabels.length > 1 && mergedRoute.kind === "bus_direct"
-        ? `${mergedRoute.primaryServiceLabel ?? mergedServiceLabels[0]} + ${mergedServiceLabels.length - 1} more direct`
+        ? `Bus \u00b7 ${mergedRoute.primaryServiceLabel ?? mergedServiceLabels[0]} (+${mergedServiceLabels.length - 1})`
         : mergedRoute.summary;
     const mergedBusInstruction =
       mergedServiceLabels.length > 1 && mergedRoute.kind === "bus_direct"
