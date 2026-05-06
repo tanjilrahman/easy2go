@@ -165,6 +165,7 @@ const SURFACE_DIVERSITY_MAX_SCORE_GAP = 45;
 const PURPOSEFUL_LONG_CONNECTOR_MIN_KM = 1.1;
 const PURPOSEFUL_LONG_CONNECTOR_MAX_KM = 9;
 const TRANSFER_SEARCH_PAIR_LIMIT = 8;
+const TRANSFER_PATH_RESULT_LIMIT = 8;
 const TRANSIT_IMPORTANCE_SCORE_MULTIPLIER = 0.08;
 const DIRECT_MATCH_CANDIDATE_BONUS = 20;
 
@@ -1939,7 +1940,7 @@ function findDirectBusLegs(
     }
   }
 
-  return legs.slice(0, 8);
+  return legs;
 }
 
 function cachedFindDirectBusLegs(
@@ -2016,6 +2017,31 @@ function findSecondRouteTransferMatches(
 
   return matches.sort(
     (left, right) => (left.walkDistanceKm ?? 0) - (right.walkDistanceKm ?? 0),
+  );
+}
+
+function transferPathKey(transfer: BusTransfer) {
+  return [
+    normalizeTransitText(transfer.firstLeg.boardingLabel),
+    normalizeTransitText(transfer.firstLeg.alightingLabel),
+    normalizeTransitText(transfer.secondLeg.boardingLabel),
+    normalizeTransitText(transfer.secondLeg.alightingLabel),
+  ].join(">");
+}
+
+function selectTransferBusLegs(transfers: BusTransfer[]) {
+  const selectedPathKeys = new Set<string>();
+
+  for (const transfer of transfers) {
+    selectedPathKeys.add(transferPathKey(transfer));
+
+    if (selectedPathKeys.size >= TRANSFER_PATH_RESULT_LIMIT) {
+      break;
+    }
+  }
+
+  return transfers.filter((transfer) =>
+    selectedPathKeys.has(transferPathKey(transfer)),
   );
 }
 
@@ -2119,14 +2145,20 @@ function findTransferBusLegs(
           break;
         }
 
-        if (transfers.length >= 24) {
-          break;
-        }
       }
     }
   }
 
-  return transfers.slice(0, 8);
+  return selectTransferBusLegs(transfers);
+}
+
+function getBusLegServiceLabels(leg: BusLeg) {
+  const labels = cachedFindDirectBusLegs(
+    [leg.boardingLabel],
+    [leg.alightingLabel],
+  ).map((candidate) => getBusDisplayName(candidate.route));
+
+  return labels.length ? dedupeStrings(labels) : [getBusDisplayName(leg.route)];
 }
 
 function createDirectBusRoute(
@@ -2135,6 +2167,9 @@ function createDirectBusRoute(
   destination: TransitCandidate,
 ) {
   const busName = getBusDisplayName(leg.route);
+  const busServiceLabels = getBusLegServiceLabels(leg);
+  const instruction =
+    buildMergedSegmentInstruction(busServiceLabels) ?? `Board ${busName}`;
   const distanceKm = estimateBusLegDistanceKm(leg);
   const durationMinutes = estimateBusDurationMinutes(distanceKm, leg.stopCount);
   const fare = estimateBusFareBdt(distanceKm, leg.stopCount);
@@ -2146,7 +2181,7 @@ function createDirectBusRoute(
   const segments = withAccessSegments(origin, destination, [
     {
       mode: "bus",
-      instruction: `Board ${busName}`,
+      instruction,
       startLocation: leg.boardingLabel,
       endLocation: leg.alightingLabel,
       note: "Bus route verified from the Dhaka bus stop-order dataset.",
@@ -2159,6 +2194,7 @@ function createDirectBusRoute(
       pricingConfidence: "regulated_estimate",
       costLowBdt: fare,
       costHighBdt: fare,
+      serviceLabels: busServiceLabels,
     },
   ]);
 
@@ -2180,7 +2216,7 @@ function createDirectBusRoute(
     boarding: makeStopReference(leg.boardingLabel),
     alighting: makeStopReference(leg.alightingLabel),
     transferStops: [],
-    serviceLabels: [busName],
+    serviceLabels: busServiceLabels,
     primaryServiceLabel: busName,
     segments,
     mapPreview: buildMapPreview(
@@ -2199,6 +2235,14 @@ function createTransferBusRoute(
 ) {
   const firstBusName = getBusDisplayName(transfer.firstLeg.route);
   const secondBusName = getBusDisplayName(transfer.secondLeg.route);
+  const firstBusServiceLabels = getBusLegServiceLabels(transfer.firstLeg);
+  const secondBusServiceLabels = getBusLegServiceLabels(transfer.secondLeg);
+  const firstBusInstruction =
+    buildMergedSegmentInstruction(firstBusServiceLabels) ??
+    `Board ${firstBusName}`;
+  const secondBusInstruction =
+    buildMergedSegmentInstruction(secondBusServiceLabels) ??
+    `Board ${secondBusName}`;
   const firstDistanceKm = estimateBusLegDistanceKm(transfer.firstLeg);
   const secondDistanceKm = estimateBusLegDistanceKm(transfer.secondLeg);
   const firstDurationMinutes = estimateBusDurationMinutes(
@@ -2241,7 +2285,7 @@ function createTransferBusRoute(
     ...(origin.accessLeg ? [buildAccessSegment(origin.accessLeg)] : []),
     {
       mode: "bus",
-      instruction: `Board ${firstBusName}`,
+      instruction: firstBusInstruction,
       startLocation: transfer.firstLeg.boardingLabel,
       endLocation: transfer.firstLeg.alightingLabel,
       fareText: formatApproxFare(firstFare),
@@ -2252,6 +2296,7 @@ function createTransferBusRoute(
       pricingConfidence: "regulated_estimate",
       costLowBdt: firstFare,
       costHighBdt: firstFare,
+      serviceLabels: firstBusServiceLabels,
     },
     {
       mode: "walk",
@@ -2266,7 +2311,7 @@ function createTransferBusRoute(
     },
     {
       mode: "bus",
-      instruction: `Board ${secondBusName}`,
+      instruction: secondBusInstruction,
       startLocation: transfer.secondLeg.boardingLabel,
       endLocation: transfer.secondLeg.alightingLabel,
       fareText: formatApproxFare(secondFare),
@@ -2277,6 +2322,7 @@ function createTransferBusRoute(
       pricingConfidence: "regulated_estimate",
       costLowBdt: secondFare,
       costHighBdt: secondFare,
+      serviceLabels: secondBusServiceLabels,
     },
     ...(destination.accessLeg
       ? [buildAccessSegment(destination.accessLeg)]
@@ -2300,7 +2346,7 @@ function createTransferBusRoute(
     boarding: makeStopReference(transfer.firstLeg.boardingLabel),
     alighting: makeStopReference(transfer.secondLeg.alightingLabel),
     transferStops: [makeStopReference(transfer.transferLabel, "hub")],
-    serviceLabels: [firstBusName, secondBusName],
+    serviceLabels: mergeUniqueStrings(firstBusServiceLabels, secondBusServiceLabels),
     primaryServiceLabel: firstBusName,
     segments,
     mapPreview: buildMapPreview(
@@ -2447,17 +2493,21 @@ function makeMetroSegment(
     pricingConfidence: "exact",
     costLowBdt: fare,
     costHighBdt: fare,
+    serviceLabels: ["MRT Line 6"],
   };
 }
 
 function makeBusSegment(leg: BusLeg): RouteSegment {
   const busName = getBusDisplayName(leg.route);
+  const busServiceLabels = getBusLegServiceLabels(leg);
+  const instruction =
+    buildMergedSegmentInstruction(busServiceLabels) ?? `Board ${busName}`;
   const distanceKm = estimateBusLegDistanceKm(leg);
   const fare = estimateBusFareBdt(distanceKm, leg.stopCount);
 
   return {
     mode: "bus",
-    instruction: `Board ${busName}`,
+    instruction,
     startLocation: leg.boardingLabel,
     endLocation: leg.alightingLabel,
     note: "Bus route verified from the Dhaka bus stop-order dataset.",
@@ -2473,6 +2523,7 @@ function makeBusSegment(leg: BusLeg): RouteSegment {
     pricingConfidence: "regulated_estimate",
     costLowBdt: fare,
     costHighBdt: fare,
+    serviceLabels: busServiceLabels,
   };
 }
 
@@ -2782,6 +2833,11 @@ function collectRoutes(
   return routes;
 }
 
+function buildMergedSegmentInstruction(labels: string[]): string | undefined {
+  if (labels.length <= 1) return undefined;
+  return `Board ${labels[0]} or ${labels.length - 1} other service${labels.length > 2 ? "s" : ""}`;
+}
+
 function dedupeRoutes(routes: RouteOption[]) {
   const bySignature = new Map<string, RouteOption>();
 
@@ -2802,34 +2858,43 @@ function dedupeRoutes(routes: RouteOption[]) {
       (existing.estimatedDurationMinutes ?? 0)
         ? route
         : existing;
-    const mergedSummary =
-      mergedServiceLabels.length > 1 && mergedRoute.kind === "bus_direct"
-        ? `Bus \u00b7 ${mergedRoute.primaryServiceLabel ?? mergedServiceLabels[0]} (+${mergedServiceLabels.length - 1})`
-        : mergedRoute.summary;
-    const mergedBusInstruction =
-      mergedServiceLabels.length > 1 && mergedRoute.kind === "bus_direct"
-        ? `Board ${mergedRoute.primaryServiceLabel ?? mergedServiceLabels[0]} or ${mergedServiceLabels.length - 1} other service${mergedServiceLabels.length > 2 ? "s" : ""}`
-        : undefined;
-    const mergedSegments = mergedBusInstruction
-      ? mergedRoute.segments.map((segment) =>
-          segment.mode === "bus"
-            ? {
-                ...segment,
-                instruction: mergedBusInstruction,
-              }
-            : segment,
-        )
-      : mergedRoute.segments;
-    const mergedMapPreview = mergedBusInstruction
-      ? {
-          ...mergedRoute.mapPreview,
-          lines: mergedRoute.mapPreview.lines.map((line) =>
-            line.mode === "bus"
-              ? { ...line, label: mergedBusInstruction }
-              : line,
-          ),
-        }
-      : mergedRoute.mapPreview;
+
+    // Merge segment-level service labels and update instructions
+    const mergedSegments = mergedRoute.segments.map((segment, index) => {
+      const existingLabels = existing.segments[index]?.serviceLabels ?? [];
+      const routeLabels = route.segments[index]?.serviceLabels ?? [];
+      const labels = mergeUniqueStrings(existingLabels, routeLabels);
+      if (labels.length <= 1) {
+        return { ...segment, serviceLabels: labels };
+      }
+      const instruction =
+        buildMergedSegmentInstruction(labels) ?? segment.instruction;
+      return { ...segment, instruction, serviceLabels: labels };
+    });
+
+    // Rebuild map preview from merged segments so line labels stay in sync
+    const mergedMapPreview = buildMapPreview(
+      mergedRoute.mapPreview.originLabel,
+      mergedRoute.mapPreview.destinationLabel,
+      mergedSegments,
+      mergedRoute.mapPreview.originCoordinates,
+      mergedRoute.mapPreview.destinationCoordinates,
+    );
+
+    // Count extra bus services across all bus segments
+    const busSegmentLabels = mergedSegments
+      .filter((s) => s.mode === "bus")
+      .map((s) => s.serviceLabels);
+    const extraBusServices = busSegmentLabels.reduce(
+      (sum, labels) => sum + Math.max(0, labels.length - 1),
+      0,
+    );
+
+    let mergedSummary = mergedRoute.summary;
+    if (extraBusServices > 0) {
+      const baseSummary = mergedRoute.summary.replace(/\s*\(\+\d+\)$/, "");
+      mergedSummary = `${baseSummary} (+${extraBusServices})`;
+    }
 
     bySignature.set(
       route.pathSignature,

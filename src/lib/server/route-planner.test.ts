@@ -173,6 +173,84 @@ describe("surfaceRoutes", () => {
     expect(routes.map((route) => route.id)).toContain("sprint");
     expect(routes.every((route) => route.connectorBurden)).toBe(true);
   });
+
+  it("merges service labels per bus leg on equivalent transfer routes", () => {
+    const transferA = makeRoute({
+      id: "transfer-a",
+      kind: "bus_transfer",
+      summary: "Bus · First A → Second A",
+      transferCount: 1,
+      serviceLabels: ["First A", "Second A"],
+      primaryServiceLabel: "First A",
+      transferStops: [{ label: "Shahbag", type: "hub" }],
+      segments: [
+        {
+          mode: "bus",
+          instruction: "Board First A",
+          startLocation: "Farmgate",
+          endLocation: "Shahbag",
+          serviceLabels: ["First A"],
+        },
+        {
+          mode: "walk",
+          instruction: "Change buses",
+          startLocation: "Shahbag",
+          endLocation: "Shahbag",
+        },
+        {
+          mode: "bus",
+          instruction: "Board Second A",
+          startLocation: "Shahbag",
+          endLocation: "Motijheel",
+          serviceLabels: ["Second A"],
+        },
+      ],
+    });
+    const transferB = makeRoute({
+      id: "transfer-b",
+      kind: "bus_transfer",
+      summary: "Bus · First B → Second B",
+      transferCount: 1,
+      serviceLabels: ["First B", "Second B"],
+      primaryServiceLabel: "First B",
+      transferStops: [{ label: "Shahbag", type: "hub" }],
+      segments: [
+        {
+          mode: "bus",
+          instruction: "Board First B",
+          startLocation: "Farmgate",
+          endLocation: "Shahbag",
+          serviceLabels: ["First B"],
+        },
+        {
+          mode: "walk",
+          instruction: "Change buses",
+          startLocation: "Shahbag",
+          endLocation: "Shahbag",
+        },
+        {
+          mode: "bus",
+          instruction: "Board Second B",
+          startLocation: "Shahbag",
+          endLocation: "Motijheel",
+          serviceLabels: ["Second B"],
+        },
+      ],
+    });
+
+    const route = surfaceRoutes([transferA, transferB], "recommended")[0];
+    const busSegments = route?.segments.filter((segment) => segment.mode === "bus");
+
+    expect(route?.serviceLabels).toEqual(
+      expect.arrayContaining(["First A", "Second A", "First B", "Second B"]),
+    );
+    expect(busSegments?.[0]?.serviceLabels).toEqual(
+      expect.arrayContaining(["First A", "First B"]),
+    );
+    expect(busSegments?.[1]?.serviceLabels).toEqual(
+      expect.arrayContaining(["Second A", "Second B"]),
+    );
+  });
 });
 
 describe("calculateRoutes", () => {
@@ -321,6 +399,53 @@ describe("calculateRoutes", () => {
     expect(route?.mapPreview.lines.length).toBeGreaterThan(0);
     expect(route?.mapPreview.lines.map((line) => line.mode)).toEqual(
       expect.arrayContaining(route?.segments.map((segment) => segment.mode) ?? []),
+    );
+  });
+
+  it("keeps all bus services that share the same direct corridor", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "");
+    const originLabel = "Kuril Bishwa Road";
+    const destinationLabel = "Airport";
+    const expectedServices = dhakaBusSeedRoutes
+      .filter((route) => {
+        const boardingIndex = route.stopLabels.findIndex((label) =>
+          label.startsWith(originLabel),
+        );
+        const alightingIndex = route.stopLabels.findIndex((label) =>
+          label.startsWith(destinationLabel),
+        );
+
+        return boardingIndex >= 0 && alightingIndex > boardingIndex;
+      })
+      .map((route) => route.busLabelEn);
+
+    const response = await calculateRoutes({
+      origin: {
+        name: originLabel,
+        canonicalId: "stop-kuril-bishwa-road",
+        type: "bus_stop",
+      },
+      destination: {
+        name: destinationLabel,
+        canonicalId: "stop-airport",
+        type: "bus_stop",
+      },
+      optimization: "recommended",
+    });
+    const route = response.routes.find((candidate) =>
+      candidate.segments.some(
+        (segment) =>
+          segment.mode === "bus" &&
+          segment.startLocation.startsWith(originLabel) &&
+          segment.endLocation.startsWith(destinationLabel),
+      ),
+    );
+    const busSegment = route?.segments.find((segment) => segment.mode === "bus");
+
+    expect(expectedServices.length).toBeGreaterThan(8);
+    expect(route?.serviceLabels).toEqual(expect.arrayContaining(expectedServices));
+    expect(busSegment?.serviceLabels).toEqual(
+      expect.arrayContaining(expectedServices),
     );
   });
 

@@ -154,6 +154,7 @@ const routeSegmentSchema = z.object({
   pricingConfidence: pricingConfidenceSchema.optional(),
   costLowBdt: z.number().int().nonnegative().optional(),
   costHighBdt: z.number().int().nonnegative().optional(),
+  serviceLabels: z.array(z.string()).optional(),
 });
 
 export type RouteSegment = z.infer<typeof routeSegmentSchema>;

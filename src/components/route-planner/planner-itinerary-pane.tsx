@@ -66,6 +66,10 @@ function getSegmentServiceLabels(
   route: RouteOption,
   segment: RouteOption["segments"][number],
 ) {
+  if (segment.serviceLabels?.length) {
+    return segment.serviceLabels;
+  }
+
   const normalizedInstruction = segment.instruction.toLowerCase();
 
   return route.serviceLabels.filter((service) => {

@@ -50,15 +50,31 @@ describe("transit resolver bus stop metadata", () => {
     expect(busStopNames).not.toContain("Sony Hall / Mirpur 1");
   });
 
-  it("uses local suggestions without external autocomplete when local coverage is strong", async () => {
+  it("uses local suggestions without external autocomplete when local coverage is very strong", async () => {
     vi.stubEnv("GEOAPIFY_API_KEY", "test-key");
     const fetchSpy = vi.fn();
     global.fetch = fetchSpy as typeof fetch;
 
     const suggestions = await searchMixedLocationSuggestions("mirpur 1");
 
-    expect(suggestions.length).toBeGreaterThanOrEqual(4);
+    expect(suggestions.length).toBeGreaterThanOrEqual(6);
     expect(fetchSpy).not.toHaveBeenCalled();
+  });
+
+  it("tries Geoapify when local coverage is useful but below the strong-local cutoff", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "test-key");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({ features: [] }),
+    }) as typeof fetch;
+
+    const localSuggestions = searchLocalTransitSuggestions("technical mor");
+
+    expect(localSuggestions.length).toBeLessThan(6);
+
+    await searchMixedLocationSuggestions("technical mor");
+
+    expect(global.fetch).toHaveBeenCalled();
   });
 
   it("falls back to Geoapify autocomplete for unknown typed places", async () => {

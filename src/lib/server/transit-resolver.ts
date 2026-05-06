@@ -102,6 +102,7 @@ const localSuggestionCatalog = [...metroPoints, ...busStopPoints];
 const coordinateCandidates = localSuggestionCatalog.filter(
   (point) => point.coordinates,
 );
+const GEOAPIFY_FALLBACK_LOCAL_RESULT_THRESHOLD = 6;
 
 function textScore(query: string, values: string[]) {
   const normalizedQuery = normalizeTransitText(query);
@@ -242,7 +243,11 @@ export function searchLocalTransitSuggestions(query: string) {
 export async function searchMixedLocationSuggestions(query: string) {
   const localSuggestions = searchLocalTransitSuggestions(query);
 
-  if (!isGeoapifyAutocompleteEnabled() || localSuggestions.length >= 4 || query.trim().length < 3) {
+  if (
+    !isGeoapifyAutocompleteEnabled() ||
+    localSuggestions.length >= GEOAPIFY_FALLBACK_LOCAL_RESULT_THRESHOLD ||
+    query.trim().length < 3
+  ) {
     return dedupeSuggestions(localSuggestions).slice(0, 8);
   }
 
