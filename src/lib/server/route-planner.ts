@@ -175,7 +175,7 @@ const HYBRID_BRIDGE_STATION_LIMIT = 2;
 
 // User-facing route notes/service windows.
 const LONG_CONNECTOR_SHARED_TRANSPORT_NOTE =
-  "Long connector may work better where local shared transport is available.";
+  "Long connector: local shared transport could be available.";
 const METRO_SERVICE_WINDOW_TEXT =
   "Weekdays & Sat/holidays: Uttara North 06:30-21:30, Motijheel 07:15-22:10 | Friday: Uttara North 15:00-21:00, Motijheel 15:20-21:40";
 
@@ -656,7 +656,8 @@ function selectRouteForProfile(
   const familyDiverseRoutes = selectedRoutes.length
     ? availableRoutes.filter((route) => {
         const score =
-          profileScore(route, profile) + diversityPenalty(route, selectedRoutes);
+          profileScore(route, profile) +
+          diversityPenalty(route, selectedRoutes);
 
         return (
           !selectedFamilies.has(routeModeFamily(route)) &&
@@ -681,15 +682,16 @@ function selectRouteForProfile(
     ? familyDiverseRoutes
     : corridorDiverseRoutes;
 
-  return (diverseRoutes.length ? diverseRoutes : availableRoutes)
-    .sort((left, right) => {
+  return (diverseRoutes.length ? diverseRoutes : availableRoutes).sort(
+    (left, right) => {
       const leftScore =
         profileScore(left, profile) + diversityPenalty(left, selectedRoutes);
       const rightScore =
         profileScore(right, profile) + diversityPenalty(right, selectedRoutes);
 
       return leftScore - rightScore || scoreTieBreaker(left, right);
-    })[0];
+    },
+  )[0];
 }
 
 function annotateSurfaceRoute(route: RouteOption, profile: ScoreProfile) {
@@ -767,8 +769,7 @@ function findComparableMetroRoute(
     .sort(
       (left, right) =>
         left.score - right.score || scoreTieBreaker(left.route, right.route),
-    )[0]
-    ?.route;
+    )[0]?.route;
 }
 
 function diversifySurfaceRoutes(
@@ -1498,19 +1499,18 @@ function findStrategicMetroCandidates(
     return [];
   }
 
-  return DHAKA_METRO_STATIONS
-    .map((station) => {
-      const point = makeMetroTransitPoint(station);
-      const distanceKm = station.coordinates
-        ? haversineDistanceKm(placeCoordinates, station.coordinates)
-        : Number.MAX_SAFE_INTEGER;
+  return DHAKA_METRO_STATIONS.map((station) => {
+    const point = makeMetroTransitPoint(station);
+    const distanceKm = station.coordinates
+      ? haversineDistanceKm(placeCoordinates, station.coordinates)
+      : Number.MAX_SAFE_INTEGER;
 
-      return {
-        point,
-        distanceKm,
-        candidate: buildCandidate(point, resolution, role),
-      };
-    })
+    return {
+      point,
+      distanceKm,
+      candidate: buildCandidate(point, resolution, role),
+    };
+  })
     .filter(
       (item) =>
         Number.isFinite(item.distanceKm) &&
@@ -2287,7 +2287,7 @@ function createTransferBusRoute(
     id: `${transfer.firstLeg.route.id}-${transfer.secondLeg.route.id}-${normalizeTransitText(transfer.transferLabel)}`,
     kind: "bus_transfer",
     confidence: "verified",
-    summary: `Transfer \u00b7 ${firstBusName} \u2192 ${secondBusName}`,
+    summary: `Bus \u00b7 ${firstBusName} \u2192 ${secondBusName}`,
     fareType: "advisory",
     fareText: formatMetricsFare(metrics, "advisory"),
     totalCost: metrics.totalCost,
@@ -2799,7 +2799,7 @@ function dedupeRoutes(routes: RouteOption[]) {
     );
     const mergedRoute =
       (route.estimatedDurationMinutes ?? 0) <
-        (existing.estimatedDurationMinutes ?? 0)
+      (existing.estimatedDurationMinutes ?? 0)
         ? route
         : existing;
     const mergedSummary =
@@ -2810,22 +2810,23 @@ function dedupeRoutes(routes: RouteOption[]) {
       mergedServiceLabels.length > 1 && mergedRoute.kind === "bus_direct"
         ? `Board ${mergedRoute.primaryServiceLabel ?? mergedServiceLabels[0]} or ${mergedServiceLabels.length - 1} other service${mergedServiceLabels.length > 2 ? "s" : ""}`
         : undefined;
-    const mergedSegments =
-      mergedBusInstruction
-        ? mergedRoute.segments.map((segment) =>
-            segment.mode === "bus"
-              ? {
-                  ...segment,
-                  instruction: mergedBusInstruction,
-                }
-              : segment,
-          )
-        : mergedRoute.segments;
+    const mergedSegments = mergedBusInstruction
+      ? mergedRoute.segments.map((segment) =>
+          segment.mode === "bus"
+            ? {
+                ...segment,
+                instruction: mergedBusInstruction,
+              }
+            : segment,
+        )
+      : mergedRoute.segments;
     const mergedMapPreview = mergedBusInstruction
       ? {
           ...mergedRoute.mapPreview,
           lines: mergedRoute.mapPreview.lines.map((line) =>
-            line.mode === "bus" ? { ...line, label: mergedBusInstruction } : line,
+            line.mode === "bus"
+              ? { ...line, label: mergedBusInstruction }
+              : line,
           ),
         }
       : mergedRoute.mapPreview;
