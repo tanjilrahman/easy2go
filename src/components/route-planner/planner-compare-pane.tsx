@@ -1,10 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowRight, ChevronDown, ChevronUp, Route } from "lucide-react";
+import { ArrowRight, ChevronDown, ChevronUp, History, Route, Timer } from "lucide-react";
 
 import { PlannerDebugRoutes } from "@/components/route-planner/planner-debug-routes";
-import { RouteOverview } from "@/components/route-planner/route-summary";
+import { RouteCoreMetrics, RouteOverview } from "@/components/route-planner/route-summary";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import type { RouteOption } from "@/lib/validations/routes";
@@ -42,13 +42,12 @@ function CompareRow({
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0 flex-1">
           <RouteOverview route={route} label={label} />
+          <div className="mt-2.5 flex items-center gap-3 text-xs">
+            <RouteCoreMetrics route={route} durationIcon={Timer} transferIcon={History} />
+          </div>
         </div>
         <ArrowRight className="mt-1 h-5 w-5 shrink-0 text-muted-foreground/50" />
       </div>
-
-      {route.tradeoffs.length ? (
-        <p className="mt-2 text-xs text-muted-foreground">{route.tradeoffs[0]}</p>
-      ) : null}
     </button>
   );
 }

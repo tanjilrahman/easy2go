@@ -29,18 +29,21 @@ const tones: Record<TransportMode, string> = {
 export function TransportIcon({
   mode,
   size = "md",
+  className,
 }: {
   mode: TransportMode;
   size?: "sm" | "md";
+  className?: string;
 }) {
   const Icon = icons[mode];
 
   return (
     <div
       className={cn(
-        "flex items-center justify-center rounded-xl",
+        "flex items-center justify-center rounded-xl shrink-0",
         tones[mode],
         size === "sm" ? "h-9 w-9" : "h-11 w-11",
+        className
       )}
     >
       <Icon className={size === "sm" ? "h-4 w-4" : "h-5 w-5"} />
