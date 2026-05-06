@@ -148,6 +148,11 @@ const BASE_TRANSIT_CANDIDATE_LIMIT = 4;
 const PURPOSEFUL_LONG_CONNECTOR_LIMIT = 2;
 const ROUTE_USEFUL_CANDIDATE_LIMIT = 4;
 const ROUTE_USEFUL_SOURCE_SCAN_LIMIT = 16;
+const METRO_CANDIDATE_LIMIT = 2;
+const METRO_CANDIDATE_MAX_CONNECTOR_KM = 8;
+const METRO_SURFACE_MAX_SCORE_MULTIPLIER = 1.35;
+const METRO_SURFACE_MAX_EXTRA_MINUTES = 18;
+const SURFACE_DIVERSITY_MAX_SCORE_GAP = 45;
 const PURPOSEFUL_LONG_CONNECTOR_MIN_KM = 1.1;
 const PURPOSEFUL_LONG_CONNECTOR_MAX_KM = 9;
 const TRANSFER_SEARCH_PAIR_LIMIT = 8;
@@ -458,6 +463,44 @@ function routeServiceKey(route: RouteOption) {
   );
 }
 
+function routeModeFamily(route: RouteOption) {
+  if (route.segments.some((segment) => segment.mode === "metro")) {
+    return "metro";
+  }
+
+  if (route.transferCount > 0) {
+    return "transfer";
+  }
+
+  return route.kind;
+}
+
+function transitSegmentEndCoordinates(route: RouteOption) {
+  const transitSegment = route.segments
+    .filter((segment) => segment.mode === "bus" || segment.mode === "metro")
+    .at(-1);
+
+  if (!transitSegment) {
+    return undefined;
+  }
+
+  return findLabelCoordinates(transitSegment.endLocation);
+}
+
+function routeCorridorKey(route: RouteOption) {
+  const coordinates = transitSegmentEndCoordinates(route);
+
+  if (!coordinates) {
+    return normalizeTransitText(route.alighting.label);
+  }
+
+  return [
+    routeModeFamily(route),
+    Math.round(coordinates[0] / 0.015),
+    Math.round(coordinates[1] / 0.015),
+  ].join(":");
+}
+
 function mergeUniqueStrings(...groups: string[][]) {
   return Array.from(new Set(groups.flat().filter(Boolean)));
 }
@@ -466,6 +509,8 @@ function diversityPenalty(route: RouteOption, selectedRoutes: RouteOption[]) {
   let penalty = 0;
   const key = routeDiversityKey(route);
   const serviceKey = routeServiceKey(route);
+  const modeFamily = routeModeFamily(route);
+  const corridorKey = routeCorridorKey(route);
 
   for (const selected of selectedRoutes) {
     if (routeDiversityKey(selected) === key) {
@@ -478,6 +523,14 @@ function diversityPenalty(route: RouteOption, selectedRoutes: RouteOption[]) {
 
     if (selected.kind === route.kind) {
       penalty += 4;
+    }
+
+    if (routeModeFamily(selected) === modeFamily) {
+      penalty += 18;
+    }
+
+    if (routeCorridorKey(selected) === corridorKey) {
+      penalty += 55;
     }
   }
 
@@ -513,13 +566,49 @@ function selectRouteForProfile(
   profile: ScoreProfile,
   selectedRoutes: RouteOption[],
 ) {
-  return [...routes]
-    .filter(
+  const availableRoutes = routes.filter(
+    (route) =>
+      !selectedRoutes.some(
+        (selected) => selected.pathSignature === route.pathSignature,
+      ),
+  );
+  const selectedFamilies = new Set(selectedRoutes.map(routeModeFamily));
+  const selectedCorridors = new Set(selectedRoutes.map(routeCorridorKey));
+  const bestAvailableScore = Math.min(
+    ...availableRoutes.map(
       (route) =>
-        !selectedRoutes.some(
-          (selected) => selected.pathSignature === route.pathSignature,
-        ),
-    )
+        profileScore(route, profile) + diversityPenalty(route, selectedRoutes),
+    ),
+  );
+  const familyDiverseRoutes = selectedRoutes.length
+    ? availableRoutes.filter((route) => {
+        const score =
+          profileScore(route, profile) + diversityPenalty(route, selectedRoutes);
+
+        return (
+          !selectedFamilies.has(routeModeFamily(route)) &&
+          score <= bestAvailableScore + SURFACE_DIVERSITY_MAX_SCORE_GAP
+        );
+      })
+    : [];
+  const corridorDiverseRoutes =
+    selectedRoutes.length && !familyDiverseRoutes.length
+      ? availableRoutes.filter((route) => {
+          const score =
+            profileScore(route, profile) +
+            diversityPenalty(route, selectedRoutes);
+
+          return (
+            !selectedCorridors.has(routeCorridorKey(route)) &&
+            score <= bestAvailableScore + SURFACE_DIVERSITY_MAX_SCORE_GAP
+          );
+        })
+      : [];
+  const diverseRoutes = familyDiverseRoutes.length
+    ? familyDiverseRoutes
+    : corridorDiverseRoutes;
+
+  return (diverseRoutes.length ? diverseRoutes : availableRoutes)
     .sort((left, right) => {
       const leftScore =
         profileScore(left, profile) + diversityPenalty(left, selectedRoutes);
@@ -554,6 +643,109 @@ function annotateSurfaceRoute(route: RouteOption, profile: ScoreProfile) {
         : "",
     ]),
   });
+}
+
+function routeUsesMetro(route: RouteOption) {
+  return route.segments.some((segment) => segment.mode === "metro");
+}
+
+function findComparableMetroRoute(
+  routes: RouteOption[],
+  selectedRoutes: RouteOption[],
+) {
+  if (selectedRoutes.some(routeUsesMetro)) {
+    return undefined;
+  }
+
+  const bestSelectedScore = selectedRoutes.length
+    ? Math.min(
+        ...selectedRoutes.map((route) =>
+          profileScore(route, SCORE_PROFILES.balanced),
+        ),
+      )
+    : Number.POSITIVE_INFINITY;
+  const bestSelectedDuration = selectedRoutes.length
+    ? Math.min(
+        ...selectedRoutes.map(
+          (route) => route.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER,
+        ),
+      )
+    : Number.POSITIVE_INFINITY;
+
+  return routes
+    .filter(
+      (route) =>
+        routeUsesMetro(route) &&
+        !selectedRoutes.some(
+          (selected) => selected.pathSignature === route.pathSignature,
+        ),
+    )
+    .map((route) => ({
+      route,
+      score: profileScore(route, SCORE_PROFILES.balanced),
+      duration: route.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER,
+    }))
+    .filter(
+      (item) =>
+        !Number.isFinite(bestSelectedScore) ||
+        item.score <= bestSelectedScore * METRO_SURFACE_MAX_SCORE_MULTIPLIER ||
+        item.duration <= bestSelectedDuration + METRO_SURFACE_MAX_EXTRA_MINUTES,
+    )
+    .sort(
+      (left, right) =>
+        left.score - right.score || scoreTieBreaker(left.route, right.route),
+    )[0]
+    ?.route;
+}
+
+function diversifySurfaceRoutes(
+  selectedRoutes: RouteOption[],
+  uniqueRoutes: RouteOption[],
+) {
+  const metroRoute = findComparableMetroRoute(uniqueRoutes, selectedRoutes);
+
+  if (!metroRoute) {
+    return selectedRoutes;
+  }
+
+  const annotatedMetroRoute = annotateSurfaceRoute(
+    metroRoute,
+    SCORE_PROFILES.balanced,
+  );
+
+  if (selectedRoutes.length < 3) {
+    return [...selectedRoutes, annotatedMetroRoute];
+  }
+
+  const replaceIndex = selectedRoutes
+    .map((route, index) => ({
+      index,
+      duplicateFamilyCount: selectedRoutes.filter(
+        (candidate) => routeModeFamily(candidate) === routeModeFamily(route),
+      ).length,
+      duplicateCorridorCount: selectedRoutes.filter(
+        (candidate) => routeCorridorKey(candidate) === routeCorridorKey(route),
+      ).length,
+      score: profileScore(route, SCORE_PROFILES.balanced),
+    }))
+    .filter(
+      (item) =>
+        item.duplicateFamilyCount > 1 || item.duplicateCorridorCount > 1,
+    )
+    .sort(
+      (left, right) =>
+        right.duplicateCorridorCount - left.duplicateCorridorCount ||
+        right.duplicateFamilyCount - left.duplicateFamilyCount ||
+        right.score - left.score,
+    )[0]?.index;
+
+  if (replaceIndex === undefined) {
+    return selectedRoutes;
+  }
+
+  return selectedRoutes.map((route, index) =>
+    index === replaceIndex ? annotatedMetroRoute : route,
+  );
 }
 
 function buildServiceWindowText(route: DhakaBusSeedRoute) {
@@ -1180,6 +1372,54 @@ function selectTransitCandidates(allCandidates: TransitCandidate[]) {
   ]);
 }
 
+function makeMetroTransitPoint(station: (typeof DHAKA_METRO_STATIONS)[number]) {
+  return {
+    id: station.id,
+    name: station.name,
+    address: "Metro station, Dhaka",
+    type: "metro_station" as const,
+    nodeType: "metro_station" as const,
+    coordinates: station.coordinates,
+    aliases: [station.name, ...station.aliases],
+    busStopLabels: [],
+    metroStationId: station.id,
+    advisories: [],
+  } satisfies TransitPoint;
+}
+
+function findStrategicMetroCandidates(
+  resolution: ResolvedTransitInput,
+  role: "origin" | "destination",
+) {
+  const placeCoordinates = resolution.place?.coordinates;
+
+  if (!placeCoordinates) {
+    return [];
+  }
+
+  return DHAKA_METRO_STATIONS
+    .map((station) => {
+      const point = makeMetroTransitPoint(station);
+      const distanceKm = station.coordinates
+        ? haversineDistanceKm(placeCoordinates, station.coordinates)
+        : Number.MAX_SAFE_INTEGER;
+
+      return {
+        point,
+        distanceKm,
+        candidate: buildCandidate(point, resolution, role),
+      };
+    })
+    .filter(
+      (item) =>
+        Number.isFinite(item.distanceKm) &&
+        item.distanceKm <= METRO_CANDIDATE_MAX_CONNECTOR_KM,
+    )
+    .sort((left, right) => left.distanceKm - right.distanceKm)
+    .slice(0, METRO_CANDIDATE_LIMIT)
+    .map((item) => item.candidate);
+}
+
 function buildTripTransitCandidates(
   originResolution: ResolvedTransitInput,
   destinationResolution: ResolvedTransitInput,
@@ -1189,16 +1429,38 @@ function buildTripTransitCandidates(
     destinationResolution,
     "destination",
   );
-  const originBase = selectTransitCandidates(originPool);
-  const destinationBase = selectTransitCandidates(destinationPool);
+  const originMetroCandidates = findStrategicMetroCandidates(
+    originResolution,
+    "origin",
+  );
+  const destinationMetroCandidates = findStrategicMetroCandidates(
+    destinationResolution,
+    "destination",
+  );
+  const originExpandedPool = dedupeTransitCandidates([
+    ...originPool,
+    ...originMetroCandidates,
+  ]).sort((left, right) => left.score - right.score);
+  const destinationExpandedPool = dedupeTransitCandidates([
+    ...destinationPool,
+    ...destinationMetroCandidates,
+  ]).sort((left, right) => left.score - right.score);
+  const originBase = dedupeTransitCandidates([
+    ...selectTransitCandidates(originExpandedPool),
+    ...originMetroCandidates,
+  ]);
+  const destinationBase = dedupeTransitCandidates([
+    ...selectTransitCandidates(destinationExpandedPool),
+    ...destinationMetroCandidates,
+  ]);
   const routeUsefulOrigins = findRouteUsefulCandidates(
-    originPool.slice(0, ROUTE_USEFUL_SOURCE_SCAN_LIMIT),
-    destinationPool.slice(0, ROUTE_USEFUL_SOURCE_SCAN_LIMIT),
+    originExpandedPool.slice(0, ROUTE_USEFUL_SOURCE_SCAN_LIMIT),
+    destinationExpandedPool.slice(0, ROUTE_USEFUL_SOURCE_SCAN_LIMIT),
     originBase,
   );
   const routeUsefulDestinations = findRouteUsefulDestinationCandidates(
-    originPool.slice(0, ROUTE_USEFUL_SOURCE_SCAN_LIMIT),
-    destinationPool.slice(0, ROUTE_USEFUL_SOURCE_SCAN_LIMIT),
+    originExpandedPool.slice(0, ROUTE_USEFUL_SOURCE_SCAN_LIMIT),
+    destinationExpandedPool.slice(0, ROUTE_USEFUL_SOURCE_SCAN_LIMIT),
     destinationBase,
   );
 
@@ -2537,7 +2799,7 @@ export function surfaceRoutes(
     selectedRoutes.push(annotateSurfaceRoute(route, SCORE_PROFILES.balanced));
   }
 
-  return selectedRoutes.slice(0, 3);
+  return diversifySurfaceRoutes(selectedRoutes, uniqueRoutes).slice(0, 3);
 }
 
 export async function calculateRoutes(payload: CalculateRouteRequest) {

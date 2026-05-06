@@ -197,6 +197,38 @@ describe("calculateRoutes", () => {
     expect(response.routes[0]?.totalCost).toBe(30);
   });
 
+  it("keeps strategic metro alternatives when bus stops crowd the nearest candidates", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "North-east origin",
+        coordinates: [23.875897154493625, 90.39024779265772],
+        type: "place",
+      },
+      destination: {
+        name: "Farmgate edge destination",
+        coordinates: [23.75289495299337, 90.39104626943124],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+
+    expect(
+      response.debugRoutes?.some((route) =>
+        route.segments.some((segment) => segment.mode === "metro"),
+      ),
+    ).toBe(true);
+    expect(
+      response.routes.some((route) =>
+        route.segments.some((segment) => segment.mode === "metro"),
+      ),
+    ).toBe(true);
+    expect(
+      response.routes.some((route) =>
+        route.segments.some((segment) => segment.mode === "bus"),
+      ),
+    ).toBe(true);
+  });
+
   it("draws metro routes from the station-derived MRT Line 6 shape", async () => {
     const response = await calculateRoutes({
       origin: { name: "Farmgate", canonicalId: "metro-farmgate", type: "metro_station" },
