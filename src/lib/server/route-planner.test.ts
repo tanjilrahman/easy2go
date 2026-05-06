@@ -75,7 +75,7 @@ describe("simple distance and fare estimation", () => {
   });
 
   it("estimates metro distance from the metro station dataset", () => {
-    expect(estimateMetroDistanceKm("metro-farmgate", "metro-motijheel", 5)).toBeCloseTo(5.8, 1);
+    expect(estimateMetroDistanceKm("metro-farmgate", "metro-motijheel", 5)).toBeCloseTo(5.6, 1);
   });
 
   it("estimates bus distance from reviewed bus stop coordinates", () => {
@@ -197,7 +197,7 @@ describe("calculateRoutes", () => {
     expect(response.routes[0]?.totalCost).toBe(30);
   });
 
-  it("draws metro routes on the MRT Line 6 shape instead of sparse straight station links", async () => {
+  it("draws metro routes from the station-derived MRT Line 6 shape", async () => {
     const response = await calculateRoutes({
       origin: { name: "Farmgate", canonicalId: "metro-farmgate", type: "metro_station" },
       destination: { name: "Motijheel", canonicalId: "metro-motijheel", type: "metro_station" },
@@ -206,8 +206,8 @@ describe("calculateRoutes", () => {
     const metroLine = response.routes[0]?.mapPreview.lines.find((line) => line.mode === "metro");
 
     expect(metroLine?.coordinates.length).toBeGreaterThan(2);
-    expect(metroLine?.coordinates[0]).toEqual([23.758939, 90.389118]);
-    expect(metroLine?.coordinates.at(-1)).toEqual([23.72774, 90.41943]);
+    expect(metroLine?.coordinates[0]).toEqual([23.7590418, 90.387085]);
+    expect(metroLine?.coordinates.at(-1)).toEqual([23.7280746, 90.4190913]);
   });
 
   it("keeps user-selected endpoint labels in route previews", async () => {

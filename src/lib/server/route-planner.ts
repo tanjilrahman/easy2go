@@ -6,10 +6,10 @@ import {
   type DhakaBusSeedRoute,
 } from "@/lib/data/dhaka-bus-seed";
 import {
+  DHAKA_METRO_LINE_6_SHAPE,
   DHAKA_METRO_STATIONS,
   getDhakaMetroFareBdtBySequence,
 } from "@/lib/data/dhaka-metro";
-import { DHAKA_METRO_LINE_6_SHAPE } from "@/lib/data/dhaka-metro-line-6-shape";
 import {
   getBusStopPointByLabel,
   getMetroStationById,
@@ -456,6 +456,10 @@ function routeServiceKey(route: RouteOption) {
   return (
     route.serviceLabels.join("+") || route.primaryServiceLabel || route.kind
   );
+}
+
+function mergeUniqueStrings(...groups: string[][]) {
+  return Array.from(new Set(groups.flat().filter(Boolean)));
 }
 
 function diversityPenalty(route: RouteOption, selectedRoutes: RouteOption[]) {
@@ -2439,13 +2443,66 @@ function dedupeRoutes(routes: RouteOption[]) {
   for (const route of routes) {
     const existing = bySignature.get(route.pathSignature);
 
-    if (
-      !existing ||
+    if (!existing) {
+      bySignature.set(route.pathSignature, route);
+      continue;
+    }
+
+    const mergedServiceLabels = mergeUniqueStrings(
+      existing.serviceLabels,
+      route.serviceLabels,
+    );
+    const mergedRoute =
       (route.estimatedDurationMinutes ?? 0) <
         (existing.estimatedDurationMinutes ?? 0)
-    ) {
-      bySignature.set(route.pathSignature, route);
-    }
+        ? route
+        : existing;
+    const mergedSummary =
+      mergedServiceLabels.length > 1 && mergedRoute.kind === "bus_direct"
+        ? `${mergedRoute.primaryServiceLabel ?? mergedServiceLabels[0]} + ${mergedServiceLabels.length - 1} more direct`
+        : mergedRoute.summary;
+    const mergedBusInstruction =
+      mergedServiceLabels.length > 1 && mergedRoute.kind === "bus_direct"
+        ? `Board ${mergedRoute.primaryServiceLabel ?? mergedServiceLabels[0]} or ${mergedServiceLabels.length - 1} other service${mergedServiceLabels.length > 2 ? "s" : ""}`
+        : undefined;
+    const mergedSegments =
+      mergedBusInstruction
+        ? mergedRoute.segments.map((segment) =>
+            segment.mode === "bus"
+              ? {
+                  ...segment,
+                  instruction: mergedBusInstruction,
+                }
+              : segment,
+          )
+        : mergedRoute.segments;
+    const mergedMapPreview = mergedBusInstruction
+      ? {
+          ...mergedRoute.mapPreview,
+          lines: mergedRoute.mapPreview.lines.map((line) =>
+            line.mode === "bus" ? { ...line, label: mergedBusInstruction } : line,
+          ),
+        }
+      : mergedRoute.mapPreview;
+
+    bySignature.set(
+      route.pathSignature,
+      routeOptionSchema.parse({
+        ...mergedRoute,
+        segments: mergedSegments,
+        mapPreview: mergedMapPreview,
+        serviceLabels: mergedServiceLabels,
+        primaryServiceLabel:
+          mergedRoute.primaryServiceLabel ?? mergedServiceLabels[0],
+        summary: mergedSummary,
+        highlights: dedupeStrings([
+          ...mergedRoute.highlights,
+          mergedServiceLabels.length > 1
+            ? `${mergedServiceLabels.length} services`
+            : "",
+        ]),
+      }),
+    );
   }
 
   return [...bySignature.values()];
