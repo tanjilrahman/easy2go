@@ -67,11 +67,11 @@ export function PlannerComparePane({
     }
 
     if (index === 1) {
-      return "Fastest practical";
+      return "Alternative route";
     }
 
     if (index === 2) {
-      return "Lowest cost";
+      return "3rd option";
     }
 
     return `Option ${index + 1}`;
