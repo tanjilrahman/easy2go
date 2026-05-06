@@ -235,6 +235,23 @@ export function RoutePlannerApp() {
     setLocationError(null);
     calculateRoutes.mutate(payload, {
       onSuccess: (response) => {
+        if (process.env.NODE_ENV === "development") {
+          console.info("[easy2go] route response", {
+            origin: payload.origin,
+            destination: payload.destination,
+            routes: response.routes.map((route) => ({
+              summary: route.summary,
+              duration: route.estimatedDurationMinutes,
+              distance: route.estimatedDistanceKm,
+              cost: route.totalCost,
+              firstTransit: route.segments.find(
+                (segment) => segment.mode === "bus" || segment.mode === "metro",
+              ),
+            })),
+            debugRouteCount: response.debugRoutes.length,
+          });
+        }
+
         startTransition(() => {
           setResults(response.routes);
           setDebugRoutes(response.debugRoutes);
