@@ -76,7 +76,9 @@ function getSegmentServiceLabels(
     }
 
     if (segment.mode === "metro") {
-      return normalizedService.includes("mrt") || normalizedService.includes("metro");
+      return (
+        normalizedService.includes("mrt") || normalizedService.includes("metro")
+      );
     }
 
     if (segment.mode === "bus" && route.kind === "bus_direct") {
@@ -105,102 +107,117 @@ export function PlannerItineraryPane({
             <RouteOverview route={route} showParentStop showStopChain={false} />
 
             <div className="mt-2.5 flex items-center gap-3 text-xs">
-              <RouteCoreMetrics route={route} durationIcon={Timer} transferIcon={History} />
+              <RouteCoreMetrics
+                route={route}
+                durationIcon={Timer}
+                transferIcon={History}
+              />
             </div>
           </div>
 
           <div className="relative py-1">
             <div className="absolute bottom-5 left-[21px] top-5 w-px bg-border" />
             <div className="space-y-5">
-            {route.segments.map((segment, index) => {
-              const isCompact = compactModes.has(segment.mode);
-              const serviceLabels = getSegmentServiceLabels(route, segment);
+              {route.segments.map((segment, index) => {
+                const isCompact = compactModes.has(segment.mode);
+                const serviceLabels = getSegmentServiceLabels(route, segment);
 
-              return (
-                <div
-                  key={`${segment.instruction}-${index}`}
-                  className="relative flex gap-3.5"
-                >
-                  <div className="relative z-10 flex w-11 shrink-0 justify-center">
-                    <TransportIcon
-                      mode={segment.mode}
-                      size={isCompact ? "sm" : "md"}
-                      className="ring-4 ring-surface"
-                    />
-                  </div>
-                  <div className="min-w-0 flex-1 pb-0.5 pt-0.5">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="font-display text-[15px] font-semibold tracking-tight text-foreground">
-                            {segment.instruction}
-                          </p>
+                return (
+                  <div
+                    key={`${segment.instruction}-${index}`}
+                    className="relative flex gap-3.5"
+                  >
+                    <div className="relative z-10 flex w-11 shrink-0 justify-center">
+                      <TransportIcon
+                        mode={segment.mode}
+                        size={isCompact ? "sm" : "md"}
+                        className="ring-4 ring-surface"
+                      />
+                    </div>
+                    <div className="min-w-0 flex-1 pb-0.5 pt-0.5">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <p className="font-display text-[15px] font-semibold tracking-tight text-foreground">
+                              {segment.instruction}
+                            </p>
+                          </div>
+                          {serviceLabels.length ? (
+                            <div className="mt-1.5 flex flex-wrap gap-1.5">
+                              {serviceLabels.map((service) => (
+                                <span
+                                  key={service}
+                                  className="rounded-lg border border-border bg-surface-strong px-2.5 py-1 text-[11px] font-medium text-primary"
+                                >
+                                  {service}
+                                </span>
+                              ))}
+                            </div>
+                          ) : null}
+                          <SegmentEndpoints
+                            startLocation={segment.startLocation}
+                            endLocation={segment.endLocation}
+                          />
                         </div>
-                        {serviceLabels.length ? (
-                          <div className="mt-1.5 flex flex-wrap gap-1.5">
-                            {serviceLabels.map((service) => (
-                              <span
-                                key={service}
-                                className="rounded-lg border border-border bg-surface-strong px-2.5 py-1 text-[11px] font-medium text-primary"
-                              >
-                                {service}
+                        {isCompact &&
+                        (segment.estimatedDurationMinutes ||
+                          segment.estimatedDistanceKm) ? (
+                          <div className="shrink-0 whitespace-nowrap pt-0.5 text-right text-xs text-muted-foreground">
+                            {segment.estimatedDurationMinutes ? (
+                              <span className="font-semibold text-foreground">
+                                {segment.estimatedDurationMinutes}m
                               </span>
-                            ))}
+                            ) : null}
+                            {segment.estimatedDistanceKm ? (
+                              <span> / {segment.estimatedDistanceKm}km</span>
+                            ) : null}
                           </div>
                         ) : null}
-                        <SegmentEndpoints
-                          startLocation={segment.startLocation}
-                          endLocation={segment.endLocation}
-                        />
                       </div>
-                      {isCompact &&
-                      (segment.estimatedDurationMinutes || segment.estimatedDistanceKm) ? (
-                        <div className="shrink-0 whitespace-nowrap pt-0.5 text-right text-xs text-muted-foreground">
+
+                      {!isCompact ? (
+                        <div className="mt-2.5 flex flex-wrap gap-1.5">
                           {segment.estimatedDurationMinutes ? (
-                            <span className="font-semibold text-foreground">
-                              {segment.estimatedDurationMinutes}m
-                            </span>
+                            <SegmentDetailChip>
+                              {segment.estimatedDurationMinutes} min
+                            </SegmentDetailChip>
                           ) : null}
                           {segment.estimatedDistanceKm ? (
-                            <span> / {segment.estimatedDistanceKm}km</span>
+                            <SegmentDetailChip>
+                              {segment.estimatedDistanceKm} km
+                            </SegmentDetailChip>
+                          ) : null}
+                          {segment.stopCount ? (
+                            <SegmentDetailChip>
+                              {segment.stopCount} stops
+                            </SegmentDetailChip>
+                          ) : null}
+                          {segment.stationCount ? (
+                            <SegmentDetailChip>
+                              {segment.stationCount} stations
+                            </SegmentDetailChip>
+                          ) : null}
+                          {segment.fareText ? (
+                            <SegmentDetailChip tone="fare">
+                              {segment.fareText}
+                            </SegmentDetailChip>
                           ) : null}
                         </div>
                       ) : null}
+
+                      {segment.connectorType === "long_rickshaw" ? (
+                        <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs leading-5 text-amber-800">
+                          <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                          <p>
+                            Long connector: this rickshaw hop is larger than the
+                            normal short-mile connector.
+                          </p>
+                        </div>
+                      ) : null}
                     </div>
-
-                    {!isCompact ? (
-                      <div className="mt-2.5 flex flex-wrap gap-1.5">
-                        {segment.estimatedDurationMinutes ? (
-                          <SegmentDetailChip>{segment.estimatedDurationMinutes} min</SegmentDetailChip>
-                        ) : null}
-                        {segment.estimatedDistanceKm ? (
-                          <SegmentDetailChip>{segment.estimatedDistanceKm} km</SegmentDetailChip>
-                        ) : null}
-                        {segment.stopCount ? (
-                          <SegmentDetailChip>{segment.stopCount} stops</SegmentDetailChip>
-                        ) : null}
-                        {segment.stationCount ? (
-                          <SegmentDetailChip>{segment.stationCount} stations</SegmentDetailChip>
-                        ) : null}
-                        {segment.fareText ? (
-                          <SegmentDetailChip tone="fare">{segment.fareText}</SegmentDetailChip>
-                        ) : null}
-                      </div>
-                    ) : null}
-
-                    {segment.connectorType === "long_rickshaw" ? (
-                      <div className="mt-2 flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-xs leading-5 text-amber-800">
-                        <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
-                        <p>
-                          Long connector: this rickshaw hop is larger than the normal short-mile
-                          connector.
-                        </p>
-                      </div>
-                    ) : null}
                   </div>
-                </div>
-              );
-            })}
+                );
+              })}
             </div>
           </div>
 
