@@ -571,6 +571,84 @@ describe("calculateRoutes", () => {
     ).toBe(true);
   });
 
+  it("prefers the closer equivalent metro boarding point", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "");
+
+    const response = await calculateRoutes({
+      origin: {
+        name: "Mirpur 11 side origin",
+        coordinates: [23.820238688664684, 90.36498291969112],
+        type: "place",
+      },
+      destination: {
+        name: "Gulshan side destination",
+        coordinates: [23.794848770870214, 90.4142060003735],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+    const surfacedMetroRoutes = response.routes.filter((route) =>
+      route.segments.some((segment) => segment.mode === "metro"),
+    );
+
+    expect(surfacedMetroRoutes.length).toBeGreaterThan(0);
+    expect(
+      surfacedMetroRoutes.some((route) =>
+        route.segments.some(
+          (segment) =>
+            segment.mode === "metro" &&
+            segment.startLocation === "Mirpur 11 Metro Station",
+        ),
+      ),
+    ).toBe(true);
+    expect(
+      surfacedMetroRoutes.some((route) =>
+        route.segments.some(
+          (segment) =>
+            segment.mode === "metro" &&
+            segment.startLocation === "Mirpur 10 Metro Station",
+        ),
+      ),
+    ).toBe(false);
+  });
+
+  it("rescues close bus access when a farther bus stop is otherwise competitive", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "");
+
+    const response = await calculateRoutes({
+      origin: {
+        name: "Shishu Mela side origin",
+        coordinates: [23.773512938505664, 90.36533431315891],
+        type: "place",
+      },
+      destination: {
+        name: "Old Dhaka side destination",
+        coordinates: [23.713803080545016, 90.40219614864965],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+
+    expect(
+      response.routes.some((route) =>
+        route.segments.some(
+          (segment) =>
+            segment.mode === "bus" &&
+            segment.startLocation === "Shishu Mela (শিশু মেলা)",
+        ),
+      ),
+    ).toBe(true);
+    expect(
+      response.routes.some((route) =>
+        route.segments.some(
+          (segment) =>
+            segment.mode === "bus" &&
+            segment.startLocation === "Asad Gate (আসাদ গেট)",
+        ),
+      ),
+    ).toBe(false);
+  });
+
   it("draws metro routes from the station-derived MRT Line 6 shape", async () => {
     const response = await calculateRoutes({
       origin: { name: "Farmgate", canonicalId: "metro-farmgate", type: "metro_station" },

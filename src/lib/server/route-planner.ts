@@ -169,6 +169,14 @@ const DIRECT_BUS_HYBRID_DOMINANCE_MAX_EXTRA_COST_BDT = 40;
 const DIRECT_BUS_HYBRID_DOMINANCE_MIN_FINAL_ADVANTAGE_KM = 1;
 const DIRECT_BUS_HYBRID_DOMINANCE_MIN_CONNECTOR_ADVANTAGE_KM = 0.5;
 const DIRECT_BUS_HYBRID_SAME_ALIGHTING_MIN_TIME_SAVED_MINUTES = 5;
+const ACCESS_DOMINANCE_MIN_FIRST_CONNECTOR_ADVANTAGE_KM = 0.5;
+const ACCESS_DOMINANCE_MAX_EXTRA_MINUTES = 5;
+const ACCESS_DOMINANCE_MAX_EXTRA_COST_BDT = 30;
+const ACCESS_RESCUE_MIN_FIRST_CONNECTOR_ADVANTAGE_KM = 1;
+const ACCESS_RESCUE_MAX_EXTRA_MINUTES = 10;
+const ACCESS_RESCUE_MAX_EXTRA_COST_BDT = 30;
+const ACCESS_RESCUE_MAX_EXTRA_FINAL_TRANSIT_KM = 1.75;
+const ACCESS_RESCUE_MAX_EXTRA_CONNECTOR_KM = 0.5;
 const LONG_CONNECTOR_HYBRID_RESCUE_MAX_EXTRA_MINUTES = 35;
 const LONG_CONNECTOR_HYBRID_RESCUE_MIN_CONNECTOR_REDUCTION_KM = 1.5;
 const LONG_CONNECTOR_HYBRID_RESCUE_MAX_FINAL_CONNECTOR_KM =
@@ -1040,6 +1048,154 @@ function removeBusDominatedHybridRoutes(routes: RouteOption[]) {
       !directBusRoutes.some((directRoute) =>
         directBusDominatesHybrid(route, directRoute),
       ),
+  );
+}
+
+function routeFirstConnectorDistanceKm(route: RouteOption) {
+  const firstSegment = route.segments[0];
+
+  return firstSegment?.connectorType
+    ? connectorSegmentDistanceKm(firstSegment)
+    : 0;
+}
+
+function routesComparableForAccessDominance(
+  left: RouteOption,
+  right: RouteOption,
+) {
+  return (
+    left.kind === right.kind &&
+    normalizeTransitText(left.alighting.label) ===
+      normalizeTransitText(right.alighting.label) &&
+    Math.abs(
+      routeFinalTransitToDestinationDistanceKm(left) -
+        routeFinalTransitToDestinationDistanceKm(right),
+    ) <= 0.5
+  );
+}
+
+function routeDominatesByAccess(
+  betterAccessRoute: RouteOption,
+  worseAccessRoute: RouteOption,
+) {
+  if (
+    !routesComparableForAccessDominance(betterAccessRoute, worseAccessRoute)
+  ) {
+    return false;
+  }
+
+  const betterFirstConnector = routeFirstConnectorDistanceKm(betterAccessRoute);
+  const worseFirstConnector = routeFirstConnectorDistanceKm(worseAccessRoute);
+  const betterDuration =
+    betterAccessRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const worseDuration =
+    worseAccessRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const betterCost = betterAccessRoute.totalCost ?? Number.MAX_SAFE_INTEGER;
+  const worseCost = worseAccessRoute.totalCost ?? Number.MAX_SAFE_INTEGER;
+
+  return (
+    betterFirstConnector +
+      ACCESS_DOMINANCE_MIN_FIRST_CONNECTOR_ADVANTAGE_KM <=
+      worseFirstConnector &&
+    betterDuration <= worseDuration + ACCESS_DOMINANCE_MAX_EXTRA_MINUTES &&
+    betterCost <= worseCost + ACCESS_DOMINANCE_MAX_EXTRA_COST_BDT
+  );
+}
+
+function removeAccessDominatedRoutes(routes: RouteOption[]) {
+  return routes.filter(
+    (route) =>
+      !routes.some(
+        (candidate) =>
+          candidate.pathSignature !== route.pathSignature &&
+          routeDominatesByAccess(candidate, route),
+      ),
+  );
+}
+
+function routeDominatesPoorFirstAccess(
+  betterAccessRoute: RouteOption,
+  worseAccessRoute: RouteOption,
+) {
+  const betterFirstConnector = routeFirstConnectorDistanceKm(betterAccessRoute);
+  const worseFirstConnector = routeFirstConnectorDistanceKm(worseAccessRoute);
+  const betterDuration =
+    betterAccessRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const worseDuration =
+    worseAccessRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const betterCost = betterAccessRoute.totalCost ?? Number.MAX_SAFE_INTEGER;
+  const worseCost = worseAccessRoute.totalCost ?? Number.MAX_SAFE_INTEGER;
+
+  const result =
+    betterFirstConnector + ACCESS_RESCUE_MIN_FIRST_CONNECTOR_ADVANTAGE_KM <=
+      worseFirstConnector &&
+    betterDuration <= worseDuration + ACCESS_RESCUE_MAX_EXTRA_MINUTES &&
+    betterCost <= worseCost + ACCESS_RESCUE_MAX_EXTRA_COST_BDT &&
+    routeFinalTransitToDestinationDistanceKm(betterAccessRoute) <=
+      routeFinalTransitToDestinationDistanceKm(worseAccessRoute) +
+        ACCESS_RESCUE_MAX_EXTRA_FINAL_TRANSIT_KM &&
+    routeConnectorDistanceKm(betterAccessRoute) <=
+      routeConnectorDistanceKm(worseAccessRoute) +
+        ACCESS_RESCUE_MAX_EXTRA_CONNECTOR_KM &&
+    betterAccessRoute.transferCount <= worseAccessRoute.transferCount + 1;
+
+  return result;
+}
+
+function removePoorFirstAccessRoutes(routes: RouteOption[]) {
+  return routes.filter(
+    (route) =>
+      !routes.some(
+        (candidate) =>
+          candidate.pathSignature !== route.pathSignature &&
+          routeDominatesPoorFirstAccess(candidate, route),
+      ),
+  );
+}
+
+function applyAccessRescueRoutes(
+  selectedRoutes: RouteOption[],
+  uniqueRoutes: RouteOption[],
+) {
+  const rescue = uniqueRoutes
+    .filter(
+      (candidate) =>
+        !selectedRoutes.some(
+          (selected) => selected.pathSignature === candidate.pathSignature,
+        ),
+    )
+    .flatMap((candidate) =>
+      selectedRoutes
+        .map((selected, index) => ({ candidate, selected, index }))
+        .filter(({ candidate: rescueCandidate, selected }) =>
+          routeDominatesPoorFirstAccess(rescueCandidate, selected),
+        ),
+    )
+    .sort((left, right) => {
+      const leftAdvantage =
+        routeFirstConnectorDistanceKm(left.selected) -
+        routeFirstConnectorDistanceKm(left.candidate);
+      const rightAdvantage =
+        routeFirstConnectorDistanceKm(right.selected) -
+        routeFirstConnectorDistanceKm(right.candidate);
+
+      return (
+        rightAdvantage - leftAdvantage ||
+        (left.candidate.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER) -
+          (right.candidate.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER) ||
+        profileScore(left.candidate, SCORE_PROFILES.balanced) -
+          profileScore(right.candidate, SCORE_PROFILES.balanced)
+      );
+    })[0];
+
+  if (!rescue) {
+    return selectedRoutes;
+  }
+
+  return selectedRoutes.map((route, index) =>
+    index === rescue.index
+      ? annotateSurfaceRoute(rescue.candidate, SCORE_PROFILES.balanced)
+      : route,
   );
 }
 
@@ -3487,8 +3643,17 @@ export function surfaceRoutes(
   routes: RouteOption[],
   optimization: RouteOptimization,
 ) {
-  const qualityFilteredRoutes = removeMetroDominatedHybridRoutes(
+  const accessRescueCandidateRoutes = dedupeRoutes(
     removeDestinationBacktrackingRoutes(removeDominatedTransferRoutes(routes)),
+  );
+  const qualityFilteredRoutes = removeMetroDominatedHybridRoutes(
+    removePoorFirstAccessRoutes(
+      removeAccessDominatedRoutes(
+        removeDestinationBacktrackingRoutes(
+          removeDominatedTransferRoutes(routes),
+        ),
+      ),
+    ),
   );
   const uniqueRoutes = dedupeRoutes(qualityFilteredRoutes);
   const selectedRoutes: RouteOption[] = [];
@@ -3515,9 +3680,13 @@ export function surfaceRoutes(
     selectedRoutes.push(annotateSurfaceRoute(route, SCORE_PROFILES.balanced));
   }
 
-  return removeBusDominatedHybridRoutes(
-    diversifySurfaceRoutes(selectedRoutes, uniqueRoutes),
-  ).slice(0, 3);
+  const diversifiedRoutes = diversifySurfaceRoutes(selectedRoutes, uniqueRoutes);
+  const accessRescuedRoutes = applyAccessRescueRoutes(
+    diversifiedRoutes,
+    accessRescueCandidateRoutes,
+  );
+
+  return removeBusDominatedHybridRoutes(accessRescuedRoutes).slice(0, 3);
 }
 
 export async function calculateRoutes(payload: CalculateRouteRequest) {
@@ -3532,10 +3701,13 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
     applyTripEndpoints(route, payload),
   );
 
+  const preSnapSurfaceRoutes = surfaceRoutes(endpointRoutes, payload.optimization);
+  const accessRescuedSurfaceRoutes = applyAccessRescueRoutes(
+    preSnapSurfaceRoutes,
+    dedupeRoutes(endpointRoutes),
+  );
   const snappedSurfaceRoutes = await Promise.all(
-    surfaceRoutes(endpointRoutes, payload.optimization).map(
-      applyRoadSnappedMapPreview,
-    ),
+    accessRescuedSurfaceRoutes.map(applyRoadSnappedMapPreview),
   );
   const surfacedRoutes = filterPostSnapDurationOutliers(snappedSurfaceRoutes);
   const debugRoutes = endpointRoutes;
