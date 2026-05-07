@@ -332,12 +332,32 @@ describe("calculateRoutes", () => {
 
     expect(longConnector?.fareText).toMatch(/Approx\. BDT \d+-\d+/);
     expect(longConnector?.costLowBdt).toBeLessThan(longConnector?.costHighBdt ?? 0);
-    expect(longConnector?.note).toContain("Long connector may work better");
+    expect(longConnector?.note).toContain("Long connector");
     expect(longConnector?.note).not.toContain("BDT");
     expect(routeWithLongConnector?.totalCostLowBdt).toBeLessThan(
       routeWithLongConnector?.totalCostHighBdt ?? 0,
     );
     expect(routeWithLongConnector?.fareText).toMatch(/BDT \d+-\d+/);
+  });
+
+  it("does not surface slower bus transfers when a direct bus reaches the same corridor", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Mirpur edge origin",
+        coordinates: [23.814003559238746, 90.35533575726116],
+        type: "place",
+      },
+      destination: {
+        name: "Badda edge destination",
+        coordinates: [23.800739672358425, 90.45187949773755],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+
+    expect(response.debugRoutes?.some((route) => route.kind === "bus_transfer")).toBe(true);
+    expect(response.routes.some((route) => route.kind === "bus_direct")).toBe(true);
+    expect(response.routes.some((route) => route.kind === "bus_transfer")).toBe(false);
   });
 
   it("draws metro routes from the station-derived MRT Line 6 shape", async () => {

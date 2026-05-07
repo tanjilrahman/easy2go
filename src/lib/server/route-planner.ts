@@ -162,6 +162,8 @@ const METRO_CANDIDATE_MAX_CONNECTOR_KM = 8;
 const METRO_SURFACE_MAX_SCORE_MULTIPLIER = 1.35;
 const METRO_SURFACE_MAX_EXTRA_MINUTES = 18;
 const SURFACE_DIVERSITY_MAX_SCORE_GAP = 45;
+const TRANSFER_DIRECT_ALTERNATIVE_MIN_TIME_SAVED_MINUTES = 8;
+const TRANSFER_DIRECT_ALTERNATIVE_MAX_EXTRA_COST_BDT = 40;
 const PURPOSEFUL_LONG_CONNECTOR_MIN_KM = 1.1;
 const PURPOSEFUL_LONG_CONNECTOR_MAX_KM = 9;
 const TRANSFER_SEARCH_PAIR_LIMIT = 8;
@@ -537,6 +539,13 @@ function routeServiceKey(route: RouteOption) {
   );
 }
 
+function routeEndpointKey(route: RouteOption) {
+  return [
+    normalizeTransitText(route.boarding.label),
+    normalizeTransitText(route.alighting.label),
+  ].join("->");
+}
+
 function routeModeFamily(route: RouteOption) {
   if (route.segments.some((segment) => segment.mode === "metro")) {
     return "metro";
@@ -577,6 +586,50 @@ function routeCorridorKey(route: RouteOption) {
 
 function mergeUniqueStrings(...groups: string[][]) {
   return Array.from(new Set(groups.flat().filter(Boolean)));
+}
+
+function isTransferDominatedByDirectRoute(
+  transferRoute: RouteOption,
+  directRoute: RouteOption,
+) {
+  const transferDuration =
+    transferRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const directDuration =
+    directRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const transferCost = transferRoute.totalCost ?? Number.MAX_SAFE_INTEGER;
+  const directCost = directRoute.totalCost ?? Number.MAX_SAFE_INTEGER;
+
+  const hasSameEndpoints =
+    routeEndpointKey(transferRoute) === routeEndpointKey(directRoute);
+  const hasSameAlighting =
+    normalizeTransitText(transferRoute.alighting.label) ===
+    normalizeTransitText(directRoute.alighting.label);
+  const directIsClearlyFaster =
+    directDuration +
+      TRANSFER_DIRECT_ALTERNATIVE_MIN_TIME_SAVED_MINUTES <=
+    transferDuration;
+  const directIsNotMateriallyPricier =
+    directCost <=
+    transferCost + TRANSFER_DIRECT_ALTERNATIVE_MAX_EXTRA_COST_BDT;
+
+  return (
+    (hasSameEndpoints &&
+      directDuration <= transferDuration &&
+      directCost <= transferCost + 20) ||
+    (hasSameAlighting && directIsClearlyFaster && directIsNotMateriallyPricier)
+  );
+}
+
+function removeDominatedTransferRoutes(routes: RouteOption[]) {
+  const directRoutes = routes.filter((route) => route.kind === "bus_direct");
+
+  return routes.filter(
+    (route) =>
+      route.kind !== "bus_transfer" ||
+      !directRoutes.some((directRoute) =>
+        isTransferDominatedByDirectRoute(route, directRoute),
+      ),
+  );
 }
 
 function diversityPenalty(route: RouteOption, selectedRoutes: RouteOption[]) {
@@ -2923,7 +2976,7 @@ export function surfaceRoutes(
   routes: RouteOption[],
   optimization: RouteOptimization,
 ) {
-  const uniqueRoutes = dedupeRoutes(routes);
+  const uniqueRoutes = dedupeRoutes(removeDominatedTransferRoutes(routes));
   const selectedRoutes: RouteOption[] = [];
 
   for (const profile of profilesForOptimization(optimization)) {
