@@ -9,6 +9,7 @@ import {
   estimateRickshawFareBdt,
   surfaceRoutes,
 } from "@/lib/server/route-planner";
+import { normalizeTransitText } from "@/lib/server/transit-support";
 import type { RouteOption } from "@/lib/validations/routes";
 
 const originalFetch = global.fetch;
@@ -358,6 +359,52 @@ describe("calculateRoutes", () => {
     expect(response.debugRoutes?.some((route) => route.kind === "bus_transfer")).toBe(true);
     expect(response.routes.some((route) => route.kind === "bus_direct")).toBe(true);
     expect(response.routes.some((route) => route.kind === "bus_transfer")).toBe(false);
+  });
+
+  it("surfaces a metro to bus hybrid when it avoids a long metro connector", async () => {
+    const response = await calculateRoutes({
+      origin: {
+        name: "Mirpur edge origin",
+        coordinates: [23.814003559238746, 90.35533575726116],
+        type: "place",
+      },
+      destination: {
+        name: "Badda edge destination",
+        coordinates: [23.800739672358425, 90.45187949773755],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+    const notunBazarHybrid = (route: (typeof response.routes)[number]) =>
+      route.kind === "bus_metro_hybrid" &&
+      route.segments.some(
+        (segment) =>
+          segment.mode === "bus" &&
+          normalizeTransitText(segment.endLocation).includes("notun bazar"),
+      );
+
+    expect(response.debugRoutes?.some(notunBazarHybrid)).toBe(true);
+    expect(response.routes.some(notunBazarHybrid)).toBe(true);
+    expect(
+      response.routes.some(
+        (route) =>
+          route.kind === "metro_direct" &&
+          route.segments.some(
+            (segment) => segment.connectorType === "long_rickshaw",
+          ),
+      ),
+    ).toBe(false);
+    expect(
+      response.routes.some(
+        (route) =>
+          route.kind === "bus_metro_hybrid" &&
+          route.segments.some((segment) =>
+            ["uttar badda", "badda link road"].some((label) =>
+              normalizeTransitText(segment.endLocation).includes(label),
+            ),
+          ),
+      ),
+    ).toBe(false);
   });
 
   it("draws metro routes from the station-derived MRT Line 6 shape", async () => {

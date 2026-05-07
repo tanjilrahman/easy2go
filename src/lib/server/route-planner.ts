@@ -164,6 +164,10 @@ const METRO_SURFACE_MAX_EXTRA_MINUTES = 18;
 const SURFACE_DIVERSITY_MAX_SCORE_GAP = 45;
 const TRANSFER_DIRECT_ALTERNATIVE_MIN_TIME_SAVED_MINUTES = 8;
 const TRANSFER_DIRECT_ALTERNATIVE_MAX_EXTRA_COST_BDT = 40;
+const LONG_CONNECTOR_HYBRID_RESCUE_MAX_EXTRA_MINUTES = 35;
+const LONG_CONNECTOR_HYBRID_RESCUE_MIN_CONNECTOR_REDUCTION_KM = 1.5;
+const LONG_CONNECTOR_HYBRID_RESCUE_MAX_FINAL_CONNECTOR_KM =
+  LONG_RICKSHAW_MIN_KM;
 const PURPOSEFUL_LONG_CONNECTOR_MIN_KM = 1.1;
 const PURPOSEFUL_LONG_CONNECTOR_MAX_KM = 9;
 const TRANSFER_SEARCH_PAIR_LIMIT = 8;
@@ -175,6 +179,7 @@ const DIRECT_MATCH_CANDIDATE_BONUS = 20;
 const NEARBY_TRANSFER_MAX_KM = 0.45;
 const METRO_BUS_TRANSFER_MAX_KM = 0.65;
 const HYBRID_BRIDGE_STATION_LIMIT = 2;
+const ROUTE_USEFUL_HYBRID_BRIDGE_STATION_LIMIT = 5;
 
 // User-facing route notes/service windows.
 const LONG_CONNECTOR_SHARED_TRANSPORT_NOTE =
@@ -826,14 +831,130 @@ function findComparableMetroRoute(
     )[0]?.route;
 }
 
+function connectorSegmentDistanceKm(segment: RouteSegment) {
+  return segment.connectorDistanceKm ?? segment.estimatedDistanceKm ?? 0;
+}
+
+function routeLongConnectorDistanceKm(route: RouteOption) {
+  return route.segments
+    .filter((segment) => segment.connectorType === "long_rickshaw")
+    .reduce((sum, segment) => sum + connectorSegmentDistanceKm(segment), 0);
+}
+
+function routeFinalConnectorDistanceKm(route: RouteOption) {
+  const finalConnector = route.segments
+    .filter((segment) => segment.connectorType)
+    .at(-1);
+
+  return finalConnector ? connectorSegmentDistanceKm(finalConnector) : 0;
+}
+
+function routeFinalTransitToDestinationDistanceKm(route: RouteOption) {
+  const transitEndCoordinates = transitSegmentEndCoordinates(route);
+  const destinationCoordinates = routeEndpointCoordinates(route).destination;
+
+  if (!transitEndCoordinates || !destinationCoordinates) {
+    return routeFinalConnectorDistanceKm(route);
+  }
+
+  return haversineDistanceKm(transitEndCoordinates, destinationCoordinates);
+}
+
+function findLongConnectorHybridRescueRoute(
+  routes: RouteOption[],
+  selectedRoutes: RouteOption[],
+) {
+  const longConnectorMetroRoute = selectedRoutes
+    .filter(
+      (route) =>
+        route.kind === "metro_direct" && routeLongConnectorDistanceKm(route) > 0,
+    )
+    .sort(
+      (left, right) =>
+        routeLongConnectorDistanceKm(right) -
+          routeLongConnectorDistanceKm(left) ||
+        profileScore(right, SCORE_PROFILES.balanced) -
+          profileScore(left, SCORE_PROFILES.balanced),
+    )[0];
+
+  if (!longConnectorMetroRoute) {
+    return undefined;
+  }
+
+  const longConnectorDistance = routeLongConnectorDistanceKm(
+    longConnectorMetroRoute,
+  );
+  const longConnectorDuration =
+    longConnectorMetroRoute.estimatedDurationMinutes ??
+    Number.MAX_SAFE_INTEGER;
+  const selectedAlightingLabels = new Set(
+    selectedRoutes.map((route) => normalizeTransitText(route.alighting.label)),
+  );
+
+  return routes
+    .filter(
+      (route) =>
+        route.kind === "bus_metro_hybrid" &&
+        routeUsesMetro(route) &&
+        route.segments.some((segment) => segment.mode === "bus") &&
+        !selectedRoutes.some(
+          (selected) => selected.pathSignature === route.pathSignature,
+        ),
+    )
+    .map((route) => ({
+      route,
+      finalConnectorDistance: routeFinalConnectorDistanceKm(route),
+      finalTransitDistance: routeFinalTransitToDestinationDistanceKm(route),
+      reachesSelectedAlighting: selectedAlightingLabels.has(
+        normalizeTransitText(route.alighting.label),
+      ),
+      longConnectorDistance: routeLongConnectorDistanceKm(route),
+      duration: route.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER,
+      score: profileScore(route, SCORE_PROFILES.balanced),
+    }))
+    .filter(
+      (item) =>
+        item.finalConnectorDistance <=
+          LONG_CONNECTOR_HYBRID_RESCUE_MAX_FINAL_CONNECTOR_KM &&
+        item.finalConnectorDistance +
+          LONG_CONNECTOR_HYBRID_RESCUE_MIN_CONNECTOR_REDUCTION_KM <=
+          longConnectorDistance &&
+        item.longConnectorDistance < longConnectorDistance &&
+        item.duration <=
+          longConnectorDuration +
+            LONG_CONNECTOR_HYBRID_RESCUE_MAX_EXTRA_MINUTES,
+    )
+    .sort(
+      (left, right) =>
+        Number(right.reachesSelectedAlighting) -
+          Number(left.reachesSelectedAlighting) ||
+        left.finalTransitDistance - right.finalTransitDistance ||
+        left.finalConnectorDistance - right.finalConnectorDistance ||
+        left.longConnectorDistance - right.longConnectorDistance ||
+        left.duration - right.duration ||
+        left.score - right.score,
+    )[0]?.route;
+}
+
 function diversifySurfaceRoutes(
   selectedRoutes: RouteOption[],
   uniqueRoutes: RouteOption[],
 ) {
   const metroRoute = findComparableMetroRoute(uniqueRoutes, selectedRoutes);
+  const rescueRoute = findLongConnectorHybridRescueRoute(
+    uniqueRoutes,
+    selectedRoutes,
+  );
+  const selectedWithRescue = rescueRoute
+    ? selectedRoutes.map((route) =>
+        route.kind === "metro_direct" && routeLongConnectorDistanceKm(route) > 0
+          ? annotateSurfaceRoute(rescueRoute, SCORE_PROFILES.balanced)
+          : route,
+      )
+    : selectedRoutes;
 
   if (!metroRoute) {
-    return selectedRoutes;
+    return selectedWithRescue;
   }
 
   const annotatedMetroRoute = annotateSurfaceRoute(
@@ -841,17 +962,21 @@ function diversifySurfaceRoutes(
     SCORE_PROFILES.balanced,
   );
 
-  if (selectedRoutes.length < 3) {
-    return [...selectedRoutes, annotatedMetroRoute];
+  if (selectedWithRescue.some(routeUsesMetro)) {
+    return selectedWithRescue;
   }
 
-  const replaceIndex = selectedRoutes
+  if (selectedWithRescue.length < 3) {
+    return [...selectedWithRescue, annotatedMetroRoute];
+  }
+
+  const replaceIndex = selectedWithRescue
     .map((route, index) => ({
       index,
-      duplicateFamilyCount: selectedRoutes.filter(
+      duplicateFamilyCount: selectedWithRescue.filter(
         (candidate) => routeModeFamily(candidate) === routeModeFamily(route),
       ).length,
-      duplicateCorridorCount: selectedRoutes.filter(
+      duplicateCorridorCount: selectedWithRescue.filter(
         (candidate) => routeCorridorKey(candidate) === routeCorridorKey(route),
       ).length,
       score: profileScore(route, SCORE_PROFILES.balanced),
@@ -871,7 +996,7 @@ function diversifySurfaceRoutes(
     return selectedRoutes;
   }
 
-  return selectedRoutes.map((route, index) =>
+  return selectedWithRescue.map((route, index) =>
     index === replaceIndex ? annotatedMetroRoute : route,
   );
 }
@@ -2744,6 +2869,89 @@ function sortHybridBridgeStations(target: TransitCandidate) {
     .slice(0, HYBRID_BRIDGE_STATION_LIMIT);
 }
 
+function findRouteUsefulHybridBridgeStations(
+  sourceStationId: string,
+  destinationBusLabels: string[],
+  destination: TransitCandidate,
+) {
+  const sourceStation = getMetroStationById(sourceStationId);
+  const destinationCoordinates = destination.point.coordinates;
+
+  if (!sourceStation) {
+    return [];
+  }
+
+  return DHAKA_METRO_STATIONS
+    .filter((station) => station.id !== sourceStationId)
+    .map((station) => {
+      const sourceDistanceToDestination =
+        sourceStation.coordinates && destinationCoordinates
+          ? haversineDistanceKm(sourceStation.coordinates, destinationCoordinates)
+          : Number.MAX_SAFE_INTEGER;
+      const bridgeDistanceToDestination =
+        station.coordinates && destinationCoordinates
+          ? haversineDistanceKm(station.coordinates, destinationCoordinates)
+          : Number.MAX_SAFE_INTEGER;
+
+      if (bridgeDistanceToDestination >= sourceDistanceToDestination) {
+        return null;
+      }
+
+      const nearbyBusLabels = findNearbyBusStopLabelsForMetroStation(
+        station.id,
+      );
+      const legs = cachedFindDirectBusLegs(
+        nearbyBusLabels,
+        destinationBusLabels,
+      );
+      const bestLeg = legs[0];
+
+      return bestLeg
+        ? {
+            station,
+            bestLeg,
+            stationCount: Math.abs(
+              sourceStation.sequence - station.sequence,
+            ),
+            bridgeDistanceToDestination,
+          }
+        : null;
+    })
+    .filter(
+      (
+        item,
+      ): item is {
+        station: (typeof DHAKA_METRO_STATIONS)[number];
+        bestLeg: BusLeg;
+        stationCount: number;
+        bridgeDistanceToDestination: number;
+      } => Boolean(item),
+    )
+    .sort(
+      (left, right) =>
+        left.bridgeDistanceToDestination - right.bridgeDistanceToDestination ||
+        left.bestLeg.stopCount - right.bestLeg.stopCount ||
+        right.stationCount - left.stationCount,
+    )
+    .map((item) => item.station)
+    .slice(0, ROUTE_USEFUL_HYBRID_BRIDGE_STATION_LIMIT);
+}
+
+function dedupeMetroStations(
+  stations: Array<(typeof DHAKA_METRO_STATIONS)[number]>,
+) {
+  const seen = new Set<string>();
+
+  return stations.filter((station) => {
+    if (seen.has(station.id)) {
+      return false;
+    }
+
+    seen.add(station.id);
+    return true;
+  });
+}
+
 function findBusMetroHybridRoutes(
   origin: TransitCandidate,
   destination: TransitCandidate,
@@ -2780,7 +2988,16 @@ function findBusMetroHybridRoutes(
   }
 
   if (origin.point.metroStationId && destination.point.busStopLabels.length) {
-    for (const station of sortHybridBridgeStations(destination)) {
+    const bridgeStations = dedupeMetroStations([
+      ...sortHybridBridgeStations(destination),
+      ...findRouteUsefulHybridBridgeStations(
+        origin.point.metroStationId,
+        destination.point.busStopLabels,
+        destination,
+      ),
+    ]);
+
+    for (const station of bridgeStations) {
       if (station.id === origin.point.metroStationId) {
         continue;
       }
@@ -2808,7 +3025,15 @@ function findBusMetroHybridRoutes(
     }
   }
 
-  return routes.slice(0, 8);
+  return routes
+    .sort(
+      (left, right) =>
+        (left.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER) -
+          (right.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER) ||
+        (left.totalCostLowBdt ?? left.totalCost ?? Number.MAX_SAFE_INTEGER) -
+          (right.totalCostLowBdt ?? right.totalCost ?? Number.MAX_SAFE_INTEGER),
+    )
+    .slice(0, 12);
 }
 
 function collectRoutes(
