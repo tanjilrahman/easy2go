@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-05T12:56:20.839Z",
+  "generatedAt": "2026-05-07T16:49:36.130Z",
   "sourceReview": "src/lib/data/dhaka-bus-stop-coordinate-review.json",
   "sourceApproved": "src/lib/data/dhaka-bus-stop-approved-coordinates.json",
   "sourceManual": "src/lib/data/dhaka-bus-stop-manual-coordinates.json",
@@ -650,22 +650,6 @@
       },
       "routeContexts": [
         {
-          "routeId": "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
-          "busLabelEn": "Ashirbad Pahibahan",
-          "previousResolved": {
-            "stopId": "stop-shiyal-bari",
-            "label": "Shiyal Bari (শিয়াল বাড়ি)",
-            "labelEn": "Shiyal Bari",
-            "candidateDistanceKm": 29.24
-          },
-          "nextResolved": {
-            "stopId": "stop-mirpur-2",
-            "label": "Mirpur 2 (মিরপুর ২)",
-            "labelEn": "Mirpur 2",
-            "candidateDistanceKm": 29.8
-          }
-        },
-        {
           "routeId": "route-9-no-college-gate-to-mirpur-12-180",
           "busLabelEn": "9 No.",
           "previousResolved": {
@@ -1275,19 +1259,7 @@
       "status": "needs_source",
       "reviewReason": "No OSM transit candidate matched this seed stop.",
       "topCandidate": null,
-      "routeContexts": [
-        {
-          "routeId": "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
-          "busLabelEn": "Ashirbad Pahibahan",
-          "previousResolved": null,
-          "nextResolved": {
-            "stopId": "stop-rupnagar-abashik",
-            "label": "Rupnagar Abashik (রূপনগর আবাসিক)",
-            "labelEn": "Rupnagar Abashik",
-            "candidateDistanceKm": null
-          }
-        }
-      ]
+      "routeContexts": []
     },
     {
       "stopId": "stop-elevated-express-way",

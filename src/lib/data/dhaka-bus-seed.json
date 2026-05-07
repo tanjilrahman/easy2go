@@ -13,9 +13,9 @@
     ]
   },
   "summary": {
-    "routeCount": 183,
-    "busCount": 166,
-    "stopCount": 264
+    "routeCount": 182,
+    "busCount": 165,
+    "stopCount": 262
   },
   "buses": [
     {
@@ -148,16 +148,6 @@
       "labelBn": "অরনব",
       "routeIds": [
         "route-arnob-hemayetpur-to-demra-staff-quarter-15"
-      ],
-      "routeCount": 1
-    },
-    {
-      "id": "bus-ashirbad-pahibahan",
-      "label": "Ashirbad Pahibahan (আশীর্বাদ পরিবহন)",
-      "labelEn": "Ashirbad Pahibahan",
-      "labelBn": "আশীর্বাদ পরিবহন",
-      "routeIds": [
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16"
       ],
       "routeCount": 1
     },
@@ -1769,7 +1759,6 @@
         "route-ajmi-dhamrai-to-chittagong-road-5",
         "route-al-madina-plus-one-nandan-park-to-kamalapur-9",
         "route-arnob-hemayetpur-to-demra-staff-quarter-15",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-baishakhi-savar-to-notun-bazar-22",
         "route-basumati-gabtoli-to-maowa-24",
@@ -1819,7 +1808,7 @@
         "route-9-no-college-gate-to-mirpur-12-180",
         "route-brtc-motijheel-to-chandra-182"
       ],
-      "routeCount": 55
+      "routeCount": 54
     },
     {
       "id": "stop-ansar-camp",
@@ -1831,7 +1820,6 @@
         "route-achim-paribahan-gabtoli-to-demra-staff-quarter-0",
         "route-active-paribahan-shia-masjid-to-abdullahpur-1",
         "route-akik-ansar-camp-to-uttar-badda-7",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-cantonment-mirpur-14-to-savar-48",
         "route-champion-vashantek-to-gabtoli-50",
@@ -1856,7 +1844,7 @@
         "route-transilva-mirpur-1-to-jatrabari-163",
         "route-9-no-college-gate-to-mirpur-12-180"
       ],
-      "routeCount": 27
+      "routeCount": 26
     },
     {
       "id": "stop-mirpur-1",
@@ -1871,7 +1859,6 @@
         "route-al-makka-motijheel-to-mirpur-1-8",
         "route-alif-mirpur-14-to-nandan-park-10",
         "route-alif-mirpur-1-to-banasree-12",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-basumati-transport-gabtoli-to-gazipur-chourasta-25",
         "route-bikalpa-mirpur-12-to-motijheel-30",
@@ -1913,7 +1900,7 @@
         "route-transilva-mirpur-1-to-jatrabari-163",
         "route-9-no-college-gate-to-mirpur-12-180"
       ],
-      "routeCount": 47
+      "routeCount": 46
     },
     {
       "id": "stop-sony-cinema-hall",
@@ -1966,7 +1953,6 @@
         "route-al-makka-motijheel-to-mirpur-1-8",
         "route-alif-mirpur-14-to-nandan-park-10",
         "route-alif-mirpur-1-to-banasree-12",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-ayat-chiriyakhana-to-kamalapur-20",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-basumati-transport-gabtoli-to-gazipur-chourasta-25",
@@ -1995,7 +1981,7 @@
         "route-sakalpa-transport-chiriyakhana-to-kamalapur-137",
         "route-9-no-college-gate-to-mirpur-12-180"
       ],
-      "routeCount": 34
+      "routeCount": 33
     },
     {
       "id": "stop-mirpur-10",
@@ -2804,7 +2790,6 @@
         "route-alif-shia-masjid-to-banasree-11",
         "route-alif-japan-garden-city-to-abdullahpur-13",
         "route-arnob-hemayetpur-to-demra-staff-quarter-15",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-baishakhi-savar-to-notun-bazar-22",
         "route-basumati-gabtoli-to-maowa-24",
@@ -2851,7 +2836,7 @@
         "route-9-no-college-gate-to-mirpur-12-180",
         "route-brtc-motijheel-to-chandra-182"
       ],
-      "routeCount": 53
+      "routeCount": 52
     },
     {
       "id": "stop-shewrapara",
@@ -3322,7 +3307,6 @@
         "route-ajmi-dhamrai-to-chittagong-road-5",
         "route-al-madina-plus-one-nandan-park-to-kamalapur-9",
         "route-arnob-hemayetpur-to-demra-staff-quarter-15",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-baishakhi-savar-to-notun-bazar-22",
         "route-basumati-gabtoli-to-maowa-24",
@@ -3363,7 +3347,7 @@
         "route-9-no-college-gate-to-mirpur-12-180",
         "route-brtc-motijheel-to-chandra-182"
       ],
-      "routeCount": 44
+      "routeCount": 43
     },
     {
       "id": "stop-shishu-mela",
@@ -3378,7 +3362,6 @@
         "route-alif-shia-masjid-to-banasree-11",
         "route-alif-japan-garden-city-to-abdullahpur-13",
         "route-arnob-hemayetpur-to-demra-staff-quarter-15",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-baishakhi-savar-to-notun-bazar-22",
         "route-basumati-gabtoli-to-maowa-24",
         "route-bhuiyan-paribahan-japan-garden-city-to-abdullahpur-28",
@@ -3418,7 +3401,7 @@
         "route-9-no-college-gate-to-mirpur-12-180",
         "route-brtc-motijheel-to-chandra-182"
       ],
-      "routeCount": 45
+      "routeCount": 44
     },
     {
       "id": "stop-agargaon",
@@ -4813,7 +4796,6 @@
       "routeIds": [
         "route-ajmi-dhamrai-to-chittagong-road-5",
         "route-al-madina-plus-one-nandan-park-to-kamalapur-9",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-basumati-gabtoli-to-maowa-24",
         "route-bikalpa-mirpur-12-to-dhakeshwari-31",
         "route-brtc-madanpur-to-savar-38",
@@ -4852,7 +4834,7 @@
         "route-9-no-college-gate-to-mirpur-12-180",
         "route-brtc-motijheel-to-chandra-182"
       ],
-      "routeCount": 40
+      "routeCount": 39
     },
     {
       "id": "stop-asad-gate",
@@ -4863,7 +4845,6 @@
       "routeIds": [
         "route-ajmi-dhamrai-to-chittagong-road-5",
         "route-al-madina-plus-one-nandan-park-to-kamalapur-9",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-atcl-mohammadpur-to-arambagh-notre-dame-college-19",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-basumati-gabtoli-to-maowa-24",
@@ -4909,7 +4890,7 @@
         "route-8-no-jatrabari-to-gabtoli-179",
         "route-brtc-motijheel-to-chandra-182"
       ],
-      "routeCount": 47
+      "routeCount": 46
     },
     {
       "id": "stop-dhanmondi-27",
@@ -4919,7 +4900,6 @@
       "slug": "dhanmondi-27",
       "routeIds": [
         "route-ajmi-dhamrai-to-chittagong-road-5",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-best-satabdi-azimpur-to-dia-bari-26",
         "route-bikalpa-mirpur-12-to-dhakeshwari-31",
@@ -4944,7 +4924,7 @@
         "route-transilva-mirpur-1-to-jatrabari-163",
         "route-7-no-gabtoli-to-sadarghat-178"
       ],
-      "routeCount": 25
+      "routeCount": 24
     },
     {
       "id": "stop-dhanmondi-32",
@@ -4954,7 +4934,6 @@
       "slug": "dhanmondi-32",
       "routeIds": [
         "route-ajmi-dhamrai-to-chittagong-road-5",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-best-satabdi-azimpur-to-dia-bari-26",
         "route-bikalpa-mirpur-12-to-dhakeshwari-31",
@@ -4979,7 +4958,7 @@
         "route-transilva-mirpur-1-to-jatrabari-163",
         "route-7-no-gabtoli-to-sadarghat-178"
       ],
-      "routeCount": 25
+      "routeCount": 24
     },
     {
       "id": "stop-kalabagan",
@@ -4989,7 +4968,6 @@
       "slug": "kalabagan",
       "routeIds": [
         "route-ajmi-dhamrai-to-chittagong-road-5",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-atcl-mohammadpur-to-arambagh-notre-dame-college-19",
         "route-bahon-mirpur-14-to-khilgaon-21",
         "route-best-satabdi-azimpur-to-dia-bari-26",
@@ -5020,7 +4998,7 @@
         "route-winner-azimpur-to-kuril-bishwa-road-173",
         "route-7-no-gabtoli-to-sadarghat-178"
       ],
-      "routeCount": 31
+      "routeCount": 30
     },
     {
       "id": "stop-city-college",
@@ -5030,7 +5008,6 @@
       "slug": "city-college",
       "routeIds": [
         "route-ajmi-dhamrai-to-chittagong-road-5",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-atcl-mohammadpur-to-arambagh-notre-dame-college-19",
         "route-best-satabdi-azimpur-to-dia-bari-26",
         "route-bikalpa-mirpur-12-to-dhakeshwari-31",
@@ -5068,7 +5045,7 @@
         "route-13-no-mohammadpur-to-azimpur-174",
         "route-deepan-tajmahal-road-to-arambagh-181"
       ],
-      "routeCount": 38
+      "routeCount": 37
     },
     {
       "id": "stop-new-market",
@@ -5078,7 +5055,6 @@
       "slug": "new-market",
       "routeIds": [
         "route-ajmi-dhamrai-to-chittagong-road-5",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-best-satabdi-azimpur-to-dia-bari-26",
         "route-bikalpa-mirpur-12-to-dhakeshwari-31",
         "route-bikash-azimpur-to-kamarpara-32",
@@ -5103,7 +5079,7 @@
         "route-winner-azimpur-to-kuril-bishwa-road-173",
         "route-13-no-mohammadpur-to-azimpur-174"
       ],
-      "routeCount": 25
+      "routeCount": 24
     },
     {
       "id": "stop-nilkhet",
@@ -5113,7 +5089,6 @@
       "slug": "nilkhet",
       "routeIds": [
         "route-ajmi-dhamrai-to-chittagong-road-5",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-best-satabdi-azimpur-to-dia-bari-26",
         "route-bikalpa-mirpur-12-to-dhakeshwari-31",
         "route-bikash-azimpur-to-kamarpara-32",
@@ -5138,7 +5113,7 @@
         "route-winner-azimpur-to-kuril-bishwa-road-173",
         "route-13-no-mohammadpur-to-azimpur-174"
       ],
-      "routeCount": 25
+      "routeCount": 24
     },
     {
       "id": "stop-azimpur",
@@ -5148,7 +5123,6 @@
       "slug": "azimpur",
       "routeIds": [
         "route-ajmi-dhamrai-to-chittagong-road-5",
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-best-satabdi-azimpur-to-dia-bari-26",
         "route-bikalpa-mirpur-12-to-dhakeshwari-31",
         "route-bikash-azimpur-to-kamarpara-32",
@@ -5174,7 +5148,7 @@
         "route-winner-azimpur-to-kuril-bishwa-road-173",
         "route-13-no-mohammadpur-to-azimpur-174"
       ],
-      "routeCount": 26
+      "routeCount": 25
     },
     {
       "id": "stop-bakshi-bazar",
@@ -6028,36 +6002,13 @@
       "routeCount": 11
     },
     {
-      "id": "stop-duairipara",
-      "label": "Duairipara (দুয়াইরিপাড়া)",
-      "labelEn": "Duairipara",
-      "labelBn": "দুয়াইরিপাড়া",
-      "slug": "duairipara",
-      "routeIds": [
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16"
-      ],
-      "routeCount": 1
-    },
-    {
       "id": "stop-rupnagar-abashik",
       "label": "Rupnagar Abashik (রূপনগর আবাসিক)",
       "labelEn": "Rupnagar Abashik",
       "labelBn": "রূপনগর আবাসিক",
       "slug": "rupnagar-abashik",
       "routeIds": [
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-everest-paribahan-rupnagar-abashik-to-keraniganj-66"
-      ],
-      "routeCount": 2
-    },
-    {
-      "id": "stop-shiyal-bari",
-      "label": "Shiyal Bari (শিয়াল বাড়ি)",
-      "labelEn": "Shiyal Bari",
-      "labelBn": "শিয়াল বাড়ি",
-      "slug": "shiyal-bari",
-      "routeIds": [
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16"
       ],
       "routeCount": 1
     },
@@ -6068,10 +6019,9 @@
       "labelBn": "প্রশিকা মোড়",
       "slug": "proshika-moor",
       "routeIds": [
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-9-no-college-gate-to-mirpur-12-180"
       ],
-      "routeCount": 2
+      "routeCount": 1
     },
     {
       "id": "stop-shukrabad",
@@ -6080,14 +6030,13 @@
       "labelBn": "শুক্রাবাদ",
       "slug": "shukrabad",
       "routeIds": [
-        "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
         "route-atcl-mohammadpur-to-arambagh-notre-dame-college-19",
         "route-dhaka-metro-service-mirpur-1-to-azimpur-58",
         "route-mtcl-2-mohammadpur-to-fantasy-kingdom-108",
         "route-nabakali-chiriyakhana-to-keraniganj-110",
         "route-shahria-enterprise-gabtoli-to-postogola-142"
       ],
-      "routeCount": 6
+      "routeCount": 5
     },
     {
       "id": "stop-jamgora",
@@ -9070,70 +9019,6 @@
         "Demra Staff Quarter (ডেমরা স্টাফ কোয়ার্টার)"
       ],
       "stopCount": 20,
-      "serviceType": "Semi-Seating Service",
-      "openingTimeText": "Time: 06:00",
-      "openingTime24h": "06:00",
-      "closingTimeText": "Time: 10:00",
-      "closingTime24h": "10:00"
-    },
-    {
-      "id": "route-ashirbad-pahibahan-duairipara-to-azimpur-16",
-      "sourceIndex": 16,
-      "busId": "bus-ashirbad-pahibahan",
-      "busLabel": "Ashirbad Pahibahan (আশীর্বাদ পরিবহন)",
-      "busLabelEn": "Ashirbad Pahibahan",
-      "busLabelBn": "আশীর্বাদ পরিবহন",
-      "startStopId": "stop-duairipara",
-      "endStopId": "stop-azimpur",
-      "startLabel": "Duairipara (দুয়াইরিপাড়া)",
-      "endLabel": "Azimpur (আজিমপুর)",
-      "stopIds": [
-        "stop-duairipara",
-        "stop-rupnagar-abashik",
-        "stop-shiyal-bari",
-        "stop-proshika-moor",
-        "stop-mirpur-2",
-        "stop-mirpur-1",
-        "stop-ansar-camp",
-        "stop-technical",
-        "stop-kallyanpur",
-        "stop-shyamoli",
-        "stop-shishu-mela",
-        "stop-college-gate",
-        "stop-asad-gate",
-        "stop-dhanmondi-27",
-        "stop-shukrabad",
-        "stop-dhanmondi-32",
-        "stop-kalabagan",
-        "stop-city-college",
-        "stop-new-market",
-        "stop-nilkhet",
-        "stop-azimpur"
-      ],
-      "stopLabels": [
-        "Duairipara (দুয়াইরিপাড়া)",
-        "Rupnagar Abashik (রূপনগর আবাসিক)",
-        "Shiyal Bari (শিয়াল বাড়ি)",
-        "Proshika Moor (প্রশিকা মোড়)",
-        "Mirpur 2 (মিরপুর ২)",
-        "Mirpur 1 (মিরপুর ১)",
-        "Ansar Camp (আনসার ক্যাম্প)",
-        "Technical (টেকনিক্যাল)",
-        "Kallyanpur (কল্যাণপুর)",
-        "Shyamoli (শ্যামলী)",
-        "Shishu Mela (শিশু মেলা)",
-        "College Gate (কলেজ গেট)",
-        "Asad Gate (আসাদ গেট)",
-        "Dhanmondi 27 (ধানমন্ডি ২৭)",
-        "Shukrabad (শুক্রাবাদ)",
-        "Dhanmondi 32 (ধানমন্ডি ৩২)",
-        "Kalabagan (কলাবাগান)",
-        "City College (সিটি কলেজ)",
-        "New Market (নিউ মার্কেট)",
-        "Nilkhet (নীলক্ষেত)",
-        "Azimpur (আজিমপুর)"
-      ],
-      "stopCount": 21,
       "serviceType": "Semi-Seating Service",
       "openingTimeText": "Time: 06:00",
       "openingTime24h": "06:00",
