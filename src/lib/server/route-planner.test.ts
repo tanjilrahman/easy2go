@@ -851,6 +851,51 @@ describe("calculateRoutes", () => {
     expect(route?.estimatedDistanceKm).toBe(2.4);
   });
 
+  it("reclassifies connector type from snapped road distance", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "test-key");
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        features: [
+          {
+            properties: {
+              distance: 4200,
+              time: 900,
+            },
+            geometry: {
+              type: "LineString",
+              coordinates: [
+                [90.35, 23.78],
+                [90.34, 23.91],
+              ],
+            },
+          },
+        ],
+      }),
+    }) as typeof fetch;
+
+    const response = await calculateRoutes({
+      origin: { name: "Technical", canonicalId: "stop-technical", type: "bus_stop" },
+      destination: {
+        name: "Near Birulia",
+        coordinates: [23.9172, 90.3342],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+    const route = response.routes[0];
+    const finalConnector = route?.segments.at(-1);
+
+    expect(finalConnector?.mode).toBe("rickshaw");
+    expect(finalConnector?.distanceSource).toBe("road_api");
+    expect(finalConnector?.connectorDistanceKm).toBe(4.2);
+    expect(finalConnector?.connectorType).toBe("long_rickshaw");
+    expect(finalConnector?.fareText).toMatch(/Approx\. BDT \d+-\d+/);
+    expect(route?.tradeoffs).toContain(
+      "Long connector: local shared transport could be available.",
+    );
+  });
+
   it("uses only local bus and metro datasets while calculating routes when snapping is disabled", async () => {
     vi.stubEnv("GEOAPIFY_API_KEY", "");
     const fetchSpy = vi.fn();

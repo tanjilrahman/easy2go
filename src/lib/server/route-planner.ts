@@ -1694,6 +1694,27 @@ function estimateRoadDurationMinutes(
   return segment.estimatedDurationMinutes;
 }
 
+function classifySnappedConnectorType(
+  segment: RouteSegment,
+  distanceKm: number,
+) {
+  if (!segment.connectorType) {
+    return undefined;
+  }
+
+  if (segment.mode === "walk") {
+    return "walk" as const;
+  }
+
+  if (segment.mode === "rickshaw" || segment.mode === "ride_share") {
+    return distanceKm <= LONG_RICKSHAW_MIN_KM
+      ? ("rickshaw" as const)
+      : ("long_rickshaw" as const);
+  }
+
+  return segment.connectorType;
+}
+
 function applyRoadMetricsToSegment(
   segment: RouteSegment,
   route: RoadSnappedRoute,
@@ -1723,9 +1744,10 @@ function applyRoadMetricsToSegment(
   }
 
   if (segment.mode === "rickshaw" || segment.mode === "ride_share") {
+    const connectorType = classifySnappedConnectorType(segment, distanceKm);
     const fare = estimateRickshawFareBdt(distanceKm);
     const sharedFareRange =
-      segment.connectorType === "long_rickshaw"
+      connectorType === "long_rickshaw"
         ? estimateSharedConnectorFareRangeBdt(distanceKm)
         : undefined;
     const lowFare = sharedFareRange?.low ?? fare;
@@ -1733,8 +1755,13 @@ function applyRoadMetricsToSegment(
 
     return {
       ...segment,
+      connectorType,
+      note:
+        connectorType === "long_rickshaw"
+          ? LONG_CONNECTOR_SHARED_TRANSPORT_NOTE
+          : undefined,
       fareText: fare
-        ? segment.connectorType === "long_rickshaw"
+        ? connectorType === "long_rickshaw"
           ? formatApproxFareRange(lowFare ?? fare, highFare ?? fare)
           : formatApproxFare(fare)
         : undefined,
@@ -2210,8 +2237,7 @@ async function applyRoadSnappedMapPreview(route: RouteOption) {
   });
   const metrics = metricsFromSegments(segments);
   const fareText = formatMetricsFare(metrics, route.fareType);
-
-  return routeOptionSchema.parse({
+  const metricsRoute = routeOptionSchema.parse({
     ...route,
     fareText,
     totalCost: metrics.totalCost,
@@ -2219,6 +2245,30 @@ async function applyRoadSnappedMapPreview(route: RouteOption) {
     totalCostHighBdt: metrics.totalCostHighBdt ?? metrics.totalCost,
     estimatedDistanceKm: metrics.estimatedDistanceKm,
     estimatedDurationMinutes: metrics.estimatedDurationMinutes,
+    segments,
+    mapPreview: {
+      ...route.mapPreview,
+      lines,
+    },
+  });
+  const burden = connectorBurden(metricsRoute);
+  const analysis = analyzeRoute(metricsRoute);
+  const stableTradeoffs = route.tradeoffs.filter(
+    (tradeoff) =>
+      tradeoff !== "High connector burden" &&
+      tradeoff !== "Moderate connector burden" &&
+      tradeoff !== LONG_CONNECTOR_SHARED_TRANSPORT_NOTE,
+  );
+
+  return routeOptionSchema.parse({
+    ...metricsRoute,
+    fareText,
+    totalCost: metrics.totalCost,
+    totalCostLowBdt: metrics.totalCostLowBdt ?? metrics.totalCost,
+    totalCostHighBdt: metrics.totalCostHighBdt ?? metrics.totalCost,
+    estimatedDistanceKm: metrics.estimatedDistanceKm,
+    estimatedDurationMinutes: metrics.estimatedDurationMinutes,
+    connectorBurden: burden,
     highlights: dedupeStrings([
       metrics.estimatedDurationMinutes
         ? `${metrics.estimatedDurationMinutes} min`
@@ -2229,6 +2279,14 @@ async function applyRoadSnappedMapPreview(route: RouteOption) {
       route.transferCount === 0
         ? "No transfers"
         : `${route.transferCount} transfer`,
+    ]),
+    tradeoffs: dedupeStrings([
+      ...stableTradeoffs,
+      burden === "high" ? "High connector burden" : "",
+      analysis.longRickshawCount > 0
+        ? LONG_CONNECTOR_SHARED_TRANSPORT_NOTE
+        : "",
+      burden === "medium" ? "Moderate connector burden" : "",
     ]),
     segments,
     mapPreview: {
