@@ -1,7 +1,7 @@
 "use client";
 
 import { startTransition, useEffect, useMemo, useState } from "react";
-import { ArrowLeft, LocateFixed, MapPin, X } from "lucide-react";
+import { ArrowLeft, LocateFixed, MapPin, MapPinned, X } from "lucide-react";
 
 import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
@@ -202,20 +202,22 @@ export function RoutePlannerApp() {
 
   function applyMapLocation(coordinates: [number, number], field: MapPickMode) {
     const nextLocation: LocationInput = {
-      name: field === "origin" ? "Current location" : "Map destination",
+      name: field === "origin" ? "Starting point" : "Map destination",
       address: `Selected on map: ${coordinates[0]}, ${coordinates[1]}`,
       type: "place",
       coordinates,
     };
 
     applyLocation(nextLocation, field);
-    if (field === "origin") {
-      setCurrentCoordinates(coordinates);
-    }
     setLocationError(null);
-    setMapPickMode(null);
     clearCurrentRoute();
     setPane("compose");
+
+    if (field === "origin") {
+      setMapPickMode("destination");
+    } else {
+      setMapPickMode(null);
+    }
   }
 
   function clearCurrentRoute() {
@@ -348,12 +350,12 @@ export function RoutePlannerApp() {
           onClick={() => setMapPickMode((current) => (current === "origin" ? null : "origin"))}
           className={`inline-flex h-8 items-center gap-1 rounded-md px-2 text-xs font-bold transition sm:h-9 sm:gap-1.5 sm:rounded-lg sm:px-2.5 ${
             mapPickMode === "origin"
-              ? "bg-emerald-600 text-white shadow-md"
+              ? "bg-primary text-primary-foreground shadow-md"
               : "text-foreground hover:bg-muted"
           }`}
         >
-          <LocateFixed className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-          <span className="hidden sm:inline">Current</span>
+          <MapPinned className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+          <span className="hidden sm:inline">Starting</span>
         </button>
         <button
           type="button"

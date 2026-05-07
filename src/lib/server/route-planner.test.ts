@@ -447,7 +447,7 @@ describe("calculateRoutes", () => {
     expect(response.routes.some((route) => route.kind === "bus_transfer")).toBe(false);
   });
 
-  it("surfaces a metro to bus hybrid when it avoids a long metro connector", async () => {
+  it("avoids long metro connectors when cleaner Notun Bazar corridor routes exist", async () => {
     const response = await calculateRoutes({
       origin: {
         name: "Mirpur edge origin",
@@ -461,16 +461,15 @@ describe("calculateRoutes", () => {
       },
       optimization: "recommended",
     });
-    const notunBazarHybrid = (route: (typeof response.routes)[number]) =>
-      route.kind === "bus_metro_hybrid" &&
+    const notunBazarCorridorRoute = (route: (typeof response.routes)[number]) =>
       route.segments.some(
         (segment) =>
           segment.mode === "bus" &&
           normalizeTransitText(segment.endLocation).includes("notun bazar"),
       );
 
-    expect(response.debugRoutes?.some(notunBazarHybrid)).toBe(true);
-    expect(response.routes.some(notunBazarHybrid)).toBe(true);
+    expect(response.debugRoutes?.some(notunBazarCorridorRoute)).toBe(true);
+    expect(response.routes.some(notunBazarCorridorRoute)).toBe(true);
     expect(
       response.routes.some(
         (route) =>
@@ -538,6 +537,38 @@ describe("calculateRoutes", () => {
           ),
       ),
     ).toBe(false);
+  });
+
+  it("suppresses transfers and hybrids when direct buses serve the destination corridor", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "");
+
+    const response = await calculateRoutes({
+      origin: {
+        name: "Mirpur edge origin",
+        coordinates: [23.812996872570377, 90.35643449183326],
+        type: "place",
+      },
+      destination: {
+        name: "Badda corridor destination",
+        coordinates: [23.799611208916872, 90.44341730558479],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+
+    expect(response.routes.length).toBeGreaterThan(0);
+    expect(response.routes.every((route) => route.kind === "bus_direct")).toBe(true);
+    expect(
+      response.routes.some((route) =>
+        route.segments.some(
+          (segment) =>
+            segment.mode === "bus" &&
+            ["nadda", "notun bazar"].some((label) =>
+              normalizeTransitText(segment.endLocation).includes(label),
+            ),
+        ),
+      ),
+    ).toBe(true);
   });
 
   it("draws metro routes from the station-derived MRT Line 6 shape", async () => {

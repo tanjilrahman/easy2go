@@ -164,6 +164,11 @@ const METRO_SURFACE_MAX_EXTRA_MINUTES = 18;
 const SURFACE_DIVERSITY_MAX_SCORE_GAP = 45;
 const TRANSFER_DIRECT_ALTERNATIVE_MIN_TIME_SAVED_MINUTES = 8;
 const TRANSFER_DIRECT_ALTERNATIVE_MAX_EXTRA_COST_BDT = 40;
+const DIRECT_BUS_HYBRID_DOMINANCE_MAX_EXTRA_MINUTES = 10;
+const DIRECT_BUS_HYBRID_DOMINANCE_MAX_EXTRA_COST_BDT = 40;
+const DIRECT_BUS_HYBRID_DOMINANCE_MIN_FINAL_ADVANTAGE_KM = 1;
+const DIRECT_BUS_HYBRID_DOMINANCE_MIN_CONNECTOR_ADVANTAGE_KM = 0.5;
+const DIRECT_BUS_HYBRID_SAME_ALIGHTING_MIN_TIME_SAVED_MINUTES = 5;
 const LONG_CONNECTOR_HYBRID_RESCUE_MAX_EXTRA_MINUTES = 35;
 const LONG_CONNECTOR_HYBRID_RESCUE_MIN_CONNECTOR_REDUCTION_KM = 1.5;
 const LONG_CONNECTOR_HYBRID_RESCUE_MAX_FINAL_CONNECTOR_KM =
@@ -622,6 +627,9 @@ function isTransferDominatedByDirectRoute(
   const directIsClearlyFaster =
     directDuration + TRANSFER_DIRECT_ALTERNATIVE_MIN_TIME_SAVED_MINUTES <=
     transferDuration;
+  const transferDoesNotSaveEnoughTime =
+    directDuration <=
+    transferDuration + TRANSFER_DIRECT_ALTERNATIVE_MIN_TIME_SAVED_MINUTES;
   const directIsNotMateriallyPricier =
     directCost <= transferCost + TRANSFER_DIRECT_ALTERNATIVE_MAX_EXTRA_COST_BDT;
 
@@ -629,7 +637,9 @@ function isTransferDominatedByDirectRoute(
     (hasSameEndpoints &&
       directDuration <= transferDuration &&
       directCost <= transferCost + 20) ||
-    (hasSameAlighting && directIsClearlyFaster && directIsNotMateriallyPricier)
+    (hasSameAlighting &&
+      (directIsClearlyFaster || transferDoesNotSaveEnoughTime) &&
+      directIsNotMateriallyPricier)
   );
 }
 
@@ -967,6 +977,68 @@ function removeMetroDominatedHybridRoutes(routes: RouteOption[]) {
       route.kind !== "bus_metro_hybrid" ||
       !directMetroRoutes.some((metroRoute) =>
         directMetroDominatesHybrid(route, metroRoute),
+      ),
+  );
+}
+
+function directBusDominatesHybrid(
+  hybridRoute: RouteOption,
+  directRoute: RouteOption,
+) {
+  const hybridDuration =
+    hybridRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const directDuration =
+    directRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const hybridCost = hybridRoute.totalCost ?? Number.MAX_SAFE_INTEGER;
+  const directCost = directRoute.totalCost ?? Number.MAX_SAFE_INTEGER;
+  const directGetsCloser =
+    routeFinalTransitToDestinationDistanceKm(directRoute) +
+      DIRECT_BUS_HYBRID_DOMINANCE_MIN_FINAL_ADVANTAGE_KM <=
+    routeFinalTransitToDestinationDistanceKm(hybridRoute);
+  const directHasLowerConnectorBurden =
+    routeConnectorDistanceKm(directRoute) +
+      DIRECT_BUS_HYBRID_DOMINANCE_MIN_CONNECTOR_ADVANTAGE_KM <=
+    routeConnectorDistanceKm(hybridRoute);
+  const directHasNoWorseConnectorBurden =
+    routeConnectorDistanceKm(directRoute) <=
+    routeConnectorDistanceKm(hybridRoute) + 0.25;
+  const hasSameAlighting =
+    normalizeTransitText(hybridRoute.alighting.label) ===
+    normalizeTransitText(directRoute.alighting.label);
+  const directIsClearlyBetterSameAlighting =
+    hasSameAlighting &&
+    directDuration + DIRECT_BUS_HYBRID_SAME_ALIGHTING_MIN_TIME_SAVED_MINUTES <=
+      hybridDuration &&
+    directHasNoWorseConnectorBurden;
+  const directIsClearlyBetterOverall =
+    directDuration + DIRECT_BUS_HYBRID_SAME_ALIGHTING_MIN_TIME_SAVED_MINUTES <=
+      hybridDuration &&
+    directHasNoWorseConnectorBurden &&
+    routeFinalTransitToDestinationDistanceKm(directRoute) <=
+      routeFinalTransitToDestinationDistanceKm(hybridRoute) + 0.5;
+
+  return (
+    (directIsClearlyBetterSameAlighting ||
+      directIsClearlyBetterOverall ||
+      (directGetsCloser && directHasLowerConnectorBurden)) &&
+    directDuration <=
+      hybridDuration + DIRECT_BUS_HYBRID_DOMINANCE_MAX_EXTRA_MINUTES &&
+    directCost <= hybridCost + DIRECT_BUS_HYBRID_DOMINANCE_MAX_EXTRA_COST_BDT
+  );
+}
+
+function removeBusDominatedHybridRoutes(routes: RouteOption[]) {
+  const directBusRoutes = routes.filter((route) => route.kind === "bus_direct");
+
+  if (!directBusRoutes.length) {
+    return routes;
+  }
+
+  return routes.filter(
+    (route) =>
+      route.kind !== "bus_metro_hybrid" ||
+      !directBusRoutes.some((directRoute) =>
+        directBusDominatesHybrid(route, directRoute),
       ),
   );
 }
@@ -3443,7 +3515,9 @@ export function surfaceRoutes(
     selectedRoutes.push(annotateSurfaceRoute(route, SCORE_PROFILES.balanced));
   }
 
-  return diversifySurfaceRoutes(selectedRoutes, uniqueRoutes).slice(0, 3);
+  return removeBusDominatedHybridRoutes(
+    diversifySurfaceRoutes(selectedRoutes, uniqueRoutes),
+  ).slice(0, 3);
 }
 
 export async function calculateRoutes(payload: CalculateRouteRequest) {

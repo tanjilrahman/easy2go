@@ -366,7 +366,7 @@ function addMapLayers(map: MapLibreMap) {
             "match",
             ["get", "role"],
             "origin",
-            MAP_COLORS.origin,
+            "#5a43d7",
             "destination",
             MAP_COLORS.destination,
             "boarding",
@@ -647,7 +647,7 @@ export function OpenMap({
       <div ref={containerRef} className="h-full w-full" />
       {pickMode ? (
         <div className="pointer-events-none absolute left-1/2 top-20 z-10 -translate-x-1/2 rounded-full border border-white/80 bg-white/94 px-3 py-2 text-xs font-bold text-[rgb(55,42,123)] shadow-[0_18px_48px_-28px_rgba(29,21,63,0.34)] backdrop-blur">
-          Click the map to set {pickMode === "origin" ? "current location" : "destination"}
+          Click the map to set {pickMode === "origin" ? "starting point" : "destination"}
         </div>
       ) : null}
     </div>
