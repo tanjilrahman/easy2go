@@ -112,12 +112,16 @@ function buildRoutePointCollection(
 
   return {
     type: "FeatureCollection",
-    features: route.mapPreview.points.map((point) =>
-      makePointFeature(point.coordinates, {
+    features: route.mapPreview.points.map((point) => {
+      const isGps =
+        point.label?.toLowerCase().includes("current location") ||
+        point.label?.toLowerCase().includes("your location");
+      return makePointFeature(point.coordinates, {
         label: formatMapLabel(point.label),
         role: point.role,
-      }),
-    ),
+        isGps: isGps ? "true" : "false",
+      });
+    }),
   };
 }
 
@@ -137,12 +141,17 @@ function buildSelectedPointCollection(
         ? makePointFeature(originSelection.coordinates, {
             label: formatMapLabel(originSelection.name),
             role: "origin",
+            isGps:
+              originSelection.name?.toLowerCase().includes("current location")
+                ? "true"
+                : "false",
           })
         : null,
       destinationSelection?.coordinates
         ? makePointFeature(destinationSelection.coordinates, {
             label: formatMapLabel(destinationSelection.name),
             role: "destination",
+            isGps: "false",
           })
         : null,
     ].filter((feature): feature is Feature<Point> => feature !== null),
@@ -199,7 +208,7 @@ function addMapLayers(map: MapLibreMap) {
       type: "line",
       source: SOURCE_IDS.routeLines,
       paint: {
-        "line-color": "rgba(15, 23, 42, 0.22)",
+        "line-color": "rgba(90, 67, 215, 0.22)",
         "line-width": 8,
         "line-blur": 2,
         "line-translate": [0, 2],
@@ -290,7 +299,7 @@ function addMapLayers(map: MapLibreMap) {
         "symbol-spacing": 150,
       },
       paint: {
-        "text-color": "#1e293b",
+        "text-color": "#261f54",
         "text-halo-color": "#ffffff",
         "text-halo-width": 3,
         "text-halo-blur": 1,
@@ -332,7 +341,15 @@ function addMapLayers(map: MapLibreMap) {
         type: "circle",
         source: config.source,
         paint: {
-          "circle-radius": config.radius + 4,
+          "circle-radius": [
+            "match",
+            ["get", "role"],
+            "origin",
+            12,
+            "destination",
+            12,
+            config.radius + 4,
+          ],
           "circle-color": "#ffffff",
           "circle-opacity": 0.94,
         },
@@ -348,29 +365,38 @@ function addMapLayers(map: MapLibreMap) {
           "circle-radius": [
             "match",
             ["get", "role"],
+            "origin",
+            8,
+            "destination",
+            8,
             "stop",
             Math.max(4, config.radius - 3),
             config.radius,
           ],
-          "circle-color": [
-            "match",
-            ["get", "role"],
-            "origin",
-            "#5a43d7",
-            "destination",
-            MAP_COLORS.destination,
-            "boarding",
-            MAP_COLORS.bus,
-            "alighting",
-            MAP_COLORS.destination,
-            "transfer",
-            MAP_COLORS.transfer,
-            "stop",
-            "#64748b",
-            "user",
-            MAP_COLORS.origin,
-            MAP_COLORS.transfer,
-          ],
+            "circle-color": [
+              "match",
+              ["get", "role"],
+              "origin",
+              [
+                "case",
+                ["==", ["get", "isGps"], "true"],
+                "#13b86d",
+                MAP_COLORS.origin,
+              ],
+              "destination",
+              MAP_COLORS.destination,
+              "boarding",
+              MAP_COLORS.bus,
+              "alighting",
+              MAP_COLORS.destination,
+              "transfer",
+              MAP_COLORS.transfer,
+              "stop",
+              "#655d89",
+              "user",
+              "#13b86d",
+              MAP_COLORS.transfer,
+            ],
           "circle-stroke-color": "#ffffff",
           "circle-stroke-width": 2,
         },
@@ -394,7 +420,7 @@ function addMapLayers(map: MapLibreMap) {
           "text-anchor": "top",
         },
         paint: {
-          "text-color": "#0f172a",
+          "text-color": "#261f54",
           "text-halo-color": "#ffffff",
           "text-halo-width": 3,
         },
