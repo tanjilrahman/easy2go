@@ -123,10 +123,10 @@ const ACCESS_WALK_MAX_KM = 0.8;
 const LONG_RICKSHAW_MIN_KM = 3.5;
 
 // Speed and timing estimates.
-const BUS_SPEED_KMPH = 13;
+const BUS_SPEED_KMPH = 18;
 const METRO_SPEED_KMPH = 32;
 const WALK_SPEED_KMPH = 4.6;
-const RICKSHAW_SPEED_KMPH = 10;
+const RICKSHAW_SPEED_KMPH = 13;
 const BUS_STOP_DELAY_MINUTES = 0.7;
 const METRO_STATION_DELAY_MINUTES = 0.7;
 const TRANSFER_BUFFER_MINUTES = 6;
@@ -168,6 +168,16 @@ const LONG_CONNECTOR_HYBRID_RESCUE_MAX_EXTRA_MINUTES = 35;
 const LONG_CONNECTOR_HYBRID_RESCUE_MIN_CONNECTOR_REDUCTION_KM = 1.5;
 const LONG_CONNECTOR_HYBRID_RESCUE_MAX_FINAL_CONNECTOR_KM =
   LONG_RICKSHAW_MIN_KM;
+const DESTINATION_REACHED_TRANSIT_MAX_KM = 0.75;
+const DESTINATION_OVERSHOOT_MIN_EXTRA_KM = 0.35;
+const DIRECT_METRO_DOMINATES_HYBRID_MAX_EXTRA_MINUTES = 12;
+const DIRECT_METRO_DESTINATION_MAX_KM = 0.9;
+const POST_SNAP_OUTLIER_MAX_EXTRA_MINUTES = 60;
+const POST_SNAP_OUTLIER_MAX_DURATION_MULTIPLIER = 1.75;
+const POST_SNAP_OUTLIER_KEEP_CHEAPER_BY_BDT = 80;
+const POST_SNAP_LONG_CONNECTOR_MAX_MINUTES = 60;
+const POST_SNAP_LONG_CONNECTOR_MAX_TOTAL_SHARE = 0.6;
+const POST_SNAP_LONG_CONNECTOR_MIN_TOTAL_MINUTES = 45;
 const PURPOSEFUL_LONG_CONNECTOR_MIN_KM = 1.1;
 const PURPOSEFUL_LONG_CONNECTOR_MAX_KM = 9;
 const TRANSFER_SEARCH_PAIR_LIMIT = 8;
@@ -610,12 +620,10 @@ function isTransferDominatedByDirectRoute(
     normalizeTransitText(transferRoute.alighting.label) ===
     normalizeTransitText(directRoute.alighting.label);
   const directIsClearlyFaster =
-    directDuration +
-      TRANSFER_DIRECT_ALTERNATIVE_MIN_TIME_SAVED_MINUTES <=
+    directDuration + TRANSFER_DIRECT_ALTERNATIVE_MIN_TIME_SAVED_MINUTES <=
     transferDuration;
   const directIsNotMateriallyPricier =
-    directCost <=
-    transferCost + TRANSFER_DIRECT_ALTERNATIVE_MAX_EXTRA_COST_BDT;
+    directCost <= transferCost + TRANSFER_DIRECT_ALTERNATIVE_MAX_EXTRA_COST_BDT;
 
   return (
     (hasSameEndpoints &&
@@ -860,6 +868,109 @@ function routeFinalTransitToDestinationDistanceKm(route: RouteOption) {
   return haversineDistanceKm(transitEndCoordinates, destinationCoordinates);
 }
 
+function transitSegmentDistanceToDestinationKm(
+  segment: RouteSegment,
+  destinationCoordinates: [number, number] | undefined,
+) {
+  const endCoordinates = findLabelCoordinates(segment.endLocation);
+
+  if (!endCoordinates || !destinationCoordinates) {
+    return undefined;
+  }
+
+  return haversineDistanceKm(endCoordinates, destinationCoordinates);
+}
+
+function routeBacktracksAfterReachingDestination(route: RouteOption) {
+  const destinationCoordinates = routeEndpointCoordinates(route).destination;
+
+  if (!destinationCoordinates) {
+    return false;
+  }
+
+  const transitSegments = route.segments.filter(
+    (segment) => segment.mode === "bus" || segment.mode === "metro",
+  );
+  let bestReachedDistance = Number.POSITIVE_INFINITY;
+
+  for (const [index, segment] of transitSegments.entries()) {
+    const distanceToDestination = transitSegmentDistanceToDestinationKm(
+      segment,
+      destinationCoordinates,
+    );
+
+    if (distanceToDestination === undefined) {
+      continue;
+    }
+
+    if (
+      bestReachedDistance <= DESTINATION_REACHED_TRANSIT_MAX_KM &&
+      distanceToDestination >=
+        bestReachedDistance + DESTINATION_OVERSHOOT_MIN_EXTRA_KM
+    ) {
+      return true;
+    }
+
+    if (index < transitSegments.length - 1) {
+      bestReachedDistance = Math.min(
+        bestReachedDistance,
+        distanceToDestination,
+      );
+    }
+  }
+
+  return false;
+}
+
+function removeDestinationBacktrackingRoutes(routes: RouteOption[]) {
+  return routes.filter(
+    (route) => !routeBacktracksAfterReachingDestination(route),
+  );
+}
+
+function routeConnectorDistanceKm(route: RouteOption) {
+  return route.segments
+    .filter((segment) => segment.connectorType)
+    .reduce((sum, segment) => sum + connectorSegmentDistanceKm(segment), 0);
+}
+
+function directMetroDominatesHybrid(
+  hybridRoute: RouteOption,
+  metroRoute: RouteOption,
+) {
+  const metroDuration =
+    metroRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+  const hybridDuration =
+    hybridRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
+
+  return (
+    routeFinalTransitToDestinationDistanceKm(metroRoute) <=
+      DIRECT_METRO_DESTINATION_MAX_KM &&
+    metroDuration <=
+      hybridDuration + DIRECT_METRO_DOMINATES_HYBRID_MAX_EXTRA_MINUTES &&
+    routeConnectorDistanceKm(metroRoute) <=
+      routeConnectorDistanceKm(hybridRoute) + 0.25
+  );
+}
+
+function removeMetroDominatedHybridRoutes(routes: RouteOption[]) {
+  const directMetroRoutes = routes.filter(
+    (route) => route.kind === "metro_direct",
+  );
+
+  if (!directMetroRoutes.length) {
+    return routes;
+  }
+
+  return routes.filter(
+    (route) =>
+      route.kind !== "bus_metro_hybrid" ||
+      !directMetroRoutes.some((metroRoute) =>
+        directMetroDominatesHybrid(route, metroRoute),
+      ),
+  );
+}
+
 function findLongConnectorHybridRescueRoute(
   routes: RouteOption[],
   selectedRoutes: RouteOption[],
@@ -867,7 +978,8 @@ function findLongConnectorHybridRescueRoute(
   const longConnectorMetroRoute = selectedRoutes
     .filter(
       (route) =>
-        route.kind === "metro_direct" && routeLongConnectorDistanceKm(route) > 0,
+        route.kind === "metro_direct" &&
+        routeLongConnectorDistanceKm(route) > 0,
     )
     .sort(
       (left, right) =>
@@ -885,8 +997,7 @@ function findLongConnectorHybridRescueRoute(
     longConnectorMetroRoute,
   );
   const longConnectorDuration =
-    longConnectorMetroRoute.estimatedDurationMinutes ??
-    Number.MAX_SAFE_INTEGER;
+    longConnectorMetroRoute.estimatedDurationMinutes ?? Number.MAX_SAFE_INTEGER;
   const selectedAlightingLabels = new Set(
     selectedRoutes.map((route) => normalizeTransitText(route.alighting.label)),
   );
@@ -1899,6 +2010,105 @@ async function applyRoadSnappedMapPreview(route: RouteOption) {
   });
 }
 
+function filterPostSnapDurationOutliers(routes: RouteOption[]) {
+  if (routes.length <= 1) {
+    return routes;
+  }
+
+  const finiteDurations = routes
+    .map((route) => route.estimatedDurationMinutes)
+    .filter(
+      (duration): duration is number =>
+        typeof duration === "number" && Number.isFinite(duration),
+    );
+
+  if (!finiteDurations.length) {
+    return routes;
+  }
+
+  const bestDuration = Math.min(...finiteDurations);
+  const maxAllowedDuration = Math.max(
+    bestDuration + POST_SNAP_OUTLIER_MAX_EXTRA_MINUTES,
+    bestDuration * POST_SNAP_OUTLIER_MAX_DURATION_MULTIPLIER,
+  );
+  const filteredRoutes = routes.filter((route, index) => {
+    const duration = route.estimatedDurationMinutes;
+    const alternativeCost = lowestRouteCostExcluding(routes, index);
+
+    if (
+      duration !== undefined &&
+      duration > maxAllowedDuration &&
+      !routeIsDramaticallyCheaper(route, alternativeCost)
+    ) {
+      return false;
+    }
+
+    if (
+      routeHasPostSnapLongConnectorOutlier(route) &&
+      !routeIsDramaticallyCheaper(route, alternativeCost)
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  return filteredRoutes.length ? filteredRoutes : routes.slice(0, 1);
+}
+
+function routeHasPostSnapLongConnectorOutlier(route: RouteOption) {
+  const routeDuration = route.estimatedDurationMinutes;
+
+  return route.segments.some((segment) => {
+    if (segment.connectorType !== "long_rickshaw") {
+      return false;
+    }
+
+    const segmentDuration = segment.estimatedDurationMinutes;
+
+    if (segmentDuration === undefined) {
+      return false;
+    }
+
+    if (segmentDuration >= POST_SNAP_LONG_CONNECTOR_MAX_MINUTES) {
+      return true;
+    }
+
+    return (
+      routeDuration !== undefined &&
+      routeDuration >= POST_SNAP_LONG_CONNECTOR_MIN_TOTAL_MINUTES &&
+      segmentDuration / routeDuration >=
+        POST_SNAP_LONG_CONNECTOR_MAX_TOTAL_SHARE
+    );
+  });
+}
+
+function routeCostForOutlierComparison(route: RouteOption) {
+  return route.totalCostLowBdt ?? route.totalCost ?? Number.MAX_SAFE_INTEGER;
+}
+
+function lowestRouteCostExcluding(routes: RouteOption[], routeIndex: number) {
+  const costs = routes
+    .filter((_, index) => index !== routeIndex)
+    .map(routeCostForOutlierComparison);
+
+  return costs.length ? Math.min(...costs) : Number.MAX_SAFE_INTEGER;
+}
+
+function routeIsDramaticallyCheaper(
+  route: RouteOption,
+  alternativeCost: number,
+) {
+  const cost = route.totalCostLowBdt ?? route.totalCost;
+
+  return (
+    cost !== undefined &&
+    cost + POST_SNAP_OUTLIER_KEEP_CHEAPER_BY_BDT < alternativeCost
+  );
+}
+
+export { filterPostSnapDurationOutliers };
+
 function addMapPoint(
   points: RouteMapPoint[],
   label: string,
@@ -2322,7 +2532,6 @@ function findTransferBusLegs(
         if (addedTransferForStop) {
           break;
         }
-
       }
     }
   }
@@ -2524,7 +2733,10 @@ function createTransferBusRoute(
     boarding: makeStopReference(transfer.firstLeg.boardingLabel),
     alighting: makeStopReference(transfer.secondLeg.alightingLabel),
     transferStops: [makeStopReference(transfer.transferLabel, "hub")],
-    serviceLabels: mergeUniqueStrings(firstBusServiceLabels, secondBusServiceLabels),
+    serviceLabels: mergeUniqueStrings(
+      firstBusServiceLabels,
+      secondBusServiceLabels,
+    ),
     primaryServiceLabel: firstBusName,
     segments,
     mapPreview: buildMapPreview(
@@ -2881,12 +3093,16 @@ function findRouteUsefulHybridBridgeStations(
     return [];
   }
 
-  return DHAKA_METRO_STATIONS
-    .filter((station) => station.id !== sourceStationId)
+  return DHAKA_METRO_STATIONS.filter(
+    (station) => station.id !== sourceStationId,
+  )
     .map((station) => {
       const sourceDistanceToDestination =
         sourceStation.coordinates && destinationCoordinates
-          ? haversineDistanceKm(sourceStation.coordinates, destinationCoordinates)
+          ? haversineDistanceKm(
+              sourceStation.coordinates,
+              destinationCoordinates,
+            )
           : Number.MAX_SAFE_INTEGER;
       const bridgeDistanceToDestination =
         station.coordinates && destinationCoordinates
@@ -2910,9 +3126,7 @@ function findRouteUsefulHybridBridgeStations(
         ? {
             station,
             bestLeg,
-            stationCount: Math.abs(
-              sourceStation.sequence - station.sequence,
-            ),
+            stationCount: Math.abs(sourceStation.sequence - station.sequence),
             bridgeDistanceToDestination,
           }
         : null;
@@ -3201,7 +3415,10 @@ export function surfaceRoutes(
   routes: RouteOption[],
   optimization: RouteOptimization,
 ) {
-  const uniqueRoutes = dedupeRoutes(removeDominatedTransferRoutes(routes));
+  const qualityFilteredRoutes = removeMetroDominatedHybridRoutes(
+    removeDestinationBacktrackingRoutes(removeDominatedTransferRoutes(routes)),
+  );
+  const uniqueRoutes = dedupeRoutes(qualityFilteredRoutes);
   const selectedRoutes: RouteOption[] = [];
 
   for (const profile of profilesForOptimization(optimization)) {
@@ -3241,11 +3458,12 @@ export async function calculateRoutes(payload: CalculateRouteRequest) {
     applyTripEndpoints(route, payload),
   );
 
-  const surfacedRoutes = await Promise.all(
+  const snappedSurfaceRoutes = await Promise.all(
     surfaceRoutes(endpointRoutes, payload.optimization).map(
       applyRoadSnappedMapPreview,
     ),
   );
+  const surfacedRoutes = filterPostSnapDurationOutliers(snappedSurfaceRoutes);
   const debugRoutes = endpointRoutes;
 
   return calculateRouteResponseSchema.parse({

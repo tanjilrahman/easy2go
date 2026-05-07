@@ -7,6 +7,7 @@ import {
   estimateBusLegDistanceKm,
   estimateMetroDistanceKm,
   estimateRickshawFareBdt,
+  filterPostSnapDurationOutliers,
   surfaceRoutes,
 } from "@/lib/server/route-planner";
 import { normalizeTransitText } from "@/lib/server/transit-support";
@@ -111,6 +112,91 @@ describe("surfaceRoutes", () => {
     expect(surfaceRoutes([cheapest, fastest], "fastest")[0]?.id).toBe("fastest");
     expect(surfaceRoutes([cheapest, fastest], "cheapest")[0]?.id).toBe("cheapest");
     expect(surfaceRoutes([cheapest, fastest], "recommended")).toHaveLength(2);
+  });
+
+  it("removes extreme post-snap duration outliers", () => {
+    const practical = makeRoute({
+      id: "practical",
+      pathSignature: "practical",
+      estimatedDurationMinutes: 60,
+      totalCost: 100,
+      totalCostLowBdt: 100,
+    });
+    const comparable = makeRoute({
+      id: "comparable",
+      pathSignature: "comparable",
+      estimatedDurationMinutes: 82,
+      totalCost: 90,
+      totalCostLowBdt: 90,
+    });
+    const outlier = makeRoute({
+      id: "outlier",
+      pathSignature: "outlier",
+      estimatedDurationMinutes: 150,
+      totalCost: 95,
+      totalCostLowBdt: 95,
+    });
+
+    expect(
+      filterPostSnapDurationOutliers([practical, outlier, comparable]).map(
+        (route) => route.id,
+      ),
+    ).toEqual(["practical", "comparable"]);
+  });
+
+  it("removes post-snap routes with unreasonable long connector time", () => {
+    const practical = makeRoute({
+      id: "practical",
+      pathSignature: "practical",
+      estimatedDurationMinutes: 85,
+      totalCost: 120,
+      totalCostLowBdt: 120,
+    });
+    const longConnectorOutlier = makeRoute({
+      id: "long-connector-outlier",
+      pathSignature: "long-connector-outlier",
+      estimatedDurationMinutes: 95,
+      totalCost: 110,
+      totalCostLowBdt: 110,
+      segments: [
+        {
+          mode: "rickshaw",
+          instruction: "Local connector",
+          startLocation: "Origin",
+          endLocation: "Boarding",
+          connectorType: "long_rickshaw",
+          estimatedDurationMinutes: 64,
+          estimatedDistanceKm: 8,
+        },
+        {
+          mode: "bus",
+          instruction: "Board Test Bus",
+          startLocation: "Boarding",
+          endLocation: "Destination",
+          estimatedDurationMinutes: 31,
+        },
+      ],
+    });
+    const cheapLongConnector = makeRoute({
+      id: "cheap-long-connector",
+      pathSignature: "cheap-long-connector",
+      estimatedDurationMinutes: 95,
+      totalCost: 20,
+      totalCostLowBdt: 20,
+      segments: longConnectorOutlier.segments,
+    });
+
+    expect(
+      filterPostSnapDurationOutliers([
+        practical,
+        longConnectorOutlier,
+      ]).map((route) => route.id),
+    ).toEqual(["practical"]);
+    expect(
+      filterPostSnapDurationOutliers([practical, cheapLongConnector]).map(
+        (route) => route.id,
+      ),
+    ).toEqual(["practical", "cheap-long-connector"]);
   });
 
   it("labels recommended results by balanced, practical speed, and hassle profiles", () => {
@@ -402,6 +488,53 @@ describe("calculateRoutes", () => {
             ["uttar badda", "badda link road"].some((label) =>
               normalizeTransitText(segment.endLocation).includes(label),
             ),
+          ),
+      ),
+    ).toBe(false);
+  });
+
+  it("does not surface hybrids that leave metro after reaching Mirpur 10", async () => {
+    vi.stubEnv("GEOAPIFY_API_KEY", "");
+
+    const response = await calculateRoutes({
+      origin: {
+        name: "DIU side origin",
+        coordinates: [23.87816946319441, 90.31963485382568],
+        type: "place",
+      },
+      destination: {
+        name: "Mirpur 10",
+        coordinates: [23.8065239, 90.3686387],
+        type: "place",
+      },
+      optimization: "recommended",
+    });
+
+    expect(response.routes[0]?.kind).toBe("metro_direct");
+    expect(
+      response.routes.some(
+        (route) =>
+          route.kind === "bus_metro_hybrid" &&
+          route.segments.some(
+            (segment) =>
+              segment.mode === "metro" &&
+              segment.endLocation === "Mirpur 10 Metro Station",
+          ) &&
+          route.segments.some(
+            (segment) =>
+              segment.mode === "bus" &&
+              normalizeTransitText(segment.endLocation).includes("mirpur 2"),
+          ),
+      ),
+    ).toBe(false);
+    expect(
+      response.routes.some(
+        (route) =>
+          route.kind === "bus_metro_hybrid" &&
+          route.segments.some(
+            (segment) =>
+              segment.mode === "metro" &&
+              segment.endLocation !== "Mirpur 10 Metro Station",
           ),
       ),
     ).toBe(false);
