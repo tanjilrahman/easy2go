@@ -30,29 +30,7 @@ interface OpenMapProps {
   onPickLocation?: (coordinates: [number, number], mode: MapPickMode) => void;
 }
 
-const DEFAULT_RASTER_STYLE: StyleSpecification = {
-  version: 8,
-  sources: {
-    "carto-positron": {
-      type: "raster",
-      tiles: [
-        "https://a.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-        "https://b.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-        "https://c.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-        "https://d.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
-      ],
-      tileSize: 256,
-      attribution: "© OpenStreetMap contributors © CARTO",
-    },
-  },
-  layers: [
-    {
-      id: "carto-positron",
-      type: "raster",
-      source: "carto-positron",
-    },
-  ],
-};
+const DEFAULT_RASTER_STYLE = "https://tiles.openfreemap.org/styles/positron";
 const DEFAULT_MAP_ATTRIBUTION =
   "© OpenStreetMap contributors, © OpenFreeMap, © OpenMapTiles";
 const DHAKA_CENTER_LNG_LAT: LngLatLike = [DHAKA_CENTER[1], DHAKA_CENTER[0]];
@@ -67,7 +45,9 @@ function toLngLat([lat, lng]: [number, number]): [number, number] {
   return [lng, lat];
 }
 
-function makeEmptyCollection<TGeometry extends LineString | Point>(): FeatureCollection<TGeometry> {
+function makeEmptyCollection<
+  TGeometry extends LineString | Point,
+>(): FeatureCollection<TGeometry> {
   return {
     type: "FeatureCollection",
     features: [],
@@ -92,10 +72,15 @@ function formatMapLabel(label?: string | null): string {
   if (!label) return "";
   // Remove everything from the first Bengali character onwards or inside parentheses
   // This avoids the MapLibre complex text shaping issues with Indic scripts
-  return label.split("(")[0].replace(/[\u0980-\u09FF].*$/, "").trim();
+  return label
+    .split("(")[0]
+    .replace(/[\u0980-\u09FF].*$/, "")
+    .trim();
 }
 
-function buildRouteLineCollection(route?: RouteOption | null): FeatureCollection<LineString> {
+function buildRouteLineCollection(
+  route?: RouteOption | null,
+): FeatureCollection<LineString> {
   if (!route) {
     return makeEmptyCollection();
   }
@@ -118,7 +103,9 @@ function buildRouteLineCollection(route?: RouteOption | null): FeatureCollection
   };
 }
 
-function buildRoutePointCollection(route?: RouteOption | null): FeatureCollection<Point> {
+function buildRoutePointCollection(
+  route?: RouteOption | null,
+): FeatureCollection<Point> {
   if (!route) {
     return makeEmptyCollection();
   }
@@ -176,7 +163,9 @@ function buildUserPointCollection(userCoordinates?: [number, number] | null) {
   } satisfies FeatureCollection<Point>;
 }
 
-function getCollectionCoordinates(collections: Array<FeatureCollection<LineString | Point>>) {
+function getCollectionCoordinates(
+  collections: Array<FeatureCollection<LineString | Point>>,
+) {
   return collections.flatMap((collection) =>
     collection.features.flatMap((feature) =>
       feature.geometry.type === "Point"
@@ -230,15 +219,7 @@ function addMapLayers(map: MapLibreMap) {
       source: SOURCE_IDS.routeLines,
       paint: {
         "line-color": "#ffffff",
-        "line-width": [
-          "match",
-          ["get", "mode"],
-          "walk",
-          5,
-          "rickshaw",
-          6,
-          7,
-        ],
+        "line-width": ["match", ["get", "mode"], "walk", 5, "rickshaw", 6, 7],
       },
       layout: {
         "line-cap": "round",
@@ -269,15 +250,7 @@ function addMapLayers(map: MapLibreMap) {
           MAP_COLORS.ride_share,
           MAP_COLORS.transfer,
         ],
-        "line-width": [
-          "match",
-          ["get", "mode"],
-          "walk",
-          3,
-          "rickshaw",
-          4,
-          5,
-        ],
+        "line-width": ["match", ["get", "mode"], "walk", 3, "rickshaw", 4, 5],
         "line-dasharray": [
           "match",
           ["get", "mode"],
@@ -303,7 +276,12 @@ function addMapLayers(map: MapLibreMap) {
       source: SOURCE_IDS.routeLines,
       layout: {
         "symbol-placement": "line",
-        "text-field": ["case", ["!=", ["get", "label"], ""], ["get", "label"], ["get", "mode"]],
+        "text-field": [
+          "case",
+          ["!=", ["get", "label"], ""],
+          ["get", "label"],
+          ["get", "mode"],
+        ],
         "text-font": ["Open Sans Bold", "Arial Unicode MS Bold"],
         "text-size": 11,
         "text-transform": "uppercase",
@@ -320,7 +298,11 @@ function addMapLayers(map: MapLibreMap) {
     });
   }
 
-  for (const sourceId of [SOURCE_IDS.routePoints, SOURCE_IDS.selectedPoints, SOURCE_IDS.userPoint]) {
+  for (const sourceId of [
+    SOURCE_IDS.routePoints,
+    SOURCE_IDS.selectedPoints,
+    SOURCE_IDS.userPoint,
+  ]) {
     if (!map.getSource(sourceId)) {
       map.addSource(sourceId, {
         type: "geojson",
@@ -329,9 +311,17 @@ function addMapLayers(map: MapLibreMap) {
     }
   }
 
-  const pointLayerConfigs: Array<{ id: string; source: string; radius: number }> = [
+  const pointLayerConfigs: Array<{
+    id: string;
+    source: string;
+    radius: number;
+  }> = [
     { id: "easy2go-route-points", source: SOURCE_IDS.routePoints, radius: 7 },
-    { id: "easy2go-selected-points", source: SOURCE_IDS.selectedPoints, radius: 8 },
+    {
+      id: "easy2go-selected-points",
+      source: SOURCE_IDS.selectedPoints,
+      radius: 8,
+    },
     { id: "easy2go-user-point", source: SOURCE_IDS.userPoint, radius: 6 },
   ];
 
@@ -386,9 +376,12 @@ function addMapLayers(map: MapLibreMap) {
         },
       });
     }
-    
+
     // Add point labels
-    if (!map.getLayer(`${config.id}-labels`) && config.id !== "easy2go-user-point") {
+    if (
+      !map.getLayer(`${config.id}-labels`) &&
+      config.id !== "easy2go-user-point"
+    ) {
       map.addLayer({
         id: `${config.id}-labels`,
         type: "symbol",
@@ -424,15 +417,35 @@ export function OpenMap({
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<MapLibreMap | null>(null);
   const pickModeRef = useRef<MapPickMode | null>(null);
-  const onPickLocationRef = useRef<OpenMapProps["onPickLocation"]>(onPickLocation);
-  const routeLineDataRef = useRef<FeatureCollection<LineString>>(makeEmptyCollection());
-  const routePointDataRef = useRef<FeatureCollection<Point>>(makeEmptyCollection());
-  const selectedPointDataRef = useRef<FeatureCollection<Point>>(makeEmptyCollection());
-  const userPointDataRef = useRef<FeatureCollection<Point>>(makeEmptyCollection());
-  const routeLineData = useMemo(() => buildRouteLineCollection(activeRoute), [activeRoute]);
-  const routePointData = useMemo(() => buildRoutePointCollection(activeRoute), [activeRoute]);
+  const onPickLocationRef =
+    useRef<OpenMapProps["onPickLocation"]>(onPickLocation);
+  const routeLineDataRef = useRef<FeatureCollection<LineString>>(
+    makeEmptyCollection(),
+  );
+  const routePointDataRef = useRef<FeatureCollection<Point>>(
+    makeEmptyCollection(),
+  );
+  const selectedPointDataRef = useRef<FeatureCollection<Point>>(
+    makeEmptyCollection(),
+  );
+  const userPointDataRef = useRef<FeatureCollection<Point>>(
+    makeEmptyCollection(),
+  );
+  const routeLineData = useMemo(
+    () => buildRouteLineCollection(activeRoute),
+    [activeRoute],
+  );
+  const routePointData = useMemo(
+    () => buildRoutePointCollection(activeRoute),
+    [activeRoute],
+  );
   const selectedPointData = useMemo(
-    () => buildSelectedPointCollection(originSelection, destinationSelection, activeRoute),
+    () =>
+      buildSelectedPointCollection(
+        originSelection,
+        destinationSelection,
+        activeRoute,
+      ),
     [activeRoute, destinationSelection, originSelection],
   );
   const userPointData = useMemo(
@@ -477,7 +490,11 @@ export function OpenMap({
       addMapLayers(map);
       setSourceData(map, SOURCE_IDS.routeLines, routeLineDataRef.current);
       setSourceData(map, SOURCE_IDS.routePoints, routePointDataRef.current);
-      setSourceData(map, SOURCE_IDS.selectedPoints, selectedPointDataRef.current);
+      setSourceData(
+        map,
+        SOURCE_IDS.selectedPoints,
+        selectedPointDataRef.current,
+      );
       setSourceData(map, SOURCE_IDS.userPoint, userPointDataRef.current);
     });
 
@@ -531,14 +548,21 @@ export function OpenMap({
       return;
     }
 
-    const coordinates = getCollectionCoordinates([routeLineData, routePointData]);
+    const coordinates = getCollectionCoordinates([
+      routeLineData,
+      routePointData,
+    ]);
     if (!coordinates.length) {
       return;
     }
 
     const bounds = coordinates.reduce(
-      (nextBounds, coordinate) => nextBounds.extend(coordinate as [number, number]),
-      new maplibregl.LngLatBounds(coordinates[0] as [number, number], coordinates[0] as [number, number]),
+      (nextBounds, coordinate) =>
+        nextBounds.extend(coordinate as [number, number]),
+      new maplibregl.LngLatBounds(
+        coordinates[0] as [number, number],
+        coordinates[0] as [number, number],
+      ),
     );
     const bottomPadding =
       viewportBottomInsetPx && viewportBottomInsetPx > 0
@@ -644,10 +668,11 @@ export function OpenMap({
 
   return (
     <div className={cn("relative overflow-hidden bg-[#e8f0f7]", className)}>
-      <div ref={containerRef} className="h-full w-full" />
+      <div ref={containerRef} className="h-full w-full brightness-105" />
       {pickMode ? (
         <div className="pointer-events-none absolute left-1/2 top-20 z-10 -translate-x-1/2 rounded-full border border-white/80 bg-white/94 px-3 py-2 text-xs font-bold text-[rgb(55,42,123)] shadow-[0_18px_48px_-28px_rgba(29,21,63,0.34)] backdrop-blur">
-          Click the map to set {pickMode === "origin" ? "starting point" : "destination"}
+          Click the map to set{" "}
+          {pickMode === "origin" ? "starting point" : "destination"}
         </div>
       ) : null}
     </div>
